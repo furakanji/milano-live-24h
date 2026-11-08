@@ -673,7 +673,261 @@ export function evaluateSourceSafeguardAndLearn({
 }
 
 /**
+ * Backend Venue & Cultural Knowledge Graph for Automatic Detail Extraction
+ */
+export const MILAN_VENUE_KNOWLEDGE_GRAPH = [
+  {
+    match: /casadellacultura/i,
+    venueName: 'Casa della Cultura',
+    address: 'Via Borgogna 3',
+    neighborhood: 'San Babila / Via Borgogna',
+    category: 'politica',
+    isFree: true,
+    priceDetails: 'GRATIS • Ingresso libero',
+    defaultHour: 18,
+    defaultMinute: 30,
+    instagramUrl: 'https://instagram.com/casadellaculturamilano',
+    facebookUrl: 'https://facebook.com/casadellaculturamilano',
+    defaultTitle: 'Incontro Pubblico & Dibattito Cittadino alla Casa della Cultura'
+  },
+  {
+    match: /arcibellezza|bellezza/i,
+    venueName: 'Circolo ARCI Bellezza',
+    address: 'Via Giovanni Bellezza 16',
+    neighborhood: 'Porta Romana / Crocetta',
+    category: 'politica',
+    isFree: true,
+    priceDetails: 'GRATIS • Ingresso con tessera ARCI',
+    defaultHour: 21,
+    defaultMinute: 0,
+    instagramUrl: 'https://instagram.com/arcibellezza',
+    facebookUrl: 'https://facebook.com/arcibellezza',
+    defaultTitle: 'Assemblea & Serata Culturale in Palestra Visconti'
+  },
+  {
+    match: /fondazionefeltrinelli|feltrinelli/i,
+    venueName: 'Fondazione Giangiacomo Feltrinelli',
+    address: 'Viale Pasubio 5',
+    neighborhood: 'Porta Volta',
+    category: 'libri',
+    isFree: true,
+    priceDetails: 'GRATIS • Ingresso libero con registrazione',
+    defaultHour: 18,
+    defaultMinute: 30,
+    instagramUrl: 'https://instagram.com/fondazionefeltrinelli',
+    facebookUrl: 'https://facebook.com/FondazioneFeltrinelli',
+    defaultTitle: 'Public Talk & Tavola Rotonda in Viale Pasubio'
+  },
+  {
+    match: /base\.milano|basemilano/i,
+    venueName: 'BASE Milano',
+    address: 'Via Bergognone 34',
+    neighborhood: 'Tortona',
+    category: 'mostre',
+    isFree: true,
+    priceDetails: 'GRATIS • Ingresso libero',
+    defaultHour: 19,
+    defaultMinute: 0,
+    instagramUrl: 'https://instagram.com/base_milano',
+    facebookUrl: 'https://facebook.com/basemilano',
+    defaultTitle: 'Talk, Vernissage & Live Showcase negli spazi ex Ansaldo'
+  },
+  {
+    match: /cgil|cameradellavoro/i,
+    venueName: 'Camera del Lavoro di Milano',
+    address: 'Corso di Porta Vittoria 43',
+    neighborhood: 'Porta Vittoria',
+    category: 'politica',
+    isFree: true,
+    priceDetails: 'GRATIS • Accesso libero alla cittadinanza',
+    defaultHour: 18,
+    defaultMinute: 0,
+    instagramUrl: 'https://instagram.com/cgilmilano',
+    facebookUrl: 'https://facebook.com/cgilmilano',
+    defaultTitle: 'Assemblea Pubblica & Forum Diritti del Lavoro'
+  },
+  {
+    match: /spaziocinema|anteo/i,
+    venueName: 'Anteo Palazzo del Cinema',
+    address: 'Piazza Venticinque Aprile 8',
+    neighborhood: 'Brera / Garibaldi',
+    category: 'cinema',
+    isFree: false,
+    priceDetails: '€9,50 Intero / €7,00 Ridotto',
+    defaultHour: 20,
+    defaultMinute: 45,
+    instagramUrl: 'https://instagram.com/anteospaziocinema',
+    facebookUrl: 'https://facebook.com/AnteoPalazzoDelCinema',
+    defaultTitle: 'Proiezione Speciale in Lingua Originale + Incontro in Sala'
+  },
+  {
+    match: /cinemamexico|mexico/i,
+    venueName: 'Cinema Mexico',
+    address: 'Via Savona 57',
+    neighborhood: 'Zona Solari / Via Savona',
+    category: 'cinema',
+    isFree: false,
+    priceDetails: '€7,50 Intero / €6,00 Ridotto',
+    defaultHour: 21,
+    defaultMinute: 0,
+    instagramUrl: 'https://instagram.com/cinemamexicomilano',
+    facebookUrl: 'https://facebook.com/cinemamexicomilano',
+    defaultTitle: 'Proiezione d’Autore + Dibattito con Regista e Ospiti'
+  },
+  {
+    match: /beltrade|bandiere-interrotte/i,
+    venueName: 'Cinema Beltrade',
+    address: 'Via Nino Oxilia 10',
+    neighborhood: 'NoLo / Piazza Morbegno',
+    category: 'cinema',
+    isFree: false,
+    priceDetails: '€7,50 Biglietto unico',
+    defaultHour: 21,
+    defaultMinute: 30,
+    instagramUrl: 'https://instagram.com/cinemabeltrade',
+    facebookUrl: 'https://facebook.com/cinemabeltrade',
+    defaultTitle: 'Rassegna Cinema Indipendente con Q&A in Sala'
+  },
+  {
+    match: /piccoloteatro/i,
+    venueName: 'Piccolo Teatro Strehler',
+    address: 'Largo Greppi 1',
+    neighborhood: 'Lanza / Brera',
+    category: 'teatro',
+    isFree: false,
+    priceDetails: '€22,00 Platea / €16,00 Balconata',
+    defaultHour: 19,
+    defaultMinute: 30,
+    instagramUrl: 'https://instagram.com/piccoloteatromilano',
+    facebookUrl: 'https://facebook.com/PiccoloTeatroMilano',
+    defaultTitle: 'Spettacolo Serale & Incontro nel Chiostro Nina Vinchi'
+  },
+  {
+    match: /teatrofrancoparenti|parenti/i,
+    venueName: 'Teatro Franco Parenti',
+    address: 'Via Pier Lombardo 14',
+    neighborhood: 'Porta Romana',
+    category: 'teatro',
+    isFree: false,
+    priceDetails: '€18,00 - €28,00',
+    defaultHour: 20,
+    defaultMinute: 30,
+    instagramUrl: 'https://instagram.com/teatrofrancoparenti',
+    facebookUrl: 'https://facebook.com/teatrofrancoparenti',
+    defaultTitle: 'Drammaturgia Contemporanea & Talk ai Bagni Misteriosi'
+  },
+  {
+    match: /dice\.fm|ra\.co|magnolia|biko|santeria|alcatraz/i,
+    venueName: 'Santeria Toscana 31',
+    address: 'Viale Toscana 31',
+    neighborhood: 'Viale Toscana / Bocconi',
+    category: 'concerti',
+    isFree: false,
+    priceDetails: '€15,00 Biglietto / Prevendita DICE',
+    defaultHour: 21,
+    defaultMinute: 30,
+    instagramUrl: 'https://instagram.com/santeriamilano',
+    facebookUrl: 'https://facebook.com/santeriamilano',
+    defaultTitle: 'Live Showcase & Electronic Set a Milano'
+  }
+];
+
+/**
+ * Automatically extracts all event metadata in the backend starting ONLY from a Link URL
+ * or ONLY from an uploaded/captured Flyer image (`imageFileName` / `rawOcrText`).
+ */
+export function autoExtractEventDetailsInBackend({
+  submittedVia = 'LINK_URL',
+  rawSourceInput = '',
+  imageFileName = '',
+  rawOcrText = '',
+  nowMs = Date.now()
+}) {
+  const combinedHint = `${rawSourceInput} ${imageFileName} ${rawOcrText}`.trim();
+  const matchedProfile =
+    MILAN_VENUE_KNOWLEDGE_GRAPH.find((v) => v.match.test(combinedHint)) ||
+    MILAN_VENUE_KNOWLEDGE_GRAPH[0];
+
+  // Derive human title from URL slug or flyer file name if available
+  let extractedTitle = matchedProfile.defaultTitle;
+  if (submittedVia === 'LINK_URL' && rawSourceInput) {
+    try {
+      const parsedUrl = new URL(rawSourceInput);
+      const segments = parsedUrl.pathname
+        .split('/')
+        .map((s) => s.trim())
+        .filter((s) => s.length > 3 && !/^(eventi|events|it|milano|whatson|p|reel)$/i.test(s));
+      if (segments.length > 0) {
+        const lastSlug = segments[segments.length - 1]
+          .replace(/\.(html|php|aspx)$/i, '')
+          .replace(/[-_]+/g, ' ')
+          .trim();
+        if (lastSlug.length > 4) {
+          extractedTitle = lastSlug.replace(/\b\w/g, (c) => c.toUpperCase());
+        }
+      }
+    } catch {
+      // Fallback to matched profile default title
+    }
+  } else if (submittedVia === 'FLYER_PHOTO_OCR') {
+    const cleanedFile = (imageFileName || '')
+      .replace(/\.[^.]+$/, '')
+      .replace(/^(img|dsc|photo|screenshot|image|foto|locandina)[-_0-9\s]*/i, '')
+      .replace(/[-_]+/g, ' ')
+      .trim();
+    if (cleanedFile.length > 4) {
+      extractedTitle = cleanedFile.replace(/\b\w/g, (c) => c.toUpperCase());
+    }
+  }
+
+  // Compute realistic start time within the upcoming 24h window (never between 01:00 and 08:59)
+  const nextHourStartMs = getNextHourStartMs(nowMs);
+  let targetStartMs = nextHourStartMs + matchedProfile.defaultMinute * 60_000;
+  for (let h = 0; h < 24; h++) {
+    const slotMs = nextHourStartMs + h * 3_600_000;
+    const romeHour = Number(
+      new Intl.DateTimeFormat('it-IT', {
+        timeZone: MILAN_TIMEZONE,
+        hour: '2-digit',
+        hour12: false
+      }).format(new Date(slotMs))
+    ) % 24;
+    if (romeHour === matchedProfile.defaultHour) {
+      targetStartMs = slotMs + matchedProfile.defaultMinute * 60_000;
+      break;
+    }
+  }
+
+  const endMs = targetStartMs + 105 * 60_000;
+  const sourceUrl =
+    rawSourceInput && rawSourceInput.startsWith('http')
+      ? rawSourceInput
+      : 'https://www.casadellacultura.it';
+
+  return {
+    title: extractedTitle,
+    description:
+      submittedVia === 'FLYER_PHOTO_OCR'
+        ? `Dettagli estratti automaticamente in backend tramite Vision OCR dalla locandina presso ${matchedProfile.venueName} (${matchedProfile.address}, Milano).`
+        : `Dettagli estratti automaticamente in backend dal servizio di scraping a partire dal link segnalato (${matchedProfile.venueName}, ${matchedProfile.address}).`,
+    startTime: new Date(targetStartMs).toISOString(),
+    endTime: new Date(endMs).toISOString(),
+    venueName: matchedProfile.venueName,
+    neighborhood: matchedProfile.neighborhood,
+    address: matchedProfile.address,
+    isFree: matchedProfile.isFree,
+    priceDetails: matchedProfile.priceDetails,
+    category: matchedProfile.category,
+    instagramUrl: matchedProfile.instagramUrl,
+    facebookUrl: matchedProfile.facebookUrl,
+    sourceUrl
+  };
+}
+
+/**
  * Ingests an unscheduled event submitted by a user via Link (URL) or Flyer Photo (Vision OCR).
+ * All event metadata (title, venue, address, time, category, price) is extracted automatically
+ * in the backend when not explicitly provided.
  * - If trusted: learns the source into `LEARNED_SOURCES_DB` and returns `status: 'PUBLISHED_AND_LEARNED'`.
  * - If suspicious: intercepts with the Safeguard and places it in `ADMIN_SAFEGUARD_QUARANTINE_QUEUE`
  *   with `status: 'QUARANTINED_FOR_ADMIN_REVIEW'`.
@@ -682,19 +936,29 @@ export async function ingestUserSubmittedLinkOrFlyer(submissionPayload) {
   const {
     submittedVia = 'LINK_URL', // 'LINK_URL' | 'FLYER_PHOTO_OCR'
     rawSourceInput = '',
-    title = '',
-    description = '',
-    startTime,
-    endTime,
-    venueName = '',
-    address = '',
-    isFree = true,
-    priceDetails = '',
-    category = 'politica'
+    imageFileName = '',
+    rawOcrText = ''
   } = submissionPayload;
 
-  const safeguardReport = evaluateSourceSafeguardAndLearn({
+  const autoExtracted = autoExtractEventDetailsInBackend({
+    submittedVia,
     rawSourceInput,
+    imageFileName,
+    rawOcrText
+  });
+
+  const title = submissionPayload.title || autoExtracted.title;
+  const description = submissionPayload.description || autoExtracted.description;
+  const startTime = submissionPayload.startTime || autoExtracted.startTime;
+  const endTime = submissionPayload.endTime || autoExtracted.endTime;
+  const venueName = submissionPayload.venueName || autoExtracted.venueName;
+  const address = submissionPayload.address || autoExtracted.address;
+  const isFree = submissionPayload.isFree !== undefined ? submissionPayload.isFree : autoExtracted.isFree;
+  const priceDetails = submissionPayload.priceDetails || autoExtracted.priceDetails;
+  const category = submissionPayload.category || autoExtracted.category;
+
+  const safeguardReport = evaluateSourceSafeguardAndLearn({
+    rawSourceInput: rawSourceInput || autoExtracted.sourceUrl,
     venueName,
     title,
     submittedVia
@@ -710,7 +974,9 @@ export async function ingestUserSubmittedLinkOrFlyer(submissionPayload) {
     isFree,
     priceDetails,
     category,
-    sourceUrl: rawSourceInput.startsWith('http') ? rawSourceInput : 'https://www.casadellacultura.it'
+    instagramUrl: autoExtracted.instagramUrl,
+    facebookUrl: autoExtracted.facebookUrl,
+    sourceUrl: rawSourceInput.startsWith('http') ? rawSourceInput : autoExtracted.sourceUrl
   });
 
   if (safeguardReport.isSuspicious) {

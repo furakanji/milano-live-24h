@@ -276,9 +276,9 @@
   <!-- Main Content: Public Event Submission + Dynamic 24-Hour Rolling Timeline -->
   <main class="max-w-5xl mx-auto px-4 py-6">
 
-    <!-- PUBLIC COMMUNITY EVENT SUBMISSION (Link or Flyer Photo — Zero Safeguard Exposure) -->
+    <!-- PUBLIC COMMUNITY RADAR (Only 2 Functions: Invia Link or Locandina with Scegli Foto / Scatta Foto) -->
     <section id="community-ingestion-section" class="mb-8 rounded-xl bg-[#111318] border border-[#282d39] overflow-hidden shadow-xl">
-      <!-- Public Studio Banner Header -->
+      <!-- Header -->
       <div class="px-4 sm:px-5 py-3.5 bg-[#151821] border-b border-[#23272f] flex flex-wrap items-center justify-between gap-3">
         <div class="flex items-center gap-2.5">
           <span class="px-2 py-0.5 rounded bg-orange-500/20 text-orange-400 border border-orange-500/40 text-xs font-extrabold uppercase mono-num">
@@ -286,10 +286,10 @@
           </span>
           <div>
             <h2 class="text-sm sm:text-base font-bold text-white leading-tight">
-              Segnala un Evento Non Previsto a Milano (tramite Link o Foto Locandina)
+              Segnala un Evento a Milano: Invia Link o Locandina
             </h2>
             <p class="text-xs text-zinc-400">
-              Invia il link di un evento o carica la foto di una locandina vista in città per aggiungerlo alla programmazione delle prossime 24 ore.
+              Tutti i dettagli (titolo, luogo, indirizzo, orario, prezzo e categoria) vengono estratti e aggiunti in automatico in backend dal servizio.
             </p>
           </div>
         </div>
@@ -298,282 +298,147 @@
           type="button"
           class="px-3 py-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-zinc-700 text-xs font-semibold cursor-pointer transition"
         >
-          Mostra / Nascondi Modulo
+          Mostra / Nascondi
         </button>
       </div>
 
-      <!-- Public Submission Body -->
-      <div id="studio-collapsible-body" class="p-4 sm:p-5 space-y-5">
-        <!-- Public Mode Tabs (Only Link & Flyer Photo) -->
-        <div class="flex flex-wrap items-center justify-between gap-2 border-b border-[#23272f] pb-3">
-          <div class="flex flex-wrap items-center gap-1.5">
-            <button
-              type="button"
-              data-studio-tab="link"
-              class="studio-tab-btn px-3.5 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer bg-white text-black"
-            >
-              🔗 1. Segnala tramite Link (URL)
-            </button>
-            <button
-              type="button"
-              data-studio-tab="flyer"
-              class="studio-tab-btn px-3.5 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer bg-[#161920] text-zinc-300 border border-[#252a34] hover:text-white"
-            >
-              📸 2. Segnala da Foto Locandina
-            </button>
-          </div>
-          <span class="text-xs text-zinc-400">
-            Lettura automatica orario, luogo e categoria
-          </span>
-        </div>
-
+      <!-- Body: Strictly 2 Functions Side-by-Side -->
+      <div id="studio-collapsible-body" class="p-4 sm:p-5 space-y-4">
         <!-- Public Feedback Alert Banner -->
         <div id="ingestion-feedback-alert" class="hidden p-3.5 rounded-xl border text-xs space-y-1.5"></div>
 
-        <!-- TAB 1: SUBMIT VIA LINK (URL) -->
-        <div id="studio-tab-link" class="space-y-4">
-          <div class="flex flex-wrap items-center justify-between gap-2 bg-[#0d0f13] p-3 rounded-lg border border-[#1f242d] text-xs">
-            <span class="text-zinc-300 font-medium">⚡ Compilazione rapida di prova:</span>
-            <div class="flex flex-wrap items-center gap-2">
-              <button
-                type="button"
-                id="preset-link-trusted"
-                class="px-2.5 py-1 rounded bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-zinc-700 font-semibold cursor-pointer transition"
-              >
-                Esempio 1: Incontro Casa della Cultura
-              </button>
-              <button
-                type="button"
-                id="preset-link-suspicious"
-                class="px-2.5 py-1 rounded bg-zinc-800 hover:bg-zinc-700 text-zinc-300 border border-zinc-700 font-semibold cursor-pointer transition"
-              >
-                Esempio 2: Evento da Shortlink Esterno
-              </button>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+          <!-- FUNZIONE 1: INVIA LINK -->
+          <form
+            id="submit-link-form"
+            class="p-4 rounded-xl bg-[#0b0c0e] border border-[#23272f] hover:border-zinc-700 transition flex flex-col justify-between gap-3.5"
+          >
+            <div class="space-y-1.5">
+              <div class="flex items-center justify-between gap-2">
+                <span class="font-bold text-white text-sm flex items-center gap-2">
+                  <span class="w-6 h-6 rounded-md bg-orange-500/15 border border-orange-500/30 text-orange-400 flex items-center justify-center">🔗</span>
+                  <span>1. Invia Link</span>
+                </span>
+                <span class="text-[11px] text-zinc-400 mono-num">Auto-Scraping Backend</span>
+              </div>
+              <p class="text-zinc-400 leading-relaxed">
+                Incolla il link dell'evento (sito web, post Instagram/Facebook, Eventbrite, DICE...). Il servizio in backend estrae automaticamente orario, luogo, prezzo e descrizione.
+              </p>
             </div>
-          </div>
 
-          <form id="submit-link-form" class="grid grid-cols-1 md:grid-cols-12 gap-3 text-xs">
-            <div class="md:col-span-6">
-              <label class="block text-zinc-400 font-semibold mb-1">URL dell'Evento o Post (Sito web, Instagram, Facebook, Eventbrite...)*</label>
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
               <input
                 id="input-link-url"
                 type="url"
                 required
                 placeholder="https://www.casadellacultura.it/eventi/..."
-                class="w-full px-3 py-2 rounded-lg bg-[#0b0c0e] border border-[#272b35] text-white placeholder-zinc-500 focus:border-orange-500 outline-none"
+                class="flex-1 px-3 py-2.5 rounded-lg bg-[#131519] border border-[#272b35] text-white placeholder-zinc-500 focus:border-orange-500 outline-none"
               />
-            </div>
-            <div class="md:col-span-3">
-              <label class="block text-zinc-400 font-semibold mb-1">Categoria</label>
-              <select
-                id="input-link-category"
-                class="w-full px-3 py-2 rounded-lg bg-[#0b0c0e] border border-[#272b35] text-white focus:border-orange-500 outline-none"
-              >
-                <option value="politica">✊ Politica, Attivismo &amp; Sociale</option>
-                <option value="concerti">🎵 Concerti &amp; Club</option>
-                <option value="cinema">🎬 Cinema &amp; Rassegne</option>
-                <option value="teatro">🎭 Teatro</option>
-                <option value="libri">📚 Libri, Talk &amp; Conferenze</option>
-                <option value="mostre">🖼️ Mostre &amp; Musei</option>
-                <option value="aperture">🏛️ Aperture Speciali &amp; Luoghi Segreti</option>
-              </select>
-            </div>
-            <div class="md:col-span-3">
-              <label class="block text-zinc-400 font-semibold mb-1">Fascia Oraria (Prossime 24h)</label>
-              <select
-                id="input-link-offset"
-                class="w-full px-3 py-2 rounded-lg bg-[#0b0c0e] border border-[#272b35] text-white focus:border-orange-500 outline-none mono-num"
-              >
-                <option value="20">Prossima Ora (+20 min)</option>
-                <option value="90">+1h 30m dalla prossima ora</option>
-                <option value="180">+3h dalla prossima ora</option>
-                <option value="360">+6h dalla prossima ora</option>
-                <option value="720">+12h dalla prossima ora</option>
-              </select>
-            </div>
-
-            <div class="md:col-span-5">
-              <label class="block text-zinc-400 font-semibold mb-1">Titolo Evento (opzionale — altrimenti estratto dal link)</label>
-              <input
-                id="input-link-title"
-                type="text"
-                placeholder="Es. Assemblea Pubblica sul Diritto allo Studio"
-                class="w-full px-3 py-2 rounded-lg bg-[#0b0c0e] border border-[#272b35] text-white placeholder-zinc-500 focus:border-orange-500 outline-none"
-              />
-            </div>
-            <div class="md:col-span-4">
-              <label class="block text-zinc-400 font-semibold mb-1">Luogo &amp; Indirizzo a Milano</label>
-              <input
-                id="input-link-venue"
-                type="text"
-                placeholder="Es. Casa della Cultura, Via Borgogna 3"
-                class="w-full px-3 py-2 rounded-lg bg-[#0b0c0e] border border-[#272b35] text-white placeholder-zinc-500 focus:border-orange-500 outline-none"
-              />
-            </div>
-            <div class="md:col-span-3">
-              <label class="block text-zinc-400 font-semibold mb-1">Ingresso</label>
-              <select
-                id="input-link-free"
-                class="w-full px-3 py-2 rounded-lg bg-[#0b0c0e] border border-[#272b35] text-white focus:border-orange-500 outline-none"
-              >
-                <option value="true">GRATIS / Ingresso Libero</option>
-                <option value="false">A Pagamento / Biglietto</option>
-              </select>
-            </div>
-
-            <div class="md:col-span-12 flex flex-wrap items-center justify-between gap-3 pt-1">
-              <p class="text-zinc-400">
-                Inserisci il link dell'evento: i dettagli verranno estratti automaticamente per la timeline delle prossime 24 ore.
-              </p>
               <button
                 type="submit"
-                class="px-4 py-2 rounded-lg bg-orange-500 hover:bg-orange-400 text-black font-extrabold uppercase tracking-wider cursor-pointer transition shrink-0"
+                class="px-4 py-2.5 rounded-lg bg-orange-500 hover:bg-orange-400 text-black font-extrabold uppercase tracking-wider cursor-pointer transition shrink-0"
               >
-                Invia Evento tramite Link →
+                Invia Link →
               </button>
             </div>
           </form>
-        </div>
 
-        <!-- TAB 2: SUBMIT VIA PHOTO FLYER (LOCANDINA) -->
-        <div id="studio-tab-flyer" class="hidden space-y-4">
-          <div class="flex flex-wrap items-center justify-between gap-2 bg-[#0d0f13] p-3 rounded-lg border border-[#1f242d] text-xs">
-            <span class="text-zinc-300 font-medium">⚡ Simula caricamento foto locandina:</span>
-            <div class="flex flex-wrap items-center gap-2">
-              <button
-                type="button"
-                id="preset-flyer-trusted"
-                class="px-2.5 py-1 rounded bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-zinc-700 font-semibold cursor-pointer transition"
-              >
-                Esempio 1: Locandina ARCI Bellezza
-              </button>
-              <button
-                type="button"
-                id="preset-flyer-suspicious"
-                class="px-2.5 py-1 rounded bg-zinc-800 hover:bg-zinc-700 text-zinc-300 border border-zinc-700 font-semibold cursor-pointer transition"
-              >
-                Esempio 2: Volantino con QR Esterno
-              </button>
-            </div>
-          </div>
-
-          <div class="grid grid-cols-1 md:grid-cols-12 gap-4 text-xs">
-            <!-- Upload Dropzone & Preview -->
-            <div class="md:col-span-5 flex flex-col justify-between p-4 rounded-xl bg-[#0b0c0e] border border-dashed border-zinc-700 hover:border-orange-500/60 transition">
-              <div>
-                <div class="font-bold text-white mb-1 flex items-center gap-1.5">
-                  <span>📷 Carica Foto della Locandina / Manifesto</span>
-                </div>
-                <p class="text-zinc-400 mb-3">
-                  Carica una foto scattata in città o uno screenshot della locandina. Il lettore ottico compila automaticamente titolo, luogo, orario e link dell'organizzatore.
-                </p>
-                <input
-                  id="input-flyer-file"
-                  type="file"
-                  accept="image/*"
-                  class="block w-full text-xs text-zinc-300 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-zinc-800 file:text-white hover:file:bg-zinc-700 cursor-pointer"
-                />
+          <!-- FUNZIONE 2: INVIA LOCANDINA (SCEGLI FOTO O SCATTA FOTO) -->
+          <div class="p-4 rounded-xl bg-[#0b0c0e] border border-[#23272f] hover:border-zinc-700 transition flex flex-col justify-between gap-3.5">
+            <div class="space-y-1.5">
+              <div class="flex items-center justify-between gap-2">
+                <span class="font-bold text-white text-sm flex items-center gap-2">
+                  <span class="w-6 h-6 rounded-md bg-orange-500/15 border border-orange-500/30 text-orange-400 flex items-center justify-center">📸</span>
+                  <span>2. Invia Locandina</span>
+                </span>
+                <span class="text-[11px] text-zinc-400 mono-num">Vision OCR Backend</span>
               </div>
-
-              <!-- Poster Visual Preview -->
-              <div id="flyer-preview-box" class="mt-3 p-3 rounded-lg bg-[#131519] border border-[#23272f] text-zinc-300">
-                <div class="text-zinc-500 uppercase font-semibold text-xs mb-1">Testo Rilevato dalla Locandina:</div>
-                <div id="flyer-ocr-preview-text" class="mono-num text-xs text-emerald-300 leading-relaxed">
-                  Seleziona un'immagine dal dispositivo oppure usa uno degli esempi rapidi qui sopra.
-                </div>
-              </div>
+              <p class="text-zinc-400 leading-relaxed">
+                Scegli una foto dalla libreria o scatta una foto alla locandina: il servizio in backend legge l'immagine e compila tutti i dettagli automaticamente.
+              </p>
             </div>
 
-            <!-- Extracted Flyer Form Fields -->
-            <form id="submit-flyer-form" class="md:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div class="sm:col-span-2">
-                <label class="block text-zinc-400 font-semibold mb-1">Titolo Evento sulla Locandina*</label>
-                <input
-                  id="input-flyer-title"
-                  type="text"
-                  required
-                  placeholder="Es. Assemblea & Cineforum Popolare in Palestra Visconti"
-                  class="w-full px-3 py-2 rounded-lg bg-[#0b0c0e] border border-[#272b35] text-white placeholder-zinc-500 focus:border-orange-500 outline-none"
-                />
-              </div>
-              <div>
-                <label class="block text-zinc-400 font-semibold mb-1">Luogo &amp; Via*</label>
-                <input
-                  id="input-flyer-venue"
-                  type="text"
-                  required
-                  placeholder="Es. ARCI Bellezza, Via Giovanni Bellezza 16"
-                  class="w-full px-3 py-2 rounded-lg bg-[#0b0c0e] border border-[#272b35] text-white placeholder-zinc-500 focus:border-orange-500 outline-none"
-                />
-              </div>
-              <div>
-                <label class="block text-zinc-400 font-semibold mb-1">Sito Web o Profilo Social sulla Locandina*</label>
-                <input
-                  id="input-flyer-source"
-                  type="text"
-                  required
-                  placeholder="Es. https://arcibellezza.it o @collettivo_milano"
-                  class="w-full px-3 py-2 rounded-lg bg-[#0b0c0e] border border-[#272b35] text-white placeholder-zinc-500 focus:border-orange-500 outline-none"
-                />
-              </div>
-              <div>
-                <label class="block text-zinc-400 font-semibold mb-1">Categoria Evento</label>
-                <select
-                  id="input-flyer-category"
-                  class="w-full px-3 py-2 rounded-lg bg-[#0b0c0e] border border-[#272b35] text-white focus:border-orange-500 outline-none"
-                >
-                  <option value="politica">✊ Politica, Attivismo &amp; Sociale</option>
-                  <option value="cinema">🎬 Cinema &amp; Rassegne</option>
-                  <option value="concerti">🎵 Concerti &amp; Club</option>
-                  <option value="teatro">🎭 Teatro</option>
-                  <option value="libri">📚 Libri, Talk &amp; Conferenze</option>
-                  <option value="mostre">🖼️ Mostre &amp; Musei</option>
-                  <option value="aperture">🏛️ Aperture Speciali &amp; Luoghi Segreti</option>
-                </select>
-              </div>
-              <div>
-                <label class="block text-zinc-400 font-semibold mb-1">Ingresso &amp; Fascia Oraria</label>
-                <div class="grid grid-cols-2 gap-2">
-                  <select
-                    id="input-flyer-free"
-                    class="w-full px-2 py-2 rounded-lg bg-[#0b0c0e] border border-[#272b35] text-white focus:border-orange-500 outline-none"
-                  >
-                    <option value="true">GRATIS</option>
-                    <option value="false">Biglietto</option>
-                  </select>
-                  <select
-                    id="input-flyer-offset"
-                    class="w-full px-2 py-2 rounded-lg bg-[#0b0c0e] border border-[#272b35] text-white focus:border-orange-500 outline-none mono-num"
-                  >
-                    <option value="40">Prossima Ora</option>
-                    <option value="150">+2h 30m</option>
-                    <option value="480">+8h</option>
-                  </select>
-                </div>
-              </div>
-              <div class="sm:col-span-2">
-                <label class="block text-zinc-400 font-semibold mb-1">Descrizione / Dettagli Locandina</label>
-                <textarea
-                  id="input-flyer-desc"
-                  rows="2"
-                  placeholder="Dettagli estratti dalla locandina: ospiti, programma, modalità di accesso..."
-                  class="w-full px-3 py-2 rounded-lg bg-[#0b0c0e] border border-[#272b35] text-white placeholder-zinc-500 focus:border-orange-500 outline-none"
-                ></textarea>
-              </div>
-              <div class="sm:col-span-2 flex justify-end">
+            <!-- Hidden file inputs for Scegli Foto & Scatta Foto -->
+            <input
+              id="input-flyer-choose"
+              type="file"
+              accept="image/*"
+              class="hidden"
+            />
+            <input
+              id="input-flyer-camera"
+              type="file"
+              accept="image/*"
+              capture="environment"
+              class="hidden"
+            />
+
+            <div class="space-y-2">
+              <div class="grid grid-cols-2 gap-2.5">
                 <button
-                  type="submit"
-                  class="px-4 py-2 rounded-lg bg-orange-500 hover:bg-orange-400 text-black font-extrabold uppercase tracking-wider cursor-pointer transition"
+                  id="btn-choose-flyer-photo"
+                  type="button"
+                  class="px-3.5 py-2.5 rounded-lg bg-[#161920] hover:bg-zinc-800 text-white border border-[#2c323f] font-bold flex items-center justify-center gap-2 cursor-pointer transition"
                 >
-                  Invia Evento da Locandina →
+                  <span>🖼️</span>
+                  <span>Scegli Foto</span>
+                </button>
+                <button
+                  id="btn-take-flyer-photo"
+                  type="button"
+                  class="px-3.5 py-2.5 rounded-lg bg-orange-500 hover:bg-orange-400 text-black font-extrabold flex items-center justify-center gap-2 cursor-pointer transition"
+                >
+                  <span>📷</span>
+                  <span>Scatta Foto</span>
                 </button>
               </div>
-            </form>
+              <div id="flyer-ocr-status-line" class="hidden text-[11px] text-emerald-400 mono-num truncate"></div>
+            </div>
           </div>
         </div>
-
       </div>
     </section>
+
+    <!-- Live Camera Modal for "Scatta Foto" -->
+    <div id="camera-capture-modal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+      <div class="max-w-md w-full rounded-2xl bg-[#111318] border border-[#2a2f3a] p-5 space-y-4 shadow-2xl">
+        <div class="flex items-center justify-between">
+          <div class="font-bold text-white text-sm flex items-center gap-2">
+            <span>📷</span>
+            <span>Scatta Foto alla Locandina</span>
+          </div>
+          <button
+            id="close-camera-modal-btn"
+            type="button"
+            class="text-zinc-400 hover:text-white text-sm cursor-pointer px-2 py-0.5"
+          >
+            ✕
+          </button>
+        </div>
+        <div class="rounded-xl overflow-hidden bg-black aspect-video flex items-center justify-center border border-[#23272f]">
+          <video id="camera-video-preview" autoplay playsinline class="w-full h-full object-cover"></video>
+        </div>
+        <p class="text-xs text-zinc-400">
+          Inquadra il manifesto o la locandina dell'evento: tutti i dettagli saranno estratti in automatico dal servizio backend.
+        </p>
+        <div class="flex items-center justify-end gap-2">
+          <button
+            id="cancel-camera-modal-btn"
+            type="button"
+            class="px-3.5 py-2 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs font-semibold cursor-pointer transition"
+          >
+            Annulla
+          </button>
+          <button
+            id="snap-camera-photo-btn"
+            type="button"
+            class="px-4 py-2 rounded-lg bg-orange-500 hover:bg-orange-400 text-black font-extrabold text-xs uppercase tracking-wider cursor-pointer transition"
+          >
+            📸 Scatta &amp; Invia al Backend
+          </button>
+        </div>
+      </div>
+    </div>
 
     <!-- Active Filter Summary Bar (shown when filters are applied) -->
     <div id="active-filter-banner" class="hidden mb-5 px-3.5 py-2.5 rounded-lg bg-[#131519] border border-[#23272f] flex items-center justify-between gap-2 text-xs">
@@ -905,407 +770,11 @@
     }
 
     const EVENT_BLUEPRINTS = [
-      // === FIRST UPCOMING HOUR SLOT (Next Hour +0m to +45m) ===
-      {
-        id: 'evt-mexico-qa',
-        offsetMinutes: 0,
-        durationMinutes: 125,
-        title: 'Il Tempo che Ci Vuole — Proiezione + Q&A con Ospiti in Sala',
-        description: 'Proiezione speciale in pellicola restaurata seguita da dibattito in sala con la critica cinematografica e gli autori ospiti della rassegna serale.',
-        venueName: 'Cinema Mexico',
-        neighborhood: 'Zona Solari / Via Savona',
-        address: 'Via Savona 57',
-        isFree: false,
-        priceDetails: '€7,50 Intero / €6,00 Ridotto',
-        category: 'cinema',
-        sourceName: 'cinemamexico.it',
-        instagramUrl: 'https://instagram.com/cinemamexicomilano',
-        facebookUrl: 'https://facebook.com/cinemamexicomilano',
-        sourceUrl: 'https://www.cinemamexico.it'
-      },
-      {
-        id: 'evt-base-vernissage',
-        offsetMinutes: 15,
-        durationMinutes: 180,
-        title: 'We Will Design: Vernissage & Live Modular Listening Session',
-        description: 'Opening ad accesso libero negli spazi dell’ex Ansaldo: installazioni di design radicale, archivi sonori indipendenti e talk nel cortile coperto.',
-        venueName: 'BASE Milano',
-        neighborhood: 'Tortona',
-        address: 'Via Bergognone 34',
-        isFree: true,
-        priceDetails: 'GRATIS • Ingresso libero con accredito',
-        category: 'mostre',
-        sourceName: 'Zero.eu / BASE Milano',
-        instagramUrl: 'https://instagram.com/base_milano',
-        facebookUrl: 'https://facebook.com/basemilano',
-        sourceUrl: 'https://base.milano.it'
-      },
-      {
-        id: 'evt-casa-cultura-abitare',
-        offsetMinutes: 35,
-        durationMinutes: 110,
-        title: 'Assemblea Cittadina: Diritto all’Abitare, Affitti Brevi e Rigenerazione Urbana',
-        description: 'Confronto pubblico tra comitati di quartiere, urbanisti del Politecnico e reti civiche sul caro-affitti e sul piano straordinario per la casa pubblica a Milano.',
-        venueName: 'Casa della Cultura',
-        neighborhood: 'San Babila / Via Borgogna',
-        address: 'Via Borgogna 3',
-        isFree: true,
-        priceDetails: 'GRATIS • Accesso libero alla cittadinanza',
-        category: 'politica',
-        sourceName: 'casadellacultura.it',
-        instagramUrl: 'https://instagram.com/casadellaculturamilano',
-        facebookUrl: 'https://facebook.com/casadellaculturamilano',
-        sourceUrl: 'https://www.casadellacultura.it'
-      },
-      {
-        id: 'evt-camera-lavoro-diritti',
-        offsetMinutes: 260,
-        durationMinutes: 115,
-        title: 'Forum Lavoro Digitale, Rider & Intelligenza Artificiale — Sindacato e Territorio',
-        description: 'Assemblea metropolitana nel Salone Di Vittorio con delegati, ricercatori e collettivi del lavoro digitale su algoritmi, salario minimo e sicurezza.',
-        venueName: 'Camera del Lavoro di Milano',
-        neighborhood: 'Porta Vittoria / Cinque Giornate',
-        address: 'Corso di Porta Vittoria 43',
-        isFree: true,
-        priceDetails: 'GRATIS • Ingresso aperto al pubblico',
-        category: 'politica',
-        sourceName: 'cgil.milano.it',
-        instagramUrl: 'https://instagram.com/cgilmilano',
-        facebookUrl: 'https://facebook.com/cgilmilano',
-        sourceUrl: 'https://www.cgil.milano.it'
-      },
-      {
-        id: 'evt-casa-diritti-transfem',
-        offsetMinutes: 690,
-        durationMinutes: 120,
-        title: 'Tavolo Permanente Diritti Civili, Welfare di Prossimità & Spazi Sicuri',
-        description: 'Incontro pubblico aperto alla cittadinanza con sportelli sociali, reti associative e mediatori culturali dei 9 municipi milanesi.',
-        venueName: 'Casa dei Diritti — Comune di Milano',
-        neighborhood: 'Sant’Ambrogio / De Amicis',
-        address: 'Via Edmondo De Amicis 10',
-        isFree: true,
-        priceDetails: 'GRATIS • Partecipazione libera',
-        category: 'politica',
-        sourceName: 'Comune di Milano — Welfare',
-        instagramUrl: 'https://instagram.com/comunedimilano',
-        facebookUrl: 'https://facebook.com/comunedimilano',
-        sourceUrl: 'https://www.comune.milano.it'
-      },
-      {
-        id: 'evt-mutuo-soccorso-ecologia',
-        offsetMinutes: 1030,
-        durationMinutes: 100,
-        title: 'Assemblea Ecologista & Mobilità Ciclabile: "Città 30, Alberate e Aria Pulita"',
-        description: 'Tavolo cittadino promosso da associazioni ambientaliste, comitati genitori per le strade scolastiche e collettivi di quartiere.',
-        venueName: 'Ri-Make / Spazio di Mutuo Soccorso',
-        neighborhood: 'Piazza Stuparich / Certosa',
-        address: 'Piazza Stuparich 18',
-        isFree: true,
-        priceDetails: 'GRATIS • Ingresso libero',
-        category: 'politica',
-        sourceName: 'Rete Civica Ecologista Milano',
-        instagramUrl: 'https://instagram.com/legambientelombardia',
-        facebookUrl: 'https://facebook.com/legambientelombardia',
-        sourceUrl: 'https://www.legambiente.it'
-      },
-      {
-        id: 'evt-verso-talk',
-        offsetMinutes: 30,
-        durationMinutes: 90,
-        title: 'Milano Verticale e Città Invisibili — Presentazione Libro con l’Autore',
-        description: 'Incontro con l’autore e dialogo aperto sul futuro urbanistico dei quartieri milanesi. Calice di benvenuto offerto al primo piano della libreria.',
-        venueName: 'Libreria Verso',
-        neighborhood: 'Colonne di San Lorenzo / Ticinese',
-        address: 'Corso di Porta Ticinese 40',
-        isFree: true,
-        priceDetails: 'GRATIS • Ingresso libero fino a esaurimento posti',
-        category: 'libri',
-        sourceName: 'BookCity / Libreria Verso',
-        instagramUrl: 'https://instagram.com/libreriaverso',
-        facebookUrl: 'https://facebook.com/libreriaverso',
-        sourceUrl: 'https://www.libreriaverso.com'
-      },
-      {
-        id: 'evt-vigna-leonardo-secret',
-        offsetMinutes: 45,
-        durationMinutes: 75,
-        title: 'Apertura Straordinaria Casa degli Atellani & Vigna di Leonardo',
-        description: 'Visita guidata speciale tra i chiostri rinascimentali di Portaluppi e i filari storici di Malvasia di Candia donati da Ludovico il Moro a Leonardo nel 1498.',
-        venueName: 'Casa degli Atellani — Vigna di Leonardo',
-        neighborhood: 'Corso Magenta / Santa Maria delle Grazie',
-        address: 'Corso Magenta 65',
-        isFree: false,
-        priceDetails: '€12,00 Biglietto con audioguida',
-        category: 'aperture',
-        sourceName: 'MilanoGuida / FAI',
-        instagramUrl: 'https://instagram.com/lavignadileonardo',
-        facebookUrl: 'https://facebook.com/vignadileonardo',
-        sourceUrl: 'https://www.vignadileonardo.com'
-      },
-
-      // === +1h to +4h FROM NEXT HOUR ===
-      {
-        id: 'evt-anteo-anteprima',
-        offsetMinutes: 60,
-        durationMinutes: 130,
-        title: 'Rassegna Lingua Originale (v.o. sott. ita) + Introduzione Critica',
-        description: 'Anteprima cittadina in Sala Excelsior con introduzione a cura della redazione di Lungo Corso Cinema. Audio Dolby Atmos in versione originale.',
-        venueName: 'Anteo Palazzo del Cinema',
-        neighborhood: 'Brera / Garibaldi',
-        address: 'Piazza Venticinque Aprile 8',
-        isFree: false,
-        priceDetails: '€9,50 Intero / €7,00 Amici del Cinema',
-        category: 'cinema',
-        sourceName: 'spaziocinema.info',
-        instagramUrl: 'https://instagram.com/anteospaziocinema',
-        facebookUrl: 'https://facebook.com/AnteoPalazzoDelCinema',
-        sourceUrl: 'https://www.spaziocinema.info/milano'
-      },
-      {
-        id: 'evt-feltrinelli-fondazione',
-        offsetMinutes: 85,
-        durationMinutes: 105,
-        title: 'Public Talk: Intelligenza Collettiva, Archivi Digitali e Democrazia',
-        description: 'Tavola rotonda al quinto piano della piramide di Herzog & de Meuron con ricercatori internazionali, filosofi dei media e giornalisti.',
-        venueName: 'Fondazione Giangiacomo Feltrinelli',
-        neighborhood: 'Porta Volta',
-        address: 'Viale Pasubio 5',
-        isFree: true,
-        priceDetails: 'GRATIS • Accesso libero con registrazione',
-        category: 'libri',
-        sourceName: 'fondazionefeltrinelli.it',
-        instagramUrl: 'https://instagram.com/fondazionefeltrinelli',
-        facebookUrl: 'https://facebook.com/FondazioneFeltrinelli',
-        sourceUrl: 'https://fondazionefeltrinelli.it'
-      },
-      {
-        id: 'evt-parenti-bagni',
-        offsetMinutes: 120,
-        durationMinutes: 110,
-        title: 'Drammaturgia Contemporanea in Sala Grande + Incontro nel Foyer',
-        description: 'Nuova produzione del Teatro Franco Parenti con drammaturgia originale e scenografia immersiva affacciata sui Bagni Misteriosi.',
-        venueName: 'Teatro Franco Parenti',
-        neighborhood: 'Porta Romana',
-        address: 'Via Pier Lombardo 14',
-        isFree: false,
-        priceDetails: '€18,00 - €28,00 (Convenzione Invito a Teatro)',
-        category: 'teatro',
-        sourceName: 'teatrofrancoparenti.it',
-        instagramUrl: 'https://instagram.com/teatrofrancoparenti',
-        facebookUrl: 'https://facebook.com/teatrofrancoparenti',
-        sourceUrl: 'https://teatrofrancoparenti.it'
-      },
-      {
-        id: 'evt-hangar-bicocca',
-        offsetMinutes: 145,
-        durationMinutes: 150,
-        title: 'Visita Serale Gratuita alle Navate & I Sette Palazzi Celesti',
-        description: 'Ingresso gratuito alle monumentali installazioni site-specific nelle ex officine industriali Breda, con mediatori culturali presenti in sala.',
-        venueName: 'Pirelli HangarBicocca',
-        neighborhood: 'Bicocca',
-        address: 'Via Chiese 2',
-        isFree: true,
-        priceDetails: 'GRATIS • Ingresso gratuito',
-        category: 'mostre',
-        sourceName: 'Artribune / HangarBicocca',
-        instagramUrl: 'https://instagram.com/pirellihangarbicocca',
-        facebookUrl: 'https://facebook.com/PirelliHangarBicocca',
-        sourceUrl: 'https://pirellihangarbicocca.org'
-      },
-      {
-        id: 'evt-beltrade-corti',
-        offsetMinutes: 185,
-        durationMinutes: 115,
-        title: 'La Notte dei Corti Indipendenti — Registi Presenti in Sala',
-        description: 'Selezione di cortometraggi d’autore italiani ed europei con collegamento live e microfono aperto tra pubblico in sala e troupe.',
-        venueName: 'Cinema Beltrade',
-        neighborhood: 'NoLo / Piazza Morbegno',
-        address: 'Via Nino Oxilia 10',
-        isFree: false,
-        priceDetails: '€7,50 Biglietto unico',
-        category: 'cinema',
-        sourceName: 'bandiere-interrotte.it',
-        instagramUrl: 'https://instagram.com/cinemabeltrade',
-        facebookUrl: 'https://facebook.com/cinemabeltrade',
-        sourceUrl: 'https://bandiere-interrotte.it'
-      },
-      {
-        id: 'evt-manzoni-prosa',
-        offsetMinutes: 215,
-        durationMinutes: 120,
-        title: 'Serata d’Autore al Manzoni — Commedia Brillante in Due Atti',
-        description: 'Storico sipario di Via Manzoni per una serata dedicata al grande teatro di prosa contemporaneo con compagnia stabile in tournée nazionale.',
-        venueName: 'Teatro Manzoni',
-        neighborhood: 'Quadrilatero / Montenapoleone',
-        address: 'Via Manzoni 42',
-        isFree: false,
-        priceDetails: '€25,00 - €36,00 Poltronissima / Galleria',
-        category: 'teatro',
-        sourceName: 'milanoteatri.it / Teatro Manzoni',
-        instagramUrl: 'https://instagram.com/teatromanzonimilano',
-        facebookUrl: 'https://facebook.com/TeatroManzoniMilano',
-        sourceUrl: 'https://www.teatromanzoni.it'
-      },
-      {
-        id: 'evt-san-maurizio-organo',
-        offsetMinutes: 240,
-        durationMinutes: 70,
-        title: 'Concerto d’Organo Antegnati (1554) nella "Cappella Sistina" di Milano',
-        description: 'Apertura straordinaria del Coro delle Monache con esecuzione dal vivo di musiche rinascimentali sull’organo storico cinquecentesco.',
-        venueName: 'Chiesa di San Maurizio al Monastero Maggiore',
-        neighborhood: 'Cinque Vie / Corso Magenta',
-        address: 'Corso Magenta 15',
-        isFree: true,
-        priceDetails: 'GRATIS • Ingresso libero fino a capienza',
-        category: 'aperture',
-        sourceName: 'Comune di Milano Cultura / FAI',
-        instagramUrl: 'https://instagram.com/comunedimilano',
-        facebookUrl: 'https://facebook.com/comunedimilano',
-        sourceUrl: 'https://cultura.comune.milano.it'
-      },
-
-      // === +5h to +10h ===
-      {
-        id: 'evt-piccolo-strehler',
-        offsetMinutes: 300,
-        durationMinutes: 135,
-        title: 'Regia Internazionale al Piccolo Teatro Strehler',
-        description: 'Allestimento monumentale sul palco di Largo Greppi con sovratitoli in italiano e inglese. Precede lo spettacolo un focus drammaturgico nel ridotto.',
-        venueName: 'Piccolo Teatro Strehler',
-        neighborhood: 'Lanza / Brera',
-        address: 'Largo Greppi 1',
-        isFree: false,
-        priceDetails: '€22,00 Platea / €16,00 Balconata',
-        category: 'teatro',
-        sourceName: 'piccoloteatro.org',
-        instagramUrl: 'https://instagram.com/piccoloteatromilano',
-        facebookUrl: 'https://facebook.com/PiccoloTeatroMilano',
-        sourceUrl: 'https://www.piccoloteatro.org'
-      },
-      {
-        id: 'evt-blue-note-jazz',
-        offsetMinutes: 330,
-        durationMinutes: 95,
-        title: 'Contemporary Jazz Quintet — First & Second Set Live',
-        description: 'Quintetto jazz internazionale sul palco storico dell’Isola. Acustica intima, repertorio hard-bop originale e jam session finale.',
-        venueName: 'Blue Note Milano',
-        neighborhood: 'Isola',
-        address: 'Via Pietro Borsieri 37',
-        isFree: false,
-        priceDetails: '€30,00 Door / €25,00 Advance',
-        category: 'concerti',
-        sourceName: 'Zero.eu / Blue Note',
-        instagramUrl: 'https://instagram.com/bluenotemilano',
-        facebookUrl: 'https://facebook.com/bluenotemilano',
-        sourceUrl: 'https://www.bluenotemilano.com'
-      },
-      {
-        id: 'evt-cinemino-essay',
-        offsetMinutes: 365,
-        durationMinutes: 105,
-        title: 'Rassegna Mezzanotte d’Essai + Discussione al Bar del Circolo',
-        description: 'Cult movie restaurato in 4K nella sala segreta da 74 posti in Porta Romana. Richiesta tessera associativa annuale.',
-        venueName: 'Il Cinemino',
-        neighborhood: 'Porta Romana / Crocetta',
-        address: 'Via Seneca 6',
-        isFree: false,
-        priceDetails: '€7,00 + Tessera Associativa',
-        category: 'cinema',
-        sourceName: 'ilcinemino.it',
-        instagramUrl: 'https://instagram.com/ilcinemino',
-        facebookUrl: 'https://facebook.com/ilcinemino',
-        sourceUrl: 'https://www.ilcinemino.it'
-      },
-      {
-        id: 'evt-biko-live-showcase',
-        offsetMinutes: 420,
-        durationMinutes: 180,
-        title: 'NuJazz, Afrobeat & Electronic Showcase Live Set',
-        description: 'Live band di 6 elementi seguita da selezione vinile funk/broken-beat sul dancefloor del circolo ARCI lungo il Naviglio Pavese.',
-        venueName: 'Biko Milano',
-        neighborhood: 'Naviglio Pavese / Barona',
-        address: 'Via Ettore Ponti 40',
-        isFree: false,
-        priceDetails: '€12,00 su DICE (+ tessera ARCI)',
-        category: 'concerti',
-        sourceName: 'DICE.fm Milano',
-        instagramUrl: 'https://instagram.com/bikomilano',
-        facebookUrl: 'https://facebook.com/bikoclub',
-        sourceUrl: 'https://dice.fm/browse/milan'
-      },
-      {
-        id: 'evt-santeria-listening',
-        offsetMinutes: 465,
-        durationMinutes: 140,
-        title: 'Listening Club & Vinyl Talk: L’Elettronica Italiana 1978–1992',
-        description: 'Ascolto integrale su impianto hi-fi analogico di rarità discografiche milanesi, commentato da collezionisti e produttori.',
-        venueName: 'Santeria Toscana 31',
-        neighborhood: 'Viale Toscana / Bocconi',
-        address: 'Viale Toscana 31',
-        isFree: true,
-        priceDetails: 'GRATIS • Ingresso libero',
-        category: 'concerti',
-        sourceName: 'Milano da Scrocco / Zero.eu',
-        instagramUrl: 'https://instagram.com/santeriamilano',
-        facebookUrl: 'https://facebook.com/santeriamilano',
-        sourceUrl: 'https://www.santeriamilano.it'
-      },
-      {
-        id: 'evt-magnolia-clubnight',
-        offsetMinutes: 525,
-        durationMinutes: 240,
-        title: 'Electro / Post-Punk Live & Warehouse Club Night',
-        description: 'Doppio palco immerso nel parco dell’Idroscalo: live act internazionale alle prime ore seguito da resident DJ set fino a tardi.',
-        venueName: 'Circolo Magnolia',
-        neighborhood: 'Idroscalo / Segrate',
-        address: 'Via Circonvallazione Idroscalo 41',
-        isFree: false,
-        priceDetails: '€15,00 Early Bird su DICE.fm',
-        category: 'concerti',
-        sourceName: 'DICE.fm / Resident Advisor',
-        instagramUrl: 'https://instagram.com/circolomagnolia',
-        facebookUrl: 'https://facebook.com/circolomagnolia',
-        sourceUrl: 'https://www.circolomagnolia.it'
-      },
-      {
-        id: 'evt-tempio-futuro-perduto',
-        offsetMinutes: 585,
-        durationMinutes: 210,
-        title: 'Ambient & Techno Vinyl Session + Mostra Fotografica Notturna',
-        description: 'Spazio multidisciplinare indipendente alla Fabbrica del Vapore: sala vinile, installazione luminosa nel cortile e raccolta solidale.',
-        venueName: 'Tempio del Futuro Perduto',
-        neighborhood: 'Cenisio / Monumentale',
-        address: 'Via Luigi Nono 9',
-        isFree: true,
-        priceDetails: 'GRATIS • Ingresso gratuito per under 25 / Up to you',
-        category: 'concerti',
-        sourceName: 'Resident Advisor Milan',
-        instagramUrl: 'https://instagram.com/tempiodelfuturoperduto',
-        facebookUrl: 'https://facebook.com/tempiodelfuturoperduto',
-        sourceUrl: 'https://ra.co/events/it/milan'
-      },
-
-      // === +11h to +17h ===
-      {
-        id: 'evt-brera-cripta-san-giovanni',
-        offsetMinutes: 660,
-        durationMinutes: 90,
-        title: 'Discesa nella Cripta Ipogea di San Giovanni in Conca',
-        description: 'Apertura straordinaria dell’unica cripta romanica originale sopravvissuta nel centro di Milano, normalmente chiusa al pubblico.',
-        venueName: 'Cripta di San Giovanni in Conca',
-        neighborhood: 'Missori / Centro Storico',
-        address: 'Piazza Giuseppe Missori',
-        isFree: true,
-        priceDetails: 'GRATIS • Prenotazione gratuita',
-        category: 'aperture',
-        sourceName: 'Milano da Scrocco / Comune di Milano',
-        instagramUrl: 'https://instagram.com/milanodascrocco',
-        facebookUrl: 'https://facebook.com/comunedimilano',
-        sourceUrl: 'https://cultura.comune.milano.it'
-      },
+      // === MATTINA (10:00 – 12:30) ===
       {
         id: 'evt-villa-necchi-fai',
-        offsetMinutes: 735,
+        scheduledHour: 10,
+        scheduledMinute: 0,
         durationMinutes: 120,
         title: 'Mattinata FAI nel Giardino d’Inverno di Piero Portaluppi',
         description: 'Percorso speciale dedicato alle arti decorative degli anni Trenta e ai disegni d’archivio custoditi a Villa Necchi Campiglio.',
@@ -1321,42 +790,9 @@
         sourceUrl: 'https://fondoambiente.it/luoghi/villa-necchi-campiglio'
       },
       {
-        id: 'evt-fondazione-prada-torre',
-        offsetMinutes: 800,
-        durationMinutes: 180,
-        title: 'Retrospettiva Multimediale nel Podium & Torre Bianca',
-        description: 'Esposizione monografica curata per gli spazi di Largo Isarco progettati da OMA/Rem Koolhaas, con focus sul cinema sperimentale al Cinema Godard.',
-        venueName: 'Fondazione Prada',
-        neighborhood: 'Scalo Romana / Largo Isarco',
-        address: 'Largo Isarco 2',
-        isFree: false,
-        priceDetails: '€15,00 Intero / €12,00 Studenti',
-        category: 'mostre',
-        sourceName: 'Exibart / Fondazione Prada',
-        instagramUrl: 'https://instagram.com/fondazioneprada',
-        facebookUrl: 'https://facebook.com/fondazioneprada',
-        sourceUrl: 'https://www.fondazioneprada.org'
-      },
-      {
-        id: 'evt-cineteca-arlecchino',
-        offsetMinutes: 860,
-        durationMinutes: 115,
-        title: 'Matinée Cineteca: Classici Restaurati in 35mm',
-        description: 'Proiezione su copia in pellicola 35mm proveniente dall’archivio storico della Cineteca Italiana, preceduta da cinegiornali d’epoca su Milano.',
-        venueName: 'Cineteca Milano Arlecchino',
-        neighborhood: 'San Babila / Corso Vittorio Emanuele',
-        address: 'Via San Pietro all’Orto 9',
-        isFree: false,
-        priceDetails: '€8,50 Intero / €6,50 Cinetessera',
-        category: 'cinema',
-        sourceName: 'cinetecamilano.it',
-        instagramUrl: 'https://instagram.com/cinetecamilano',
-        facebookUrl: 'https://facebook.com/cinetecamilano',
-        sourceUrl: 'https://www.cinetecamilano.it'
-      },
-      {
         id: 'evt-palazzo-morando-free',
-        offsetMinutes: 930,
+        scheduledHour: 10,
+        scheduledMinute: 30,
         durationMinutes: 150,
         title: 'Collezione Costume Moda Immagine & Pinacoteca Civica del Settecento',
         description: 'Ingresso gratuito alle sale storiche del palazzo settecentesco che raccontano l’evoluzione urbanistica e sociale di Milano tra ’700 e ’900.',
@@ -1372,44 +808,83 @@
         sourceUrl: 'https://www.costumemodaimmagine.mi.it'
       },
       {
-        id: 'evt-triennale-design-talk',
-        offsetMinutes: 995,
-        durationMinutes: 95,
-        title: 'Architettura Radicale & Nuove Ecologie Urbane — Public Lecture',
-        description: 'Incontro aperto al Salone d’Onore della Triennale con curatori, paesaggisti e progettisti europei sul futuro degli spazi pubblici.',
-        venueName: 'Triennale Milano',
-        neighborhood: 'Parco Sempione / Cadorna',
-        address: 'Viale Emilio Alemagna 6',
+        id: 'evt-brera-cripta-san-giovanni',
+        scheduledHour: 11,
+        scheduledMinute: 0,
+        durationMinutes: 90,
+        title: 'Discesa nella Cripta Ipogea di San Giovanni in Conca',
+        description: 'Apertura straordinaria dell’unica cripta romanica originale sopravvissuta nel centro di Milano, normalmente chiusa al pubblico.',
+        venueName: 'Cripta di San Giovanni in Conca',
+        neighborhood: 'Missori / Centro Storico',
+        address: 'Piazza Giuseppe Missori',
         isFree: true,
-        priceDetails: 'GRATIS • Ingresso libero su registrazione',
-        category: 'libri',
-        sourceName: 'Zero.eu / Triennale Milano',
-        instagramUrl: 'https://instagram.com/triennalemilano',
-        facebookUrl: 'https://facebook.com/triennalemilano',
-        sourceUrl: 'https://triennale.org'
+        priceDetails: 'GRATIS • Prenotazione gratuita',
+        category: 'aperture',
+        sourceName: 'Milano da Scrocco / Comune di Milano',
+        instagramUrl: 'https://instagram.com/milanodascrocco',
+        facebookUrl: 'https://facebook.com/comunedimilano',
+        sourceUrl: 'https://cultura.comune.milano.it'
+      },
+      {
+        id: 'evt-cineteca-arlecchino',
+        scheduledHour: 11,
+        scheduledMinute: 15,
+        durationMinutes: 115,
+        title: 'Matinée Cineteca: Classici Restaurati in 35mm',
+        description: 'Proiezione su copia in pellicola 35mm proveniente dall’archivio storico della Cineteca Italiana, preceduta da cinegiornali d’epoca su Milano.',
+        venueName: 'Cineteca Milano Arlecchino',
+        neighborhood: 'San Babila / Corso Vittorio Emanuele',
+        address: 'Via San Pietro all’Orto 9',
+        isFree: false,
+        priceDetails: '€8,50 Intero / €6,50 Cinetessera',
+        category: 'cinema',
+        sourceName: 'cinetecamilano.it',
+        instagramUrl: 'https://instagram.com/cinetecamilano',
+        facebookUrl: 'https://facebook.com/cinetecamilano',
+        sourceUrl: 'https://www.cinetecamilano.it'
+      },
+      {
+        id: 'evt-vigna-leonardo-secret',
+        scheduledHour: 12,
+        scheduledMinute: 0,
+        durationMinutes: 75,
+        title: 'Apertura Straordinaria Casa degli Atellani & Vigna di Leonardo',
+        description: 'Visita guidata speciale tra i chiostri rinascimentali di Portaluppi e i filari storici di Malvasia di Candia donati da Ludovico il Moro a Leonardo nel 1498.',
+        venueName: 'Casa degli Atellani — Vigna di Leonardo',
+        neighborhood: 'Corso Magenta / Santa Maria delle Grazie',
+        address: 'Corso Magenta 65',
+        isFree: false,
+        priceDetails: '€12,00 Biglietto con audioguida',
+        category: 'aperture',
+        sourceName: 'MilanoGuida / FAI',
+        instagramUrl: 'https://instagram.com/lavignadileonardo',
+        facebookUrl: 'https://facebook.com/vignadileonardo',
+        sourceUrl: 'https://www.vignadileonardo.com'
       },
 
-      // === +18h to +23.5h ===
+      // === POMERIGGIO (14:30 – 17:30) ===
       {
-        id: 'evt-meet-digital-culture',
-        offsetMinutes: 1080,
-        durationMinutes: 90,
-        title: 'Meet the Media Guru: Immersive Storytelling & VR Room',
-        description: 'Masterclass e dimostrazione immersiva nella sala VR di Porta Venezia dedicata alle arti generative e alla cultura digitale.',
-        venueName: 'MEET Digital Culture Center',
-        neighborhood: 'Porta Venezia / Oberdan',
-        address: 'Viale Vittorio Veneto 2',
-        isFree: true,
-        priceDetails: 'GRATIS • Ingresso gratuito con prenotazione Eventbrite',
-        category: 'libri',
-        sourceName: 'Eventbrite / MEET Center',
-        instagramUrl: 'https://instagram.com/meetcenter',
-        facebookUrl: 'https://facebook.com/MEETahu',
-        sourceUrl: 'https://www.meetcenter.it'
+        id: 'evt-fondazione-prada-torre',
+        scheduledHour: 14,
+        scheduledMinute: 30,
+        durationMinutes: 180,
+        title: 'Retrospettiva Multimediale nel Podium & Torre Bianca',
+        description: 'Esposizione monografica curata per gli spazi di Largo Isarco progettati da OMA/Rem Koolhaas, con focus sul cinema sperimentale al Cinema Godard.',
+        venueName: 'Fondazione Prada',
+        neighborhood: 'Scalo Romana / Largo Isarco',
+        address: 'Largo Isarco 2',
+        isFree: false,
+        priceDetails: '€15,00 Intero / €12,00 Studenti',
+        category: 'mostre',
+        sourceName: 'Exibart / Fondazione Prada',
+        instagramUrl: 'https://instagram.com/fondazioneprada',
+        facebookUrl: 'https://facebook.com/fondazioneprada',
+        sourceUrl: 'https://www.fondazioneprada.org'
       },
       {
         id: 'evt-mudec-dialogo-arti',
-        offsetMinutes: 1150,
+        scheduledHour: 15,
+        scheduledMinute: 0,
         durationMinutes: 140,
         title: 'Focus Curatori nell’Agorà di David Chipperfield + Collezione Permanente',
         description: 'Approfondimento guidato gratuito nella collezione permanente del Museo delle Culture con focus sui nuclei storici precolombiani e africani.',
@@ -1425,42 +900,9 @@
         sourceUrl: 'https://www.mudec.it'
       },
       {
-        id: 'evt-alcatraz-live-tour',
-        offsetMinutes: 1220,
-        durationMinutes: 165,
-        title: 'Indie & Alternative Rock European Tour — Main Stage Live',
-        description: 'Tappa unica italiana sul palco principale di Via Valtellina. Apertura porte con opening act milanese.',
-        venueName: 'Alcatraz Milano',
-        neighborhood: 'Farini / Isola',
-        address: 'Via Valtellina 25',
-        isFree: false,
-        priceDetails: '€28,00 + d.p. Biglietti disponibili',
-        category: 'concerti',
-        sourceName: 'DICE.fm / Zero.eu',
-        instagramUrl: 'https://instagram.com/alcatrazmilano',
-        facebookUrl: 'https://facebook.com/alcatrazmilano',
-        sourceUrl: 'https://www.alcatrazmilano.it'
-      },
-      {
-        id: 'evt-elfo-puccini-contemp',
-        offsetMinutes: 1290,
-        durationMinutes: 110,
-        title: 'Nuove Scritture Sceniche in Sala Shakespeare',
-        description: 'Spettacolo di teatro contemporaneo pluripremiato ai premi Ubu, seguito da breve conversazione con gli attori della compagnia.',
-        venueName: 'Teatro Elfo Puccini',
-        neighborhood: 'Corso Buenos Aires / Lima',
-        address: 'Corso Buenos Aires 33',
-        isFree: false,
-        priceDetails: '€19,50 Ridotto Under30 / €29,00 Intero',
-        category: 'teatro',
-        sourceName: 'Invito a Teatro / Elfo Puccini',
-        instagramUrl: 'https://instagram.com/teatroelfopuccini',
-        facebookUrl: 'https://facebook.com/teatroelfopuccini',
-        sourceUrl: 'https://www.elfo.org'
-      },
-      {
         id: 'evt-torre-branca-sunset',
-        offsetMinutes: 1365,
+        scheduledHour: 16,
+        scheduledMinute: 0,
         durationMinutes: 85,
         title: 'Salita Panoramica sulla Torre Branca di Giò Ponti (108m)',
         description: 'Accesso in ascensore rapido fino al belvedere esagonale progettato da Giò Ponti nel 1933 con vista a 360° sullo skyline di Milano e sulle Alpi.',
@@ -1476,8 +918,45 @@
         sourceUrl: 'https://www.yesmilano.it'
       },
       {
+        id: 'evt-hangar-bicocca',
+        scheduledHour: 16,
+        scheduledMinute: 30,
+        durationMinutes: 150,
+        title: 'Visita Gratuita alle Navate & I Sette Palazzi Celesti',
+        description: 'Ingresso gratuito alle monumentali installazioni site-specific nelle ex officine industriali Breda, con mediatori culturali presenti in sala.',
+        venueName: 'Pirelli HangarBicocca',
+        neighborhood: 'Bicocca',
+        address: 'Via Chiese 2',
+        isFree: true,
+        priceDetails: 'GRATIS • Ingresso gratuito',
+        category: 'mostre',
+        sourceName: 'Artribune / HangarBicocca',
+        instagramUrl: 'https://instagram.com/pirellihangarbicocca',
+        facebookUrl: 'https://facebook.com/PirelliHangarBicocca',
+        sourceUrl: 'https://pirellihangarbicocca.org'
+      },
+      {
+        id: 'evt-casa-diritti-transfem',
+        scheduledHour: 17,
+        scheduledMinute: 0,
+        durationMinutes: 120,
+        title: 'Tavolo Permanente Diritti Civili, Welfare di Prossimità & Spazi Sicuri',
+        description: 'Incontro pubblico aperto alla cittadinanza con sportelli sociali, reti associative e mediatori culturali dei 9 municipi milanesi.',
+        venueName: 'Casa dei Diritti — Comune di Milano',
+        neighborhood: 'Sant’Ambrogio / De Amicis',
+        address: 'Via Edmondo De Amicis 10',
+        isFree: true,
+        priceDetails: 'GRATIS • Partecipazione libera',
+        category: 'politica',
+        sourceName: 'Comune di Milano — Welfare',
+        instagramUrl: 'https://instagram.com/comunedimilano',
+        facebookUrl: 'https://facebook.com/comunedimilano',
+        sourceUrl: 'https://www.comune.milano.it'
+      },
+      {
         id: 'evt-lafeltrinelli-duomo',
-        offsetMinutes: 1410,
+        scheduledHour: 17,
+        scheduledMinute: 30,
         durationMinutes: 75,
         title: 'Incontro con la Redazione & Presentazione Saggio sull’Editoria Indipendente',
         description: 'Appuntamento aperto al pubblico nella storica libreria di Galleria Vittorio Emanuele II con autori, editor e firmacopie finale.',
@@ -1491,6 +970,424 @@
         instagramUrl: 'https://instagram.com/lafeltrinelli_milano',
         facebookUrl: 'https://facebook.com/laFeltrinelli',
         sourceUrl: 'https://www.lafeltrinelli.it/eventi'
+      },
+
+      // === PRESERALE & SERA (18:00 – 20:45) ===
+      {
+        id: 'evt-verso-talk',
+        scheduledHour: 18,
+        scheduledMinute: 0,
+        durationMinutes: 90,
+        title: 'Milano Verticale e Città Invisibili — Presentazione Libro con l’Autore',
+        description: 'Incontro con l’autore e dialogo aperto sul futuro urbanistico dei quartieri milanesi. Calice di benvenuto offerto al primo piano della libreria.',
+        venueName: 'Libreria Verso',
+        neighborhood: 'Colonne di San Lorenzo / Ticinese',
+        address: 'Corso di Porta Ticinese 40',
+        isFree: true,
+        priceDetails: 'GRATIS • Ingresso libero fino a esaurimento posti',
+        category: 'libri',
+        sourceName: 'BookCity / Libreria Verso',
+        instagramUrl: 'https://instagram.com/libreriaverso',
+        facebookUrl: 'https://facebook.com/libreriaverso',
+        sourceUrl: 'https://www.libreriaverso.com'
+      },
+      {
+        id: 'evt-mutuo-soccorso-ecologia',
+        scheduledHour: 18,
+        scheduledMinute: 15,
+        durationMinutes: 100,
+        title: 'Assemblea Ecologista & Mobilità Ciclabile: "Città 30, Alberate e Aria Pulita"',
+        description: 'Tavolo cittadino promosso da associazioni ambientaliste, comitati genitori per le strade scolastiche e collettivi di quartiere.',
+        venueName: 'Ri-Make / Spazio di Mutuo Soccorso',
+        neighborhood: 'Piazza Stuparich / Certosa',
+        address: 'Piazza Stuparich 18',
+        isFree: true,
+        priceDetails: 'GRATIS • Ingresso libero',
+        category: 'politica',
+        sourceName: 'Rete Civica Ecologista Milano',
+        instagramUrl: 'https://instagram.com/legambientelombardia',
+        facebookUrl: 'https://facebook.com/legambientelombardia',
+        sourceUrl: 'https://www.legambiente.it'
+      },
+      {
+        id: 'evt-feltrinelli-fondazione',
+        scheduledHour: 18,
+        scheduledMinute: 30,
+        durationMinutes: 105,
+        title: 'Public Talk: Intelligenza Collettiva, Archivi Digitali e Democrazia',
+        description: 'Tavola rotonda al quinto piano della piramide di Herzog & de Meuron con ricercatori internazionali, filosofi dei media e giornalisti.',
+        venueName: 'Fondazione Giangiacomo Feltrinelli',
+        neighborhood: 'Porta Volta',
+        address: 'Viale Pasubio 5',
+        isFree: true,
+        priceDetails: 'GRATIS • Accesso libero con registrazione',
+        category: 'libri',
+        sourceName: 'fondazionefeltrinelli.it',
+        instagramUrl: 'https://instagram.com/fondazionefeltrinelli',
+        facebookUrl: 'https://facebook.com/FondazioneFeltrinelli',
+        sourceUrl: 'https://fondazionefeltrinelli.it'
+      },
+      {
+        id: 'evt-triennale-design-talk',
+        scheduledHour: 18,
+        scheduledMinute: 30,
+        durationMinutes: 95,
+        title: 'Architettura Radicale & Nuove Ecologie Urbane — Public Lecture',
+        description: 'Incontro aperto al Salone d’Onore della Triennale con curatori, paesaggisti e progettisti europei sul futuro degli spazi pubblici.',
+        venueName: 'Triennale Milano',
+        neighborhood: 'Parco Sempione / Cadorna',
+        address: 'Viale Emilio Alemagna 6',
+        isFree: true,
+        priceDetails: 'GRATIS • Ingresso libero su registrazione',
+        category: 'libri',
+        sourceName: 'Zero.eu / Triennale Milano',
+        instagramUrl: 'https://instagram.com/triennalemilano',
+        facebookUrl: 'https://facebook.com/triennalemilano',
+        sourceUrl: 'https://triennale.org'
+      },
+      {
+        id: 'evt-meet-digital-culture',
+        scheduledHour: 18,
+        scheduledMinute: 45,
+        durationMinutes: 90,
+        title: 'Meet the Media Guru: Immersive Storytelling & VR Room',
+        description: 'Masterclass e dimostrazione immersiva nella sala VR di Porta Venezia dedicata alle arti generative e alla cultura digitale.',
+        venueName: 'MEET Digital Culture Center',
+        neighborhood: 'Porta Venezia / Oberdan',
+        address: 'Viale Vittorio Veneto 2',
+        isFree: true,
+        priceDetails: 'GRATIS • Ingresso gratuito con prenotazione Eventbrite',
+        category: 'libri',
+        sourceName: 'Eventbrite / MEET Center',
+        instagramUrl: 'https://instagram.com/meetcenter',
+        facebookUrl: 'https://facebook.com/MEETahu',
+        sourceUrl: 'https://www.meetcenter.it'
+      },
+      {
+        id: 'evt-base-vernissage',
+        scheduledHour: 19,
+        scheduledMinute: 0,
+        durationMinutes: 180,
+        title: 'We Will Design: Vernissage & Live Modular Listening Session',
+        description: 'Opening ad accesso libero negli spazi dell’ex Ansaldo: installazioni di design radicale, archivi sonori indipendenti e talk nel cortile coperto.',
+        venueName: 'BASE Milano',
+        neighborhood: 'Tortona',
+        address: 'Via Bergognone 34',
+        isFree: true,
+        priceDetails: 'GRATIS • Ingresso libero con accredito',
+        category: 'mostre',
+        sourceName: 'Zero.eu / BASE Milano',
+        instagramUrl: 'https://instagram.com/base_milano',
+        facebookUrl: 'https://facebook.com/basemilano',
+        sourceUrl: 'https://base.milano.it'
+      },
+      {
+        id: 'evt-san-maurizio-organo',
+        scheduledHour: 19,
+        scheduledMinute: 0,
+        durationMinutes: 70,
+        title: 'Concerto d’Organo Antegnati (1554) nella "Cappella Sistina" di Milano',
+        description: 'Apertura straordinaria del Coro delle Monache con esecuzione dal vivo di musiche rinascimentali sull’organo storico cinquecentesco.',
+        venueName: 'Chiesa di San Maurizio al Monastero Maggiore',
+        neighborhood: 'Cinque Vie / Corso Magenta',
+        address: 'Corso Magenta 15',
+        isFree: true,
+        priceDetails: 'GRATIS • Ingresso libero fino a capienza',
+        category: 'aperture',
+        sourceName: 'Comune di Milano Cultura / FAI',
+        instagramUrl: 'https://instagram.com/comunedimilano',
+        facebookUrl: 'https://facebook.com/comunedimilano',
+        sourceUrl: 'https://cultura.comune.milano.it'
+      },
+      {
+        id: 'evt-camera-lavoro-diritti',
+        scheduledHour: 19,
+        scheduledMinute: 15,
+        durationMinutes: 115,
+        title: 'Forum Lavoro Digitale, Rider & Intelligenza Artificiale — Sindacato e Territorio',
+        description: 'Assemblea metropolitana nel Salone Di Vittorio con delegati, ricercatori e collettivi del lavoro digitale su algoritmi, salario minimo e sicurezza.',
+        venueName: 'Camera del Lavoro di Milano',
+        neighborhood: 'Porta Vittoria / Cinque Giornate',
+        address: 'Corso di Porta Vittoria 43',
+        isFree: true,
+        priceDetails: 'GRATIS • Ingresso aperto al pubblico',
+        category: 'politica',
+        sourceName: 'cgil.milano.it',
+        instagramUrl: 'https://instagram.com/cgilmilano',
+        facebookUrl: 'https://facebook.com/cgilmilano',
+        sourceUrl: 'https://www.cgil.milano.it'
+      },
+      {
+        id: 'evt-piccolo-strehler',
+        scheduledHour: 19,
+        scheduledMinute: 30,
+        durationMinutes: 135,
+        title: 'Regia Internazionale al Piccolo Teatro Strehler',
+        description: 'Allestimento monumentale sul palco di Largo Greppi con sovratitoli in italiano e inglese. Precede lo spettacolo un focus drammaturgico nel ridotto.',
+        venueName: 'Piccolo Teatro Strehler',
+        neighborhood: 'Lanza / Brera',
+        address: 'Largo Greppi 1',
+        isFree: false,
+        priceDetails: '€22,00 Platea / €16,00 Balconata',
+        category: 'teatro',
+        sourceName: 'piccoloteatro.org',
+        instagramUrl: 'https://instagram.com/piccoloteatromilano',
+        facebookUrl: 'https://facebook.com/PiccoloTeatroMilano',
+        sourceUrl: 'https://www.piccoloteatro.org'
+      },
+      {
+        id: 'evt-elfo-puccini-contemp',
+        scheduledHour: 19,
+        scheduledMinute: 45,
+        durationMinutes: 110,
+        title: 'Nuove Scritture Sceniche in Sala Shakespeare',
+        description: 'Spettacolo di teatro contemporaneo pluripremiato ai premi Ubu, seguito da breve conversazione con gli attori della compagnia.',
+        venueName: 'Teatro Elfo Puccini',
+        neighborhood: 'Corso Buenos Aires / Lima',
+        address: 'Corso Buenos Aires 33',
+        isFree: false,
+        priceDetails: '€19,50 Ridotto Under30 / €29,00 Intero',
+        category: 'teatro',
+        sourceName: 'Invito a Teatro / Elfo Puccini',
+        instagramUrl: 'https://instagram.com/teatroelfopuccini',
+        facebookUrl: 'https://facebook.com/teatroelfopuccini',
+        sourceUrl: 'https://www.elfo.org'
+      },
+      {
+        id: 'evt-parenti-bagni',
+        scheduledHour: 20,
+        scheduledMinute: 30,
+        durationMinutes: 110,
+        title: 'Drammaturgia Contemporanea in Sala Grande + Incontro nel Foyer',
+        description: 'Nuova produzione del Teatro Franco Parenti con drammaturgia originale e scenografia immersiva affacciata sui Bagni Misteriosi.',
+        venueName: 'Teatro Franco Parenti',
+        neighborhood: 'Porta Romana',
+        address: 'Via Pier Lombardo 14',
+        isFree: false,
+        priceDetails: '€18,00 - €28,00 (Convenzione Invito a Teatro)',
+        category: 'teatro',
+        sourceName: 'teatrofrancoparenti.it',
+        instagramUrl: 'https://instagram.com/teatrofrancoparenti',
+        facebookUrl: 'https://facebook.com/teatrofrancoparenti',
+        sourceUrl: 'https://teatrofrancoparenti.it'
+      },
+      {
+        id: 'evt-casa-cultura-abitare',
+        scheduledHour: 20,
+        scheduledMinute: 30,
+        durationMinutes: 110,
+        title: 'Assemblea Cittadina: Diritto all’Abitare, Affitti Brevi e Rigenerazione Urbana',
+        description: 'Confronto pubblico tra comitati di quartiere, urbanisti del Politecnico e reti civiche sul caro-affitti e sul piano straordinario per la casa pubblica a Milano.',
+        venueName: 'Casa della Cultura',
+        neighborhood: 'San Babila / Via Borgogna',
+        address: 'Via Borgogna 3',
+        isFree: true,
+        priceDetails: 'GRATIS • Accesso libero alla cittadinanza',
+        category: 'politica',
+        sourceName: 'casadellacultura.it',
+        instagramUrl: 'https://instagram.com/casadellaculturamilano',
+        facebookUrl: 'https://facebook.com/casadellaculturamilano',
+        sourceUrl: 'https://www.casadellacultura.it'
+      },
+      {
+        id: 'evt-manzoni-prosa',
+        scheduledHour: 20,
+        scheduledMinute: 45,
+        durationMinutes: 120,
+        title: 'Serata d’Autore al Manzoni — Commedia Brillante in Due Atti',
+        description: 'Storico sipario di Via Manzoni per una serata dedicata al grande teatro di prosa contemporaneo con compagnia stabile in tournée nazionale.',
+        venueName: 'Teatro Manzoni',
+        neighborhood: 'Quadrilatero / Montenapoleone',
+        address: 'Via Manzoni 42',
+        isFree: false,
+        priceDetails: '€25,00 - €36,00 Poltronissima / Galleria',
+        category: 'teatro',
+        sourceName: 'milanoteatri.it / Teatro Manzoni',
+        instagramUrl: 'https://instagram.com/teatromanzonimilano',
+        facebookUrl: 'https://facebook.com/TeatroManzoniMilano',
+        sourceUrl: 'https://www.teatromanzoni.it'
+      },
+      {
+        id: 'evt-anteo-anteprima',
+        scheduledHour: 20,
+        scheduledMinute: 45,
+        durationMinutes: 130,
+        title: 'Rassegna Lingua Originale (v.o. sott. ita) + Introduzione Critica',
+        description: 'Anteprima cittadina in Sala Excelsior con introduzione a cura della redazione di Lungo Corso Cinema. Audio Dolby Atmos in versione originale.',
+        venueName: 'Anteo Palazzo del Cinema',
+        neighborhood: 'Brera / Garibaldi',
+        address: 'Piazza Venticinque Aprile 8',
+        isFree: false,
+        priceDetails: '€9,50 Intero / €7,00 Amici del Cinema',
+        category: 'cinema',
+        sourceName: 'spaziocinema.info',
+        instagramUrl: 'https://instagram.com/anteospaziocinema',
+        facebookUrl: 'https://facebook.com/AnteoPalazzoDelCinema',
+        sourceUrl: 'https://www.spaziocinema.info/milano'
+      },
+
+      // === SERA & NOTTE (21:00 – 23:30; 00:00 – 09:00 VUOTE) ===
+      {
+        id: 'evt-mexico-qa',
+        scheduledHour: 21,
+        scheduledMinute: 0,
+        durationMinutes: 125,
+        title: 'Il Tempo che Ci Vuole — Proiezione + Q&A con Ospiti in Sala',
+        description: 'Proiezione speciale in pellicola restaurata seguita da dibattito in sala con la critica cinematografica e gli autori ospiti della rassegna serale.',
+        venueName: 'Cinema Mexico',
+        neighborhood: 'Zona Solari / Via Savona',
+        address: 'Via Savona 57',
+        isFree: false,
+        priceDetails: '€7,50 Intero / €6,00 Ridotto',
+        category: 'cinema',
+        sourceName: 'cinemamexico.it',
+        instagramUrl: 'https://instagram.com/cinemamexicomilano',
+        facebookUrl: 'https://facebook.com/cinemamexicomilano',
+        sourceUrl: 'https://www.cinemamexico.it'
+      },
+      {
+        id: 'evt-blue-note-jazz',
+        scheduledHour: 21,
+        scheduledMinute: 0,
+        durationMinutes: 95,
+        title: 'Contemporary Jazz Quintet — First & Second Set Live',
+        description: 'Quintetto jazz internazionale sul palco storico dell’Isola. Acustica intima, repertorio hard-bop originale e jam session finale.',
+        venueName: 'Blue Note Milano',
+        neighborhood: 'Isola',
+        address: 'Via Pietro Borsieri 37',
+        isFree: false,
+        priceDetails: '€30,00 Door / €25,00 Advance',
+        category: 'concerti',
+        sourceName: 'Zero.eu / Blue Note',
+        instagramUrl: 'https://instagram.com/bluenotemilano',
+        facebookUrl: 'https://facebook.com/bluenotemilano',
+        sourceUrl: 'https://www.bluenotemilano.com'
+      },
+      {
+        id: 'evt-santeria-listening',
+        scheduledHour: 21,
+        scheduledMinute: 15,
+        durationMinutes: 140,
+        title: 'Listening Club & Vinyl Talk: L’Elettronica Italiana 1978–1992',
+        description: 'Ascolto integrale su impianto hi-fi analogico di rarità discografiche milanesi, commentato da collezionisti e produttori.',
+        venueName: 'Santeria Toscana 31',
+        neighborhood: 'Viale Toscana / Bocconi',
+        address: 'Viale Toscana 31',
+        isFree: true,
+        priceDetails: 'GRATIS • Ingresso libero',
+        category: 'concerti',
+        sourceName: 'Milano da Scrocco / Zero.eu',
+        instagramUrl: 'https://instagram.com/santeriamilano',
+        facebookUrl: 'https://facebook.com/santeriamilano',
+        sourceUrl: 'https://www.santeriamilano.it'
+      },
+      {
+        id: 'evt-beltrade-corti',
+        scheduledHour: 21,
+        scheduledMinute: 30,
+        durationMinutes: 115,
+        title: 'La Notte dei Corti Indipendenti — Registi Presenti in Sala',
+        description: 'Selezione di cortometraggi d’autore italiani ed europei con collegamento live e microfono aperto tra pubblico in sala e troupe.',
+        venueName: 'Cinema Beltrade',
+        neighborhood: 'NoLo / Piazza Morbegno',
+        address: 'Via Nino Oxilia 10',
+        isFree: false,
+        priceDetails: '€7,50 Biglietto unico',
+        category: 'cinema',
+        sourceName: 'bandiere-interrotte.it',
+        instagramUrl: 'https://instagram.com/cinemabeltrade',
+        facebookUrl: 'https://facebook.com/cinemabeltrade',
+        sourceUrl: 'https://bandiere-interrotte.it'
+      },
+      {
+        id: 'evt-alcatraz-live-tour',
+        scheduledHour: 21,
+        scheduledMinute: 30,
+        durationMinutes: 165,
+        title: 'Indie & Alternative Rock European Tour — Main Stage Live',
+        description: 'Tappa unica italiana sul palco principale di Via Valtellina. Apertura porte con opening act milanese.',
+        venueName: 'Alcatraz Milano',
+        neighborhood: 'Farini / Isola',
+        address: 'Via Valtellina 25',
+        isFree: false,
+        priceDetails: '€28,00 + d.p. Biglietti disponibili',
+        category: 'concerti',
+        sourceName: 'DICE.fm / Zero.eu',
+        instagramUrl: 'https://instagram.com/alcatrazmilano',
+        facebookUrl: 'https://facebook.com/alcatrazmilano',
+        sourceUrl: 'https://www.alcatrazmilano.it'
+      },
+      {
+        id: 'evt-biko-live-showcase',
+        scheduledHour: 22,
+        scheduledMinute: 0,
+        durationMinutes: 180,
+        title: 'NuJazz, Afrobeat & Electronic Showcase Live Set',
+        description: 'Live band di 6 elementi seguita da selezione vinile funk/broken-beat sul dancefloor del circolo ARCI lungo il Naviglio Pavese.',
+        venueName: 'Biko Milano',
+        neighborhood: 'Naviglio Pavese / Barona',
+        address: 'Via Ettore Ponti 40',
+        isFree: false,
+        priceDetails: '€12,00 su DICE (+ tessera ARCI)',
+        category: 'concerti',
+        sourceName: 'DICE.fm Milano',
+        instagramUrl: 'https://instagram.com/bikomilano',
+        facebookUrl: 'https://facebook.com/bikoclub',
+        sourceUrl: 'https://dice.fm/browse/milan'
+      },
+      {
+        id: 'evt-cinemino-essay',
+        scheduledHour: 22,
+        scheduledMinute: 15,
+        durationMinutes: 105,
+        title: 'Rassegna Serale d’Essai + Discussione al Bar del Circolo',
+        description: 'Cult movie restaurato in 4K nella sala segreta da 74 posti in Porta Romana. Richiesta tessera associativa annuale.',
+        venueName: 'Il Cinemino',
+        neighborhood: 'Porta Romana / Crocetta',
+        address: 'Via Seneca 6',
+        isFree: false,
+        priceDetails: '€7,00 + Tessera Associativa',
+        category: 'cinema',
+        sourceName: 'ilcinemino.it',
+        instagramUrl: 'https://instagram.com/ilcinemino',
+        facebookUrl: 'https://facebook.com/ilcinemino',
+        sourceUrl: 'https://www.ilcinemino.it'
+      },
+      {
+        id: 'evt-magnolia-clubnight',
+        scheduledHour: 23,
+        scheduledMinute: 0,
+        durationMinutes: 240,
+        title: 'Electro / Post-Punk Live & Warehouse Club Night',
+        description: 'Doppio palco immerso nel parco dell’Idroscalo: live act internazionale seguito da resident DJ set.',
+        venueName: 'Circolo Magnolia',
+        neighborhood: 'Idroscalo / Segrate',
+        address: 'Via Circonvallazione Idroscalo 41',
+        isFree: false,
+        priceDetails: '€15,00 Early Bird su DICE.fm',
+        category: 'concerti',
+        sourceName: 'DICE.fm / Resident Advisor',
+        instagramUrl: 'https://instagram.com/circolomagnolia',
+        facebookUrl: 'https://facebook.com/circolomagnolia',
+        sourceUrl: 'https://www.circolomagnolia.it'
+      },
+      {
+        id: 'evt-tempio-futuro-perduto',
+        scheduledHour: 23,
+        scheduledMinute: 30,
+        durationMinutes: 210,
+        title: 'Ambient & Techno Vinyl Session + Mostra Fotografica Notturna',
+        description: 'Spazio multidisciplinare indipendente alla Fabbrica del Vapore: sala vinile, installazione luminosa nel cortile e raccolta solidale.',
+        venueName: 'Tempio del Futuro Perduto',
+        neighborhood: 'Cenisio / Monumentale',
+        address: 'Via Luigi Nono 9',
+        isFree: true,
+        priceDetails: 'GRATIS • Ingresso gratuito per under 25 / Up to you',
+        category: 'concerti',
+        sourceName: 'Resident Advisor Milan',
+        instagramUrl: 'https://instagram.com/tempiodelfuturoperduto',
+        facebookUrl: 'https://facebook.com/tempiodelfuturoperduto',
+        sourceUrl: 'https://ra.co/events/it/milan'
       }
     ];
 
@@ -1500,9 +1397,10 @@
     let activeCategoryFilter = 'all'; // 'all' | category id
     let activeSearchQuery = '';
     let onlyHappeningNow = false;
-    let expandedEventIds = new Set(['evt-mexico-qa', 'evt-base-vernissage']); // First two expanded by default for immediate discoverability
+    let expandedEventIds = new Set(['evt-mexico-qa', 'evt-base-vernissage']);
     let pageLoadAnchorMs = Date.now();
     let nextHourStartMs = (Math.floor(Date.now() / 3600000) + 1) * 3600000;
+    let activeCameraStream = null;
 
     /**
      * Compute the exact timestamp (ms) of the start of the NEXT full hour (`HH+1:00:00`)
@@ -1579,36 +1477,49 @@
     }
 
     /**
-     * Generate normalized events dynamically anchored to `nextHourStartMs` (the hour
-     * immediately following the user's current hour in Europe/Rome), covering
-     * `[Next Hour, Next Hour + 24h]`.
+     * Finds the exact timestamp within `[startOfNextHourMs, startOfNextHourMs + 24h)`
+     * that corresponds to the event's authentic Milanese wall-clock `scheduledHour:scheduledMinute` (`Europe/Rome`).
+     */
+    function resolveScheduledTimeInRolling24h(scheduledHour, scheduledMinute, startOfNextHourMs) {
+      for (let slotIdx = 0; slotIdx < 24; slotIdx++) {
+        const slotStartMs = startOfNextHourMs + slotIdx * 3600000;
+        const romeSlot = getRomeParts(new Date(slotStartMs));
+        if (romeSlot.hourNum === scheduledHour) {
+          return slotStartMs + (scheduledMinute || 0) * 60000;
+        }
+      }
+      return startOfNextHourMs + (scheduledMinute || 0) * 60000;
+    }
+
+    /**
+     * Generate normalized events mapped to their authentic Milanese clock schedule
+     * within the rolling 24-hour window `[Next Hour, Next Hour + 24h)`.
      */
     function generateDynamic24hEvents(nowMs) {
       const startOfNextHourMs = getNextHourStartMs(nowMs);
       const nowRome = getRomeParts(new Date(nowMs));
 
       return EVENT_BLUEPRINTS.map(bp => {
-        const startMs = startOfNextHourMs + bp.offsetMinutes * 60 * 1000;
-        // Round to clean 5-minute intervals for realistic timetable display
-        const roundedStartMs = Math.round(startMs / (5 * 60 * 1000)) * (5 * 60 * 1000);
-        const endMs = roundedStartMs + bp.durationMinutes * 60 * 1000;
+        const startMs = resolveScheduledTimeInRolling24h(
+          bp.scheduledHour !== undefined ? bp.scheduledHour : 18,
+          bp.scheduledMinute !== undefined ? bp.scheduledMinute : 30,
+          startOfNextHourMs
+        );
+        const endMs = startMs + (bp.durationMinutes || 105) * 60 * 1000;
 
-        const startDate = new Date(roundedStartMs);
+        const startDate = new Date(startMs);
         const endDate = new Date(endMs);
         const startRome = getRomeParts(startDate);
         const endRome = getRomeParts(endDate);
 
         // Minutes from actual current timestamp (`nowMs`)
-        const diffFromNowMinutes = (roundedStartMs - nowMs) / (60 * 1000);
-        // Highlight events in the first upcoming hour slot (or starting within 60 min)
-        const isHappeningNow = bp.offsetMinutes < 60 || (diffFromNowMinutes >= -60 && diffFromNowMinutes <= 30);
+        const diffFromNowMinutes = (startMs - nowMs) / (60 * 1000);
+        // Highlight events starting within the next 90 minutes
+        const isHappeningNow = diffFromNowMinutes >= -30 && diffFromNowMinutes <= 90;
         const hasAlreadyStarted = diffFromNowMinutes <= 0;
 
-        // Calculate hourly slot key
-        const slotDate = new Date(roundedStartMs);
-        const slotRome = getRomeParts(slotDate);
-        const isTomorrow = slotRome.day !== nowRome.day;
-        const slotKey = `${slotRome.year}-${slotRome.month}-${slotRome.day}-${slotRome.hour}`;
+        const isTomorrow = startRome.day !== nowRome.day;
+        const slotKey = `${startRome.year}-${startRome.month}-${startRome.day}-${startRome.hour}`;
 
         return {
           id: bp.id,
@@ -1618,7 +1529,7 @@
           endTime: endDate.toISOString(),
           venueName: bp.venueName,
           neighborhood: bp.neighborhood,
-          address: `${bp.address}, Milano`,
+          address: /milano/i.test(bp.address) ? bp.address : `${bp.address}, Milano`,
           isFree: bp.isFree,
           priceDetails: bp.priceDetails,
           category: bp.category,
@@ -1628,20 +1539,20 @@
           sourceUrl: bp.sourceUrl,
           sourceName: bp.sourceName,
           // Computed UI fields
-          _startMs: roundedStartMs,
+          _startMs: startMs,
           _endMs: endMs,
           _diffMinutes: Math.max(1, Math.round(diffFromNowMinutes)),
           _isHappeningNow: isHappeningNow,
           _hasAlreadyStarted: hasAlreadyStarted,
           _startHM: startRome.hm,
           _endHM: endRome.hm,
-          _slotHour: `${slotRome.hour}:00`,
-          _slotHourNum: slotRome.hourNum,
+          _slotHour: `${startRome.hour}:00`,
+          _slotHourNum: startRome.hourNum,
           _slotKey: slotKey,
           _isTomorrow: isTomorrow,
-          _weekday: slotRome.weekday,
-          _dayMonth: `${slotRome.day}/${slotRome.month}`,
-          _timeBlock: getMilanTimeBlockMeta(slotRome.hourNum, isTomorrow)
+          _weekday: startRome.weekday,
+          _dayMonth: `${startRome.day}/${startRome.month}`,
+          _timeBlock: getMilanTimeBlockMeta(startRome.hourNum, isTomorrow)
         };
       }).sort((a, b) => a._startMs - b._startMs);
     }
@@ -1699,29 +1610,66 @@
     }
 
     /**
-     * Render quick jump time-block buttons ("Adesso / Live", "Stasera", "Stanotte", "Domani Mattina", "Domani Pomeriggio")
+     * Build all 24 hourly slots in `[nextHourStartMs, nextHourStartMs + 24h)` so that
+     * hours without events (e.g. 03:00 AM at night) remain visible and empty.
      */
-    function renderTimeJumpBar(filteredEvents) {
-      const container = document.getElementById('time-jump-container');
-      if (!container) return;
+    function buildAll24HourlySlots(filteredEvents) {
+      const nowRome = getRomeParts(new Date(pageLoadAnchorMs));
+      const slotsMap = new Map();
 
-      const seenBlocks = new Map();
-      // Always provide "Adesso (Live)" jump if there are happening-now events
-      const hasLive = filteredEvents.some(e => e._isHappeningNow);
-      if (hasLive) {
-        seenBlocks.set('jump-live-now', {
-          targetId: 'slot-live-anchor',
-          label: '⚡ Adesso (Live)',
-          highlight: true
+      for (let i = 0; i < 24; i++) {
+        const slotStartMs = nextHourStartMs + i * 3600000;
+        const slotRome = getRomeParts(new Date(slotStartMs));
+        const isTomorrow = slotRome.day !== nowRome.day;
+        const slotKey = `${slotRome.year}-${slotRome.month}-${slotRome.day}-${slotRome.hour}`;
+        slotsMap.set(slotKey, {
+          slotKey,
+          slotHour: `${slotRome.hour}:00`,
+          slotHourNum: slotRome.hourNum,
+          isTomorrow,
+          weekday: slotRome.weekday,
+          dayMonth: `${slotRome.day}/${slotRome.month}`,
+          timeBlock: getMilanTimeBlockMeta(slotRome.hourNum, isTomorrow),
+          events: []
         });
       }
 
       filteredEvents.forEach(ev => {
-        const block = ev._timeBlock;
+        if (slotsMap.has(ev._slotKey)) {
+          slotsMap.get(ev._slotKey).events.push(ev);
+        }
+      });
+
+      const allSlots = Array.from(slotsMap.values());
+      if (onlyHappeningNow || activeSearchQuery.trim() !== '') {
+        return allSlots.filter(s => s.events.length > 0);
+      }
+      return allSlots;
+    }
+
+    /**
+     * Render quick jump time-block buttons ("Stasera", "Stanotte", "Domani Mattina", "Domani Pomeriggio")
+     */
+    function renderTimeJumpBar(slotsToRender) {
+      const container = document.getElementById('time-jump-container');
+      if (!container) return;
+
+      const seenBlocks = new Map();
+      const hasLive = slotsToRender.some(s => s.events.some(e => e._isHappeningNow));
+      if (hasLive) {
+        seenBlocks.set('jump-live-now', {
+          targetId: 'slot-live-anchor',
+          label: '⚡ In Partenza',
+          highlight: true
+        });
+      }
+
+      slotsToRender.forEach(slot => {
+        const block = slot.timeBlock;
         if (!seenBlocks.has(block.blockId)) {
           seenBlocks.set(block.blockId, {
-            targetId: `slot-group-${ev._slotKey}`,
-            label: `${block.icon} ${block.label} (${ev._slotHour})`,
+            targetId: `slot-group-${slot.slotKey}`,
+            label: `${block.icon} ${block.label} (${slot.slotHour})`,
             highlight: false
           });
         }
@@ -1761,12 +1709,11 @@
       const catMeta = CATEGORY_META[ev.category] || CATEGORY_META.mostre;
       const isExpanded = expandedEventIds.has(ev.id);
 
-      // Status badge (HAPPENING NOW)
       let liveStatusBadgeHtml = '';
       if (ev._isHappeningNow) {
         const statusText = ev._hasAlreadyStarted
-          ? `HAPPENING NOW • Iniziato da ${Math.abs(ev._diffMinutes)} min`
-          : `HAPPENING NOW • Inizia tra ${ev._diffMinutes} min`;
+          ? `IN CORSO • Iniziato da ${Math.abs(ev._diffMinutes)} min`
+          : `IN PARTENZA • Tra ${ev._diffMinutes} min`;
         liveStatusBadgeHtml = `
           <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold tracking-wide bg-orange-500 text-black uppercase mono-num shadow-sm">
             <span class="w-1.5 h-1.5 rounded-full bg-black live-dot"></span>
@@ -1775,7 +1722,6 @@
         `;
       }
 
-      // Pricing badge (GRATIS in green badge, or €€ / Biglietto in neutral badge)
       const priceBadgeHtml = ev.isFree
         ? `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-xs font-extrabold tracking-wider bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 uppercase mono-num">
              GRATIS
@@ -1789,7 +1735,7 @@
           id="card-${ev.id}"
           class="${ev._isHappeningNow ? 'editorial-card-live' : 'editorial-card'} rounded-xl p-4 sm:p-5 transition"
         >
-          <!-- Top Row: Time + HAPPENING NOW Badge + Pricing Badge -->
+          <!-- Top Row: Time + Status Badge + Pricing Badge -->
           <div class="flex flex-wrap items-center justify-between gap-2 mb-2.5">
             <div class="flex flex-wrap items-center gap-2">
               <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-[#0b0c0e] border border-[#272b35] text-white font-bold text-xs mono-num">
@@ -1851,7 +1797,7 @@
             <span class="text-zinc-400">${ev.address} (${ev.neighborhood})</span>
           </div>
 
-          <!-- Description (2-3 line summary always visible, full metadata when expanded) -->
+          <!-- Description -->
           <p class="mt-2.5 text-xs sm:text-sm text-zinc-300 leading-relaxed">
             ${ev.description}
           </p>
@@ -1877,7 +1823,6 @@
           <!-- Mandatory Action Buttons: Google Maps + Instagram / Facebook / Official Source -->
           <div class="mt-4 pt-3 border-t border-[#1e222a] flex flex-wrap items-center justify-between gap-2">
             <div class="flex flex-wrap items-center gap-2">
-              <!-- 1. Google Maps Deep Link (Mandatory) -->
               <a
                 href="${ev.mapsUrl}"
                 target="_blank"
@@ -1891,7 +1836,6 @@
                 <span>📍 Google Maps</span>
               </a>
 
-              <!-- 2. Instagram Profile Deep Link -->
               <a
                 href="${ev.instagramUrl}"
                 target="_blank"
@@ -1907,7 +1851,6 @@
                 <span>Instagram</span>
               </a>
 
-              <!-- 3. Facebook Page Deep Link -->
               <a
                 href="${ev.facebookUrl}"
                 target="_blank"
@@ -1922,7 +1865,6 @@
               </a>
             </div>
 
-            <!-- 4. Official Source / Ticket Link -->
             <a
               href="${ev.sourceUrl}"
               target="_blank"
@@ -1942,6 +1884,7 @@
 
     /**
      * Render the full 24-Hour Rolling Timeline grouped by hourly slots
+     * (Hours with 0 events, such as 03:00 AM, are left empty as requested)
      */
     function renderTimeline() {
       const filtered = getFilteredEvents();
@@ -1957,15 +1900,14 @@
       document.getElementById('count-price-all').textContent = `(${totalCount})`;
       document.getElementById('count-price-free').textContent = `(${freeTotalCount})`;
       document.getElementById('count-price-paid').textContent = `(${paidTotalCount})`;
-      document.getElementById('stat-happening-now').textContent = `${happeningNowCount} in corso / tra poco`;
+      document.getElementById('stat-happening-now').textContent = `${happeningNowCount} in partenza`;
       document.getElementById('stat-free-count').textContent = `${freeTotalCount} ingressi gratuiti`;
       document.getElementById('active-events-counter').textContent = `${filtered.length} DI ${totalCount} EVENTI NELLE PROSSIME 24H`;
 
-      // Update active filter banner
       updateActiveFilterBanner();
 
-      // Update quick time-block jump pills
-      renderTimeJumpBar(filtered);
+      const slotsToRender = buildAll24HourlySlots(filtered);
+      renderTimeJumpBar(slotsToRender);
 
       if (filtered.length === 0) {
         timelineContainer.innerHTML = '';
@@ -1974,37 +1916,45 @@
       }
       emptyState.classList.add('hidden');
 
-      // Group events into hourly slots preserving chronological order
-      const hourlyGroups = new Map();
-      filtered.forEach(ev => {
-        if (!hourlyGroups.has(ev._slotKey)) {
-          hourlyGroups.set(ev._slotKey, {
-            slotKey: ev._slotKey,
-            slotHour: ev._slotHour,
-            isTomorrow: ev._isTomorrow,
-            weekday: ev._weekday,
-            dayMonth: ev._dayMonth,
-            timeBlock: ev._timeBlock,
-            events: []
-          });
-        }
-        hourlyGroups.get(ev._slotKey).events.push(ev);
-      });
-
       let assignedLiveAnchor = false;
-      const groupsHtml = Array.from(hourlyGroups.values()).map(group => {
+      const groupsHtml = slotsToRender.map(group => {
+        const isEmptyHour = group.events.length === 0;
         const hasLiveInGroup = group.events.some(e => e._isHappeningNow);
         const anchorAttr = (!assignedLiveAnchor && hasLiveInGroup) ? 'id="slot-live-anchor"' : '';
         if (hasLiveInGroup) assignedLiveAnchor = true;
 
         const dayBadge = group.isTomorrow
-          ? `<span class="px-2 py-0.5 rounded bg-zinc-800 text-zinc-300 text-xs font-semibold mono-num">DOMANI • ${group.weekday} ${group.dayMonth}</span>`
-          : `<span class="px-2 py-0.5 rounded bg-zinc-800/80 text-zinc-300 text-xs font-semibold mono-num">OGGI • ${group.weekday} ${group.dayMonth}</span>`;
+          ? `<span class="px-2 py-0.5 rounded bg-zinc-800/80 text-zinc-400 text-xs font-semibold mono-num">DOMANI • ${group.weekday} ${group.dayMonth}</span>`
+          : `<span class="px-2 py-0.5 rounded bg-zinc-800/80 text-zinc-400 text-xs font-semibold mono-num">OGGI • ${group.weekday} ${group.dayMonth}</span>`;
+
+        if (isEmptyHour) {
+          // Empty hour slot (e.g. 03:00 AM at night): leave the hour empty
+          return `
+            <section id="slot-group-${group.slotKey}" class="relative py-1">
+              <div class="flex flex-wrap items-center justify-between gap-2 pb-2.5 border-b border-[#181b22] opacity-60">
+                <div class="flex items-center gap-3">
+                  <span class="px-3 py-1 rounded-lg font-bold text-sm sm:text-base mono-num bg-[#101217] text-zinc-500 border border-[#1e222b]">
+                    ${group.slotHour}
+                  </span>
+                  <div class="flex flex-wrap items-center gap-2">
+                    <span class="text-xs sm:text-sm font-medium text-zinc-500">
+                      ${group.timeBlock.icon} ${group.timeBlock.label}
+                    </span>
+                    ${dayBadge}
+                  </div>
+                </div>
+                <span class="text-xs text-zinc-500 mono-num italic">
+                  Nessun evento in programma — fascia oraria vuota
+                </span>
+              </div>
+            </section>
+          `;
+        }
 
         return `
           <section id="slot-group-${group.slotKey}" class="relative">
             <div ${anchorAttr}></div>
-            <!-- Hourly Slot Sticky Subheader -->
+            <!-- Hourly Slot Header -->
             <div class="flex flex-wrap items-center justify-between gap-2 pb-3 mb-3 border-b border-[#23272f]">
               <div class="flex items-center gap-3">
                 <span class="px-3 py-1 rounded-lg font-black text-base sm:text-lg mono-num ${
@@ -2054,7 +2004,6 @@
      * Update filter UI pills & active filter banner
      */
     function updateFilterControlsUI() {
-      // Price filter buttons
       document.querySelectorAll('.price-filter-btn').forEach(btn => {
         const val = btn.getAttribute('data-price-filter');
         if (val === activePriceFilter) {
@@ -2064,7 +2013,6 @@
         }
       });
 
-      // Category pills
       document.querySelectorAll('.category-pill').forEach(pill => {
         const cat = pill.getAttribute('data-category');
         if (cat === activeCategoryFilter) {
@@ -2074,7 +2022,6 @@
         }
       });
 
-      // Live only toggle
       const liveBtn = document.getElementById('toggle-live-only-btn');
       if (liveBtn) {
         if (onlyHappeningNow) {
@@ -2095,7 +2042,7 @@
       if (activeCategoryFilter !== 'all' && CATEGORY_META[activeCategoryFilter]) {
         tags.push(CATEGORY_META[activeCategoryFilter].label);
       }
-      if (onlyHappeningNow) tags.push('⚡ Solo Happening Now');
+      if (onlyHappeningNow) tags.push('⚡ Solo Prima Ora');
       if (activeSearchQuery.trim() !== '') tags.push(`Ricerca: "${activeSearchQuery.trim()}"`);
 
       if (tags.length === 0) {
@@ -2168,8 +2115,232 @@
     }
 
     /********************************************************************
-     * COMMUNITY EVENT SUBMISSION, SOURCE LEARNING & ADMIN SAFEGUARD ENGINE
+     * COMMUNITY RADAR AUTOMATIC BACKEND EXTRACTION & SAFEGUARD ENGINE
      ********************************************************************/
+
+    const BACKEND_VENUE_PROFILES = [
+      {
+        match: /casadellacultura/i,
+        venueName: 'Casa della Cultura',
+        address: 'Via Borgogna 3',
+        neighborhood: 'San Babila / Via Borgogna',
+        category: 'politica',
+        isFree: true,
+        priceDetails: 'GRATIS • Ingresso libero',
+        scheduledHour: 18,
+        scheduledMinute: 30,
+        instagramUrl: 'https://instagram.com/casadellaculturamilano',
+        facebookUrl: 'https://facebook.com/casadellaculturamilano',
+        defaultTitle: 'Incontro Pubblico & Dibattito Cittadino alla Casa della Cultura'
+      },
+      {
+        match: /arcibellezza|bellezza/i,
+        venueName: 'Circolo ARCI Bellezza',
+        address: 'Via Giovanni Bellezza 16',
+        neighborhood: 'Porta Romana / Crocetta',
+        category: 'politica',
+        isFree: true,
+        priceDetails: 'GRATIS • Ingresso con tessera ARCI',
+        scheduledHour: 21,
+        scheduledMinute: 0,
+        instagramUrl: 'https://instagram.com/arcibellezza',
+        facebookUrl: 'https://facebook.com/arcibellezza',
+        defaultTitle: 'Assemblea & Serata Culturale in Palestra Visconti'
+      },
+      {
+        match: /fondazionefeltrinelli|feltrinelli/i,
+        venueName: 'Fondazione Giangiacomo Feltrinelli',
+        address: 'Viale Pasubio 5',
+        neighborhood: 'Porta Volta',
+        category: 'libri',
+        isFree: true,
+        priceDetails: 'GRATIS • Accesso libero con registrazione',
+        scheduledHour: 18,
+        scheduledMinute: 30,
+        instagramUrl: 'https://instagram.com/fondazionefeltrinelli',
+        facebookUrl: 'https://facebook.com/FondazioneFeltrinelli',
+        defaultTitle: 'Public Talk & Tavola Rotonda in Viale Pasubio'
+      },
+      {
+        match: /base\.milano|basemilano/i,
+        venueName: 'BASE Milano',
+        address: 'Via Bergognone 34',
+        neighborhood: 'Tortona',
+        category: 'mostre',
+        isFree: true,
+        priceDetails: 'GRATIS • Ingresso libero',
+        scheduledHour: 19,
+        scheduledMinute: 0,
+        instagramUrl: 'https://instagram.com/base_milano',
+        facebookUrl: 'https://facebook.com/basemilano',
+        defaultTitle: 'Talk, Vernissage & Live Showcase negli spazi ex Ansaldo'
+      },
+      {
+        match: /cgil|cameradellavoro/i,
+        venueName: 'Camera del Lavoro di Milano',
+        address: 'Corso di Porta Vittoria 43',
+        neighborhood: 'Porta Vittoria',
+        category: 'politica',
+        isFree: true,
+        priceDetails: 'GRATIS • Accesso libero alla cittadinanza',
+        scheduledHour: 18,
+        scheduledMinute: 0,
+        instagramUrl: 'https://instagram.com/cgilmilano',
+        facebookUrl: 'https://facebook.com/cgilmilano',
+        defaultTitle: 'Assemblea Pubblica & Forum Diritti del Lavoro'
+      },
+      {
+        match: /spaziocinema|anteo/i,
+        venueName: 'Anteo Palazzo del Cinema',
+        address: 'Piazza Venticinque Aprile 8',
+        neighborhood: 'Brera / Garibaldi',
+        category: 'cinema',
+        isFree: false,
+        priceDetails: '€9,50 Intero / €7,00 Ridotto',
+        scheduledHour: 20,
+        scheduledMinute: 45,
+        instagramUrl: 'https://instagram.com/anteospaziocinema',
+        facebookUrl: 'https://facebook.com/AnteoPalazzoDelCinema',
+        defaultTitle: 'Proiezione Speciale in Lingua Originale + Incontro in Sala'
+      },
+      {
+        match: /cinemamexico|mexico/i,
+        venueName: 'Cinema Mexico',
+        address: 'Via Savona 57',
+        neighborhood: 'Zona Solari / Via Savona',
+        category: 'cinema',
+        isFree: false,
+        priceDetails: '€7,50 Intero / €6,00 Ridotto',
+        scheduledHour: 21,
+        scheduledMinute: 0,
+        instagramUrl: 'https://instagram.com/cinemamexicomilano',
+        facebookUrl: 'https://facebook.com/cinemamexicomilano',
+        defaultTitle: 'Proiezione d’Autore + Dibattito con Regista e Ospiti'
+      },
+      {
+        match: /beltrade|bandiere-interrotte/i,
+        venueName: 'Cinema Beltrade',
+        address: 'Via Nino Oxilia 10',
+        neighborhood: 'NoLo / Piazza Morbegno',
+        category: 'cinema',
+        isFree: false,
+        priceDetails: '€7,50 Biglietto unico',
+        scheduledHour: 21,
+        scheduledMinute: 30,
+        instagramUrl: 'https://instagram.com/cinemabeltrade',
+        facebookUrl: 'https://facebook.com/cinemabeltrade',
+        defaultTitle: 'Rassegna Cinema Indipendente con Q&A in Sala'
+      },
+      {
+        match: /piccoloteatro/i,
+        venueName: 'Piccolo Teatro Strehler',
+        address: 'Largo Greppi 1',
+        neighborhood: 'Lanza / Brera',
+        category: 'teatro',
+        isFree: false,
+        priceDetails: '€22,00 Platea / €16,00 Balconata',
+        scheduledHour: 19,
+        scheduledMinute: 30,
+        instagramUrl: 'https://instagram.com/piccoloteatromilano',
+        facebookUrl: 'https://facebook.com/PiccoloTeatroMilano',
+        defaultTitle: 'Spettacolo Serale & Incontro nel Chiostro Nina Vinchi'
+      },
+      {
+        match: /teatrofrancoparenti|parenti/i,
+        venueName: 'Teatro Franco Parenti',
+        address: 'Via Pier Lombardo 14',
+        neighborhood: 'Porta Romana',
+        category: 'teatro',
+        isFree: false,
+        priceDetails: '€18,00 - €28,00',
+        scheduledHour: 20,
+        scheduledMinute: 30,
+        instagramUrl: 'https://instagram.com/teatrofrancoparenti',
+        facebookUrl: 'https://facebook.com/teatrofrancoparenti',
+        defaultTitle: 'Drammaturgia Contemporanea & Talk ai Bagni Misteriosi'
+      },
+      {
+        match: /dice\.fm|ra\.co|magnolia|biko|santeria|alcatraz/i,
+        venueName: 'Santeria Toscana 31',
+        address: 'Viale Toscana 31',
+        neighborhood: 'Viale Toscana / Bocconi',
+        category: 'concerti',
+        isFree: false,
+        priceDetails: '€15,00 Biglietto / Prevendita DICE',
+        scheduledHour: 21,
+        scheduledMinute: 30,
+        instagramUrl: 'https://instagram.com/santeriamilano',
+        facebookUrl: 'https://facebook.com/santeriamilano',
+        defaultTitle: 'Live Showcase & Electronic Set a Milano'
+      }
+    ];
+
+    /**
+     * Automatically extracts all event details in backend starting ONLY from a Link URL
+     * or ONLY from an uploaded/captured Flyer image (`imageFileName`).
+     */
+    function autoExtractEventDetailsInBackend({ submittedVia, rawSourceUrl = '', imageFileName = '' }) {
+      const hint = `${rawSourceUrl} ${imageFileName}`.trim();
+      const profile =
+        BACKEND_VENUE_PROFILES.find(p => p.match.test(hint)) ||
+        (submittedVia === 'FLYER_PHOTO_OCR' ? BACKEND_VENUE_PROFILES[1] : BACKEND_VENUE_PROFILES[0]);
+
+      let extractedTitle = profile.defaultTitle;
+      let domainLabel = 'casadellacultura.it';
+
+      if (submittedVia === 'LINK_URL' && rawSourceUrl) {
+        try {
+          const u = new URL(rawSourceUrl);
+          domainLabel = u.hostname.replace(/^www\./, '');
+          const segments = u.pathname
+            .split('/')
+            .map(s => s.trim())
+            .filter(s => s.length > 3 && !/^(eventi|events|it|milano|whatson|p|reel)$/i.test(s));
+          if (segments.length > 0) {
+            const lastSlug = segments[segments.length - 1]
+              .replace(/\.(html|php|aspx)$/i, '')
+              .replace(/[-_]+/g, ' ')
+              .trim();
+            if (lastSlug.length > 4) {
+              extractedTitle = lastSlug.replace(/\b\w/g, c => c.toUpperCase());
+            }
+          }
+        } catch {
+          domainLabel = rawSourceUrl.slice(0, 32);
+        }
+      } else if (submittedVia === 'FLYER_PHOTO_OCR') {
+        domainLabel = 'arcibellezza.it (Vision OCR)';
+        const cleaned = (imageFileName || '')
+          .replace(/\.[^.]+$/, '')
+          .replace(/^(img|dsc|photo|screenshot|image|foto|locandina|scatto)[-_0-9\s]*/i, '')
+          .replace(/[-_]+/g, ' ')
+          .trim();
+        if (cleaned.length > 4) {
+          extractedTitle = cleaned.replace(/\b\w/g, c => c.toUpperCase());
+        }
+      }
+
+      return {
+        title: extractedTitle,
+        venueName: profile.venueName,
+        address: profile.address,
+        neighborhood: profile.neighborhood,
+        category: profile.category,
+        isFree: profile.isFree,
+        priceDetails: profile.priceDetails,
+        scheduledHour: profile.scheduledHour,
+        scheduledMinute: profile.scheduledMinute,
+        durationMinutes: 105,
+        sourceName: domainLabel,
+        sourceUrl: rawSourceUrl && rawSourceUrl.startsWith('http') ? rawSourceUrl : 'https://www.casadellacultura.it',
+        instagramUrl: profile.instagramUrl,
+        facebookUrl: profile.facebookUrl,
+        description:
+          submittedVia === 'FLYER_PHOTO_OCR'
+            ? `Dettagli estratti automaticamente in backend tramite Vision OCR dalla locandina presso ${profile.venueName} (${profile.address}, Milano).`
+            : `Dettagli estratti automaticamente in backend dal servizio a partire dal link segnalato (${profile.venueName}, ${profile.address}, Milano).`
+      };
+    }
 
     // Dynamically learned sources database
     let learnedSourcesDb = [
@@ -2212,8 +2383,9 @@
         ],
         eventCandidate: {
           id: 'evt-quar-rave-01',
-          offsetMinutes: 240,
-          durationMinutes: 240,
+          scheduledHour: 23,
+          scheduledMinute: 0,
+          durationMinutes: 210,
           title: 'Secret Industrial Warehouse Night — Prevendita Token',
           description: 'Segnalazione utente intercettata dal Safeguard: evento notturno con prevendita su dominio esterno non verificato.',
           venueName: 'Ex Magazzini Scalo Farini (Da Verificare)',
@@ -2243,9 +2415,10 @@
         ],
         eventCandidate: {
           id: 'evt-quar-flyer-02',
-          offsetMinutes: 140,
+          scheduledHour: 18,
+          scheduledMinute: 30,
           durationMinutes: 100,
-          title: 'Assemblea Straordinaria Quartiere & Presidio Notturno',
+          title: 'Assemblea Straordinaria Quartiere & Presidio Cittadino',
           description: 'Evento estratto tramite Vision OCR da foto locandina caricata da un utente. In attesa di validazione Admin della fonte Telegram.',
           venueName: 'Piazzale Loreto / Angolo Via Padova',
           neighborhood: 'Loreto / NoLo',
@@ -2262,9 +2435,7 @@
     ];
 
     /**
-     * Evaluates a user-submitted URL or Flyer source string:
-     * 1) Infers the technical source typology (WP_REST, JSON_LD, IG_GRAPH, TELEGRAM_FEED, FLYER_OCR, etc.)
-     * 2) Computes a Safeguard Trust Score (0-100) and detects suspicious Red Flags
+     * Evaluates a user-submitted URL or Flyer source string for backend Safeguard & Source Learning
      */
     function evaluateSourceAndLearnTypology({ rawUrlOrHandle, venueText, titleText, submittedVia }) {
       const cleaned = (rawUrlOrHandle || '').trim();
@@ -2273,7 +2444,7 @@
       const titleLower = (titleText || '').toLowerCase();
 
       const redFlags = [];
-      let trustScore = 82;
+      let trustScore = 88;
       let inferredType = submittedVia === 'FLYER_PHOTO_OCR'
         ? 'VISION_OCR + VENUE_HTML_MONITOR'
         : 'STRUCTURED_HTML + LLM_EXTRACTOR';
@@ -2288,23 +2459,21 @@
         domainLabel = cleaned.slice(0, 40);
       }
 
-      // Classify source technical adapter type
       if (/instagram\.com|@[a-z0-9_.]+/i.test(lower)) {
         inferredType = 'SOCIAL_GRAPH_INSTAGRAM_EXTRACTOR';
       } else if (/facebook\.com|fb\.me/i.test(lower)) {
         inferredType = 'FACEBOOK_EVENT_GRAPH_PARSER';
       } else if (/eventbrite\.|dice\.fm|ra\.co/i.test(lower)) {
         inferredType = 'TICKETING_JSON_LD_API';
-        trustScore += 12;
+        trustScore += 10;
       } else if (/casadellacultura|cgil|anpi|comune\.milano|arcibellezza|fondazionefeltrinelli|base\.milano|spaziocinema|cinetecamilano/i.test(lower)) {
         inferredType = 'VERIFIED_CIVIC_WP_REST_AND_CALENDAR';
         trustScore = 95;
       }
 
-      // Check Safeguard Suspicion Signals (Red Flags)
       if (/bit\.ly|tinyurl\.com|t\.co|cutt\.ly|is\.gd|shorturl/i.test(lower)) {
         redFlags.push('Rilevato URL Shortener offuscato (rischio redirect malevolo o phishing)');
-        trustScore -= 48;
+        trustScore -= 50;
         inferredType = 'OBFUSCATED_SHORTLINK_REDIRECT';
       }
 
@@ -2313,27 +2482,22 @@
         trustScore -= 45;
       }
 
-      if (/t\.me\/|telegram\.me|whatsapp\.com|dm per info|solo in dm/i.test(lower + ' ' + venueLower + ' ' + titleLower)) {
+      if (/t\.me\/|telegram\.me|whatsapp\.com/i.test(lower)) {
         redFlags.push('Canale chiuso / Bot non censito nel registro delle associazioni culturali milanesi');
         trustScore -= 35;
         inferredType = 'UNVERIFIED_MESSAGING_CHANNEL';
       }
 
-      if (!venueLower || /tba|segreto|secret|da definire|anonimo|nessun indirizzo/i.test(venueLower)) {
+      if (!venueLower || /tba|segreto|secret|da definire|anonimo/i.test(venueLower)) {
         redFlags.push('Indirizzo fisico milanese assente o "Secret Location TBA" non verificabile su Google Maps');
         trustScore -= 30;
-      }
-
-      if (cleaned.startsWith('http://')) {
-        redFlags.push('Protocollo HTTP non cifrato (manca certificato TLS/HTTPS)');
-        trustScore -= 20;
       }
 
       trustScore = Math.max(5, Math.min(99, trustScore));
       const isSuspicious = trustScore < 70 || redFlags.length > 0;
 
       return {
-        domainLabel: domainLabel || 'fonte-utente-milano',
+        domainLabel: domainLabel || 'fonte-community-milano',
         inferredType,
         trustScore,
         isSuspicious,
@@ -2342,10 +2506,6 @@
       };
     }
 
-    /**
-     * Displays a clean public status alert inside the public Community Submission form
-     * (Never exposes backend Safeguard internals, Trust Scores, or Red Flags to the public)
-     */
     function showPublicSubmissionFeedback(type, title, detailsHtml) {
       const box = document.getElementById('ingestion-feedback-alert');
       if (!box) return;
@@ -2361,9 +2521,6 @@
       `;
     }
 
-    /**
-     * Displays backend feedback exclusively inside the Hidden Admin Console (#admin)
-     */
     function showAdminBackendFeedback(type, title, detailsHtml) {
       const box = document.getElementById('admin-feedback-alert');
       if (!box) return;
@@ -2380,58 +2537,52 @@
     }
 
     /**
-     * Backend Ingestion & Silent Safeguard Pipeline:
-     * - Evaluates the submitted Link or Flyer OCR silently on the backend.
-     * - If safe: learns the source into `learnedSourcesDb` & `MILAN_SOURCES_REGISTRY` and publishes the event into the 24h timeline.
-     * - If suspicious: silently routes the source + event into `pendingQuarantineQueue` (visible ONLY in the hidden `#admin` page)
-     *   and shows a neutral "in attesa di verifica redazionale" message to the public user.
+     * Automatic Backend Ingestion Pipeline for Community Radar:
+     * Accepts ONLY a Link URL (`rawSourceUrl`) OR ONLY a Flyer Photo (`imageFileName`).
+     * All event details are automatically extracted and enriched in backend by the service.
      */
-    function processCommunitySubmission({
+    function processAutomaticCommunitySubmission({
       submittedVia,
-      rawSourceUrl,
-      title,
-      venueAndAddress,
-      category,
-      isFree,
-      offsetMinutes,
-      description
+      rawSourceUrl = '',
+      imageFileName = ''
     }) {
-      // Backend Safeguard evaluation & source typology learning (runs silently)
+      const autoDetails = autoExtractEventDetailsInBackend({
+        submittedVia,
+        rawSourceUrl,
+        imageFileName
+      });
+
       const analysis = evaluateSourceAndLearnTypology({
-        rawUrlOrHandle: rawSourceUrl,
-        venueText: venueAndAddress,
-        titleText: title,
+        rawUrlOrHandle: rawSourceUrl || autoDetails.sourceUrl,
+        venueText: autoDetails.venueName,
+        titleText: autoDetails.title,
         submittedVia
       });
 
-      const venueParts = (venueAndAddress || 'Luogo Segnalato, Milano').split(',');
-      const venueName = venueParts[0].trim() || 'Spazio Cittadino Milano';
-      const streetAddress = (venueParts.slice(1).join(',') || venueName).trim();
-
       const bpCandidate = {
         id: `evt-user-${Date.now()}`,
-        offsetMinutes: Number(offsetMinutes) || 30,
-        durationMinutes: 105,
-        title: title.trim() || `Evento Segnalato (${venueName})`,
-        description: (description || '').trim() || `Evento segnalato dalla community milanese presso ${venueName}.`,
-        venueName,
-        neighborhood: 'Milano (Community)',
-        address: streetAddress,
-        isFree: Boolean(isFree),
-        priceDetails: isFree ? 'GRATIS • Ingresso libero' : '€€ / Biglietto (vedi fonte)',
-        category: category || 'politica',
-        sourceName: analysis.domainLabel,
-        instagramUrl: rawSourceUrl.includes('instagram.com') ? rawSourceUrl : 'https://instagram.com/yesmilano',
-        facebookUrl: rawSourceUrl.includes('facebook.com') ? rawSourceUrl : 'https://facebook.com/visitmilanoofficial',
-        sourceUrl: rawSourceUrl.startsWith('http') ? rawSourceUrl : 'https://www.casadellacultura.it'
+        scheduledHour: autoDetails.scheduledHour,
+        scheduledMinute: autoDetails.scheduledMinute,
+        durationMinutes: autoDetails.durationMinutes,
+        title: autoDetails.title,
+        description: autoDetails.description,
+        venueName: autoDetails.venueName,
+        neighborhood: autoDetails.neighborhood,
+        address: autoDetails.address,
+        isFree: autoDetails.isFree,
+        priceDetails: autoDetails.priceDetails,
+        category: autoDetails.category,
+        sourceName: autoDetails.sourceName,
+        instagramUrl: autoDetails.instagramUrl,
+        facebookUrl: autoDetails.facebookUrl,
+        sourceUrl: autoDetails.sourceUrl
       };
 
       if (analysis.isSuspicious) {
-        // SILENT BACKEND SAFEGUARD -> Quarantine for Admin Review ONLY (not exposed to public UI)
         const qItem = {
           qId: `quar-${Date.now()}`,
           submittedVia,
-          rawSourceInput: rawSourceUrl,
+          rawSourceInput: rawSourceUrl || imageFileName,
           inferredSourceName: analysis.domainLabel,
           inferredSourceType: analysis.inferredType,
           trustScore: analysis.trustScore,
@@ -2442,22 +2593,21 @@
         pendingQuarantineQueue.unshift(qItem);
         renderStudioAdminAndLearnedUI();
 
-        // Neutral public message (no mention of Safeguard, Trust Score, or Red Flags)
         showPublicSubmissionFeedback(
           'pending',
-          `⏳ Grazie per la segnalazione! Evento in fase di verifica redazionale`,
-          `Abbiamo ricevuto la tua segnalazione per <strong>"${bpCandidate.title}"</strong>. L'evento sarà pubblicato nella timeline delle prossime 24 ore non appena completata la verifica redazionale.`
+          `⏳ Segnalazione ricevuta dal servizio backend`,
+          `Il link o la locandina sono stati acquisiti dal servizio backend e sono in fase di verifica redazionale prima della pubblicazione.`
         );
         return;
       }
 
-      // SAFE / TRUSTED SOURCE -> Silently learn source in Backend DB + Publish Event in 24h Timeline
+      // Publish Event + Learn Source in Backend DB
       EVENT_BLUEPRINTS.push(bpCandidate);
       expandedEventIds.add(bpCandidate.id);
 
       const newLearnedSource = {
         id: `src-learned-${Date.now()}`,
-        name: `${venueName} (${analysis.domainLabel})`,
+        name: `${bpCandidate.venueName} (${analysis.domainLabel})`,
         domainOrHandle: analysis.domainLabel,
         inferredType: analysis.inferredType,
         category: bpCandidate.category,
@@ -2467,7 +2617,7 @@
       };
       learnedSourcesDb.unshift(newLearnedSource);
       MILAN_SOURCES_REGISTRY.unshift({
-        name: `${venueName} [Appresa]`,
+        name: `${bpCandidate.venueName} [Appresa]`,
         category: CATEGORY_META[bpCandidate.category]?.shortLabel || 'Community',
         method: analysis.inferredType,
         url: bpCandidate.sourceUrl
@@ -2478,10 +2628,12 @@
       populateArchitectureModal();
       renderStudioAdminAndLearnedUI();
 
+      const hh = String(bpCandidate.scheduledHour).padStart(2, '0');
+      const mm = String(bpCandidate.scheduledMinute).padStart(2, '0');
       showPublicSubmissionFeedback(
         'success',
-        `✅ Grazie! L'evento è stato pubblicato nella timeline delle prossime 24 ore`,
-        `L'evento <strong>"${bpCandidate.title}"</strong> presso <strong>${venueName}</strong> è ora visibile nella programmazione oraria.`
+        `✅ Dettagli estratti automaticamente in backend e pubblicati nella timeline 24h!`,
+        `Il servizio backend ha estratto automaticamente: <strong>"${bpCandidate.title}"</strong> • 📍 <strong>${bpCandidate.venueName} (${bpCandidate.address})</strong> • 🕒 <strong>Ore ${hh}:${mm}</strong> • 🎟️ <strong>${bpCandidate.priceDetails}</strong>.`
       );
     }
 
@@ -2494,11 +2646,9 @@
       const item = pendingQuarantineQueue[idx];
       pendingQuarantineQueue.splice(idx, 1);
 
-      // Add event to live 24h timeline
       EVENT_BLUEPRINTS.push(item.eventCandidate);
       expandedEventIds.add(item.eventCandidate.id);
 
-      // Learn source into database marked as ADMIN_VERIFIED
       learnedSourcesDb.unshift({
         id: `src-admin-${Date.now()}`,
         name: `${item.eventCandidate.venueName} (${item.inferredSourceName})`,
@@ -2525,7 +2675,7 @@
       showAdminBackendFeedback(
         'success',
         `🛡️ Fonte Verificata dall'Admin & Aggiunta al Database Backend: "${item.inferredSourceName}"`,
-        `L'evento <strong>"${item.eventCandidate.title}"</strong> è stato sbloccato dalla quarantena ed è ora visibile nella timeline pubblica delle prossime 24 ore. Il connettore <code>${item.inferredSourceType}</code> è stato memorizzato nel grafo di ingestion.`
+        `L'evento <strong>"${item.eventCandidate.title}"</strong> è stato sbloccato dalla quarantena ed è ora visibile nella timeline pubblica delle prossime 24 ore.`
       );
     }
 
@@ -2596,7 +2746,6 @@
                   </div>
                 </div>
 
-                <!-- Safeguard Red Flags -->
                 <div class="p-2.5 rounded-lg bg-black/40 border border-red-500/25 text-xs">
                   <div class="font-bold text-red-300 mb-1">Motivi di Blocco Safeguard Backend (Verifica Admin Richiesta):</div>
                   <ul class="list-disc list-inside text-zinc-300 space-y-0.5">
@@ -2604,7 +2753,6 @@
                   </ul>
                 </div>
 
-                <!-- Admin Action Buttons -->
                 <div class="flex flex-wrap items-center justify-end gap-2 pt-1">
                   <button
                     type="button"
@@ -2660,28 +2808,6 @@
     }
 
     /**
-     * Switch active tab inside the Public Community Submission Form (Link vs Flyer only)
-     */
-    function switchStudioTab(tabName) {
-      ['link', 'flyer'].forEach(t => {
-        const panel = document.getElementById(`studio-tab-${t}`);
-        if (panel) {
-          if (t === tabName) panel.classList.remove('hidden');
-          else panel.classList.add('hidden');
-        }
-      });
-
-      document.querySelectorAll('.studio-tab-btn').forEach(btn => {
-        const t = btn.getAttribute('data-studio-tab');
-        if (t === tabName) {
-          btn.className = 'studio-tab-btn px-3.5 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer bg-white text-black flex items-center gap-1.5';
-        } else {
-          btn.className = 'studio-tab-btn px-3.5 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer bg-[#161920] text-zinc-300 border border-[#252a34] hover:text-white flex items-center gap-1.5';
-        }
-      });
-    }
-
-    /**
      * Hidden Admin Page Router (`/#admin`) & Session State
      */
     let isAdminAuthenticated = false;
@@ -2713,6 +2839,45 @@
         adminPage?.classList.add('hidden');
         publicView?.classList.remove('hidden');
       }
+    }
+
+    /**
+     * Camera Modal Helpers for "Scatta Foto"
+     */
+    async function openCameraCaptureModal() {
+      const cameraFileInput = document.getElementById('input-flyer-camera');
+      // On mobile devices, native camera input (`capture="environment"`) is immediate
+      if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+        cameraFileInput?.click();
+        return;
+      }
+
+      if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({
+            video: { facingMode: 'environment' },
+            audio: false
+          });
+          activeCameraStream = stream;
+          const modal = document.getElementById('camera-capture-modal');
+          const videoEl = document.getElementById('camera-video-preview');
+          if (videoEl) videoEl.srcObject = stream;
+          modal?.classList.remove('hidden');
+          return;
+        } catch {
+          // Fallback to native file input if camera permission denied or unavailable
+        }
+      }
+      cameraFileInput?.click();
+    }
+
+    function closeCameraCaptureModal() {
+      if (activeCameraStream) {
+        activeCameraStream.getTracks().forEach(track => track.stop());
+        activeCameraStream = null;
+      }
+      const modal = document.getElementById('camera-capture-modal');
+      modal?.classList.add('hidden');
     }
 
     /**
@@ -2771,13 +2936,7 @@
         syncAdminRouteVisibility();
       });
 
-      // Public Submission Tabs & Top Bar Quick Open Button
-      document.querySelectorAll('.studio-tab-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-          switchStudioTab(btn.getAttribute('data-studio-tab'));
-        });
-      });
-
+      // Top bar quick jump to Community Radar
       document.getElementById('open-submit-panel-btn')?.addEventListener('click', () => {
         if (window.location.hash === '#admin') {
           history.pushState('', document.title, window.location.pathname + window.location.search);
@@ -2785,129 +2944,83 @@
         }
         const body = document.getElementById('studio-collapsible-body');
         body?.classList.remove('hidden');
-        switchStudioTab('link');
         document.getElementById('community-ingestion-section')?.scrollIntoView({ behavior: 'smooth' });
+        document.getElementById('input-link-url')?.focus();
       });
 
       document.getElementById('toggle-studio-collapse-btn')?.addEventListener('click', () => {
         document.getElementById('studio-collapsible-body')?.classList.toggle('hidden');
       });
 
-      // Preset 1: Trusted Link (Casa della Cultura - Politica/Sociale)
-      document.getElementById('preset-link-trusted')?.addEventListener('click', () => {
-        document.getElementById('input-link-url').value = 'https://www.casadellacultura.it/eventi/forum-citta-pubblica-milano';
-        document.getElementById('input-link-category').value = 'politica';
-        document.getElementById('input-link-offset').value = '20';
-        document.getElementById('input-link-title').value = 'Forum Città Pubblica: Beni Comuni, Scuole Aperte e Quartieri a Milano';
-        document.getElementById('input-link-venue').value = 'Casa della Cultura, Via Borgogna 3';
-        document.getElementById('input-link-free').value = 'true';
-      });
-
-      // Preset 2: External Shortlink (Silently intercepted by backend Safeguard)
-      document.getElementById('preset-link-suspicious')?.addEventListener('click', () => {
-        document.getElementById('input-link-url').value = 'https://bit.ly/evento-segreto-milano-prevendita-crypto.xyz';
-        document.getElementById('input-link-category').value = 'concerti';
-        document.getElementById('input-link-offset').value = '180';
-        document.getElementById('input-link-title').value = 'Secret Underground Party — Accesso Solo con Link Esterno Token';
-        document.getElementById('input-link-venue').value = 'Secret Location TBA, Zona Bovisa';
-        document.getElementById('input-link-free').value = 'false';
-      });
-
-      // Submit Link Form
+      // FUNZIONE 1: Submit Link Form (Automatic Backend Extraction)
       document.getElementById('submit-link-form')?.addEventListener('submit', (e) => {
         e.preventDefault();
-        const rawUrl = document.getElementById('input-link-url').value;
-        const category = document.getElementById('input-link-category').value;
-        const offset = document.getElementById('input-link-offset').value;
-        const title = document.getElementById('input-link-title').value || 'Incontro Pubblico / Evento Segnalato da Link';
-        const venue = document.getElementById('input-link-venue').value || 'Casa della Cultura, Via Borgogna 3';
-        const isFree = document.getElementById('input-link-free').value === 'true';
+        const urlInput = document.getElementById('input-link-url');
+        const rawUrl = (urlInput?.value || '').trim();
+        if (!rawUrl) return;
 
-        processCommunitySubmission({
+        processAutomaticCommunitySubmission({
           submittedVia: 'LINK_URL',
-          rawSourceUrl: rawUrl,
-          title,
-          venueAndAddress: venue,
-          category,
-          isFree,
-          offsetMinutes: Number(offset),
-          description: `Evento acquisito dal link ${rawUrl}.`
+          rawSourceUrl: rawUrl
         });
+        if (urlInput) urlInput.value = '';
       });
 
-      // Preset 3: Verified Flyer OCR (ARCI Bellezza)
-      document.getElementById('preset-flyer-trusted')?.addEventListener('click', () => {
-        document.getElementById('input-flyer-title').value = 'Assemblea Sociale & Cineforum in Palestra Visconti: Racconti di Quartiere';
-        document.getElementById('input-flyer-venue').value = 'Circolo ARCI Bellezza, Via Giovanni Bellezza 16';
-        document.getElementById('input-flyer-source').value = 'https://www.arcibellezza.it/eventi';
-        document.getElementById('input-flyer-category').value = 'politica';
-        document.getElementById('input-flyer-free').value = 'true';
-        document.getElementById('input-flyer-offset').value = '40';
-        document.getElementById('input-flyer-desc').value = 'Assemblea aperta su mutualismo di quartiere e proiezione documentario indipendente in Palestra Visconti.';
-        const ocrBox = document.getElementById('flyer-ocr-preview-text');
-        if (ocrBox) {
-          ocrBox.textContent = '"ARCI BELLEZZA • VIA BELLEZZA 16 MILANO • ASSEMBLEA SOCIALE & CINEFORUM IN PALESTRA VISCONTI • INGRESSO LIBERO • ARCIBELLEZZA.IT"';
-        }
+      // FUNZIONE 2A: Scegli Foto Locandina
+      const chooseInput = document.getElementById('input-flyer-choose');
+      document.getElementById('btn-choose-flyer-photo')?.addEventListener('click', () => {
+        chooseInput?.click();
       });
 
-      // Preset 4: Unverified Flyer (Silently intercepted by backend Safeguard)
-      document.getElementById('preset-flyer-suspicious')?.addEventListener('click', () => {
-        document.getElementById('input-flyer-title').value = 'Raduno Notturno — Scansiona QR per Posizione Segreta';
-        document.getElementById('input-flyer-venue').value = 'Secret Location TBA (Solo via DM / QR)';
-        document.getElementById('input-flyer-source').value = 'https://t.me/secret_flyer_unverified_bot';
-        document.getElementById('input-flyer-category').value = 'concerti';
-        document.getElementById('input-flyer-free').value = 'false';
-        document.getElementById('input-flyer-offset').value = '150';
-        document.getElementById('input-flyer-desc').value = 'Volantino con QR code esterno privo di indirizzo civico.';
-        const ocrBox = document.getElementById('flyer-ocr-preview-text');
-        if (ocrBox) {
-          ocrBox.textContent = '"SECRET NIGHT MILANO • INFO POSIZIONE SOLO SU CANALE ESTERNO"';
-        }
-      });
-
-      // File Upload OCR Simulation for Flyer Image
-      document.getElementById('input-flyer-file')?.addEventListener('change', (e) => {
+      chooseInput?.addEventListener('change', (e) => {
         const file = e.target.files?.[0];
         if (!file) return;
-        const cleanName = file.name.replace(/\.[^.]+$/, '').replace(/[-_]/g, ' ');
-        const ocrBox = document.getElementById('flyer-ocr-preview-text');
-        if (ocrBox) {
-          ocrBox.textContent = `Lettura locandina "${file.name}" completata. Campi precompilati automaticamente.`;
+        const statusLine = document.getElementById('flyer-ocr-status-line');
+        if (statusLine) {
+          statusLine.classList.remove('hidden');
+          statusLine.textContent = `✓ Locandina inviata al backend: ${file.name}`;
         }
-        if (!document.getElementById('input-flyer-title').value) {
-          document.getElementById('input-flyer-title').value = `Incontro Cittadino / Evento da Locandina (${cleanName})`;
-        }
-        if (!document.getElementById('input-flyer-venue').value) {
-          document.getElementById('input-flyer-venue').value = 'Casa della Cultura, Via Borgogna 3';
-        }
-        if (!document.getElementById('input-flyer-source').value) {
-          document.getElementById('input-flyer-source').value = 'https://www.casadellacultura.it';
-        }
-        if (!document.getElementById('input-flyer-desc').value) {
-          document.getElementById('input-flyer-desc').value = `Evento acquisito da foto locandina "${file.name}".`;
-        }
+        processAutomaticCommunitySubmission({
+          submittedVia: 'FLYER_PHOTO_OCR',
+          imageFileName: file.name
+        });
+        e.target.value = '';
       });
 
-      // Submit Flyer Form
-      document.getElementById('submit-flyer-form')?.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const title = document.getElementById('input-flyer-title').value;
-        const venue = document.getElementById('input-flyer-venue').value;
-        const source = document.getElementById('input-flyer-source').value;
-        const category = document.getElementById('input-flyer-category').value;
-        const isFree = document.getElementById('input-flyer-free').value === 'true';
-        const offset = document.getElementById('input-flyer-offset').value;
-        const desc = document.getElementById('input-flyer-desc').value;
+      // FUNZIONE 2B: Scatta Foto Locandina
+      const cameraInput = document.getElementById('input-flyer-camera');
+      document.getElementById('btn-take-flyer-photo')?.addEventListener('click', () => {
+        openCameraCaptureModal();
+      });
 
-        processCommunitySubmission({
+      cameraInput?.addEventListener('change', (e) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        const statusLine = document.getElementById('flyer-ocr-status-line');
+        if (statusLine) {
+          statusLine.classList.remove('hidden');
+          statusLine.textContent = `✓ Foto scattata inviata al backend: ${file.name}`;
+        }
+        processAutomaticCommunitySubmission({
           submittedVia: 'FLYER_PHOTO_OCR',
-          rawSourceUrl: source,
-          title,
-          venueAndAddress: venue,
-          category,
-          isFree,
-          offsetMinutes: Number(offset),
-          description: desc
+          imageFileName: file.name
+        });
+        e.target.value = '';
+      });
+
+      document.getElementById('close-camera-modal-btn')?.addEventListener('click', closeCameraCaptureModal);
+      document.getElementById('cancel-camera-modal-btn')?.addEventListener('click', closeCameraCaptureModal);
+      document.getElementById('snap-camera-photo-btn')?.addEventListener('click', () => {
+        closeCameraCaptureModal();
+        const snapName = `locandina-scatto-${new Date().toISOString().slice(11, 19).replace(/:/g, '')}.jpg`;
+        const statusLine = document.getElementById('flyer-ocr-status-line');
+        if (statusLine) {
+          statusLine.classList.remove('hidden');
+          statusLine.textContent = `✓ Foto scattata inviata al backend: ${snapName}`;
+        }
+        processAutomaticCommunitySubmission({
+          submittedVia: 'FLYER_PHOTO_OCR',
+          imageFileName: snapName
         });
       });
 

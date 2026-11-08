@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import {
   Clock,
   MapPin,
@@ -11,8 +11,9 @@ import {
   Database,
   Sparkles,
   ShieldAlert,
-  PlusCircle,
-  Upload,
+  Link2,
+  Camera,
+  Image as ImageIcon,
   CheckCircle2,
   Ban,
   X
@@ -21,6 +22,9 @@ import {
   CATEGORIES,
   buildMapsUrl,
   generateRolling24hFeed,
+  buildFull24HourlySlots,
+  resolveScheduledTimeInRolling24h,
+  autoExtractCommunitySubmissionBackend,
   getNextHourStartMs,
   getRomeDateParts,
   getTimeBlockLabel
@@ -34,9 +38,18 @@ export default function App() {
   const [onlyLiveNow, setOnlyLiveNow] = useState(false);
   const [expandedIds, setExpandedIds] = useState(() => new Set(['evt-mexico-qa', 'evt-base-vernissage']));
 
-  // Public Community Submission Tab ('link' | 'flyer' only)
-  const [studioTab, setStudioTab] = useState('link');
+  // Public Community Radar State (Only 2 functions: Link or Flyer Photo)
   const [userAddedEvents, setUserAddedEvents] = useState([]);
+  const [linkUrl, setLinkUrl] = useState('');
+  const [selectedFlyerName, setSelectedFlyerName] = useState('');
+  const [publicFeedbackBanner, setPublicFeedbackBanner] = useState(null);
+
+  // Camera Modal state for "Scatta Foto"
+  const [isCameraOpen, setIsCameraOpen] = useState(false);
+  const videoRef = useRef(null);
+  const streamRef = useRef(null);
+  const fileChooseInputRef = useRef(null);
+  const fileCameraInputRef = useRef(null);
 
   // Hidden Admin Route (`/#admin`) & Auth State (Never exposed in public UI)
   const [isAdminRoute, setIsAdminRoute] = useState(() => window.location.hash === '#admin');
@@ -72,28 +85,18 @@ export default function App() {
       eventCandidate: {
         title: 'Secret Industrial Warehouse Night — Prevendita Token',
         venueName: 'Ex Magazzini Scalo Farini (Da Verificare)',
-        address: 'Via Valtellina, Milano',
+        address: 'Via Valtellina',
+        neighborhood: 'Farini / Bovisa',
         category: 'concerti',
         isFree: false,
-        offsetMinutes: 240,
+        priceDetails: '€25,00 (Link esterno non verificato)',
+        scheduledHour: 23,
+        scheduledMinute: 15,
+        durationMinutes: 180,
         description: 'Segnalazione utente intercettata dal Safeguard backend per dominio esterno non verificato.'
       }
     }
   ]);
-  const [publicFeedbackBanner, setPublicFeedbackBanner] = useState(null);
-
-  // Form states for Link & Flyer OCR
-  const [linkUrl, setLinkUrl] = useState('');
-  const [linkTitle, setLinkTitle] = useState('');
-  const [linkVenue, setLinkVenue] = useState('');
-  const [linkCategory, setLinkCategory] = useState('politica');
-  const [linkIsFree, setLinkIsFree] = useState(true);
-
-  const [flyerTitle, setFlyerTitle] = useState('');
-  const [flyerVenue, setFlyerVenue] = useState('');
-  const [flyerSource, setFlyerSource] = useState('');
-  const [flyerCategory, setFlyerCategory] = useState('politica');
-  const [flyerOcrPreview, setFlyerOcrPreview] = useState('');
 
   useEffect(() => {
     const timer = setInterval(() => setNowMs(Date.now()), 1000);
@@ -136,7 +139,7 @@ export default function App() {
     const lower = (rawSourceInput || '').toLowerCase();
     const venueLower = (venueText || '').toLowerCase();
     const redFlags = [];
-    let trustScore = 85;
+    let trustScore = 88;
     let inferredType =
       submittedVia === 'FLYER_PHOTO_OCR'
         ? 'VISION_OCR + VENUE_HTML_MONITOR'
@@ -170,12 +173,29 @@ export default function App() {
     };
   };
 
-  const buildDynamicUserEvent = ({ title, venueName, address, category, isFree, offsetMinutes = 30, sourceName, sourceUrl, description }) => {
-    const startMs = nextHourStartMs + offsetMinutes * 60_000;
-    const endMs = startMs + 100 * 60_000;
+  const buildDynamicUserEvent = ({
+    title,
+    venueName,
+    address,
+    neighborhood = 'Milano (Community)',
+    category,
+    isFree,
+    priceDetails,
+    scheduledHour = 18,
+    scheduledMinute = 30,
+    durationMinutes = 105,
+    sourceName,
+    sourceUrl,
+    instagramUrl,
+    facebookUrl,
+    description
+  }) => {
+    const startMs = resolveScheduledTimeInRolling24h(scheduledHour, scheduledMinute, nextHourStartMs);
+    const endMs = startMs + durationMinutes * 60_000;
     const startRome = getRomeDateParts(new Date(startMs));
     const endRome = getRomeDateParts(new Date(endMs));
     const isTomorrow = startRome.day !== romeNow.day;
+    const diffMinutes = Math.max(1, Math.round((startMs - nowMs) / 60_000));
 
     return {
       id: `evt-community-${Date.now()}`,
@@ -184,22 +204,22 @@ export default function App() {
       startTime: new Date(startMs).toISOString(),
       endTime: new Date(endMs).toISOString(),
       venueName,
-      neighborhood: 'Milano (Community)',
-      address: `${address}, Milano`,
+      neighborhood,
+      address: /milano/i.test(address) ? address : `${address}, Milano`,
       isFree,
-      priceDetails: isFree ? 'GRATIS • Ingresso libero' : '€€ / Biglietto',
+      priceDetails: priceDetails || (isFree ? 'GRATIS • Ingresso libero' : '€€ / Biglietto'),
       category,
       mapsUrl: buildMapsUrl(venueName, address),
-      instagramUrl: 'https://instagram.com/yesmilano',
-      facebookUrl: 'https://facebook.com/visitmilanoofficial',
+      instagramUrl: instagramUrl || 'https://instagram.com/yesmilano',
+      facebookUrl: facebookUrl || 'https://facebook.com/visitmilanoofficial',
       sourceUrl: sourceUrl || 'https://www.casadellacultura.it',
       sourceName,
       startHM: startRome.hm,
       endHM: endRome.hm,
       slotHour: `${startRome.hour}:00`,
       slotKey: `${startRome.year}-${startRome.month}-${startRome.day}-${startRome.hour}`,
-      diffMinutes: offsetMinutes,
-      isHappeningNow: offsetMinutes < 60,
+      diffMinutes,
+      isHappeningNow: diffMinutes <= 90,
       isTomorrow,
       weekday: startRome.weekday,
       dayMonth: `${startRome.day}/${startRome.month}`,
@@ -207,67 +227,107 @@ export default function App() {
     };
   };
 
-  // Silent Backend Safeguard evaluation: public users only see neutral feedback
-  const handleCommunitySubmission = ({ submittedVia, rawSource, title, venue, category, isFree, description }) => {
-    const check = evaluateSourceSafeguard(rawSource, venue, title, submittedVia);
+  // Automatic Backend Extraction + Silent Safeguard Evaluation
+  const handleAutomaticCommunitySubmission = ({ submittedVia, rawSource = '', imageFileName = '' }) => {
+    const extracted = autoExtractCommunitySubmissionBackend({
+      submittedVia,
+      rawSourceInput: rawSource,
+      imageFileName
+    });
+
+    const check = evaluateSourceSafeguard(
+      rawSource || extracted.sourceUrl,
+      extracted.venueName,
+      extracted.title,
+      submittedVia
+    );
+
     if (check.isSuspicious) {
       setQuarantineQueue((prev) => [
         {
           qId: `quar-${Date.now()}`,
           submittedVia,
-          rawSource,
+          rawSource: rawSource || imageFileName,
           inferredType: check.inferredType,
           trustScore: check.trustScore,
           riskLevel: check.riskLevel,
           redFlags: check.redFlags,
-          eventCandidate: {
-            title: title || 'Evento Segnalato da Verificare',
-            venueName: venue || 'Luogo Da Verificare',
-            address: venue || 'Milano',
-            category,
-            isFree,
-            offsetMinutes: 120,
-            description: description || 'In attesa di verifica Admin del Safeguard.'
-          }
+          eventCandidate: extracted
         },
         ...prev
       ]);
-      // Neutral public message (zero Safeguard details exposed)
       setPublicFeedbackBanner({
         type: 'pending',
-        message: `⏳ Grazie per la segnalazione! L'evento è stato ricevuto ed è in fase di verifica redazionale prima della pubblicazione.`
+        message: `⏳ Ricevuto! Il servizio backend ha preso in carico la segnalazione per la verifica redazionale prima della pubblicazione.`
       });
       return;
     }
 
-    const newEv = buildDynamicUserEvent({
-      title: title || 'Assemblea Cittadina / Evento Community',
-      venueName: (venue || '').split(',')[0] || 'Casa della Cultura',
-      address: venue || 'Via Borgogna 3',
-      category,
-      isFree,
-      offsetMinutes: 25,
-      sourceName: rawSource,
-      sourceUrl: rawSource.startsWith('http') ? rawSource : 'https://www.casadellacultura.it',
-      description: description || `Evento segnalato dalla community milanese.`
-    });
-
+    const newEv = buildDynamicUserEvent(extracted);
     setUserAddedEvents((prev) => [...prev, newEv]);
+    setExpandedIds((prev) => new Set([...prev, newEv.id]));
+
     setLearnedSources((prev) => [
       {
         id: `src-${Date.now()}`,
-        name: (venue || '').split(',')[0] || rawSource,
-        domain: rawSource,
+        name: extracted.venueName,
+        domain: extracted.sourceName,
         inferredType: check.inferredType,
-        category,
+        category: extracted.category,
         trustScore: check.trustScore,
         status: 'AUTO_LEARNED'
       },
       ...prev
     ]);
+
     setPublicFeedbackBanner({
       type: 'success',
-      message: `✅ Grazie! L'evento è stato acquisito e pubblicato nella programmazione delle prossime 24 ore.`
+      message: `✅ Dettagli estratti automaticamente in backend: "${newEv.title}" presso ${newEv.venueName} (ore ${newEv.startHM} – ${newEv.endHM}, ${newEv.priceDetails}). Aggiunto alla programmazione 24h!`
+    });
+  };
+
+  // Open WebRTC camera modal or fallback to native mobile camera capture
+  const handleOpenCameraCapture = async () => {
+    if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+      fileCameraInputRef.current?.click();
+      return;
+    }
+    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: 'environment' },
+          audio: false
+        });
+        streamRef.current = stream;
+        setIsCameraOpen(true);
+        setTimeout(() => {
+          if (videoRef.current) {
+            videoRef.current.srcObject = stream;
+          }
+        }, 50);
+        return;
+      } catch {
+        // Fallback to native file input with capture attribute
+      }
+    }
+    fileCameraInputRef.current?.click();
+  };
+
+  const closeCameraModal = () => {
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach((t) => t.stop());
+      streamRef.current = null;
+    }
+    setIsCameraOpen(false);
+  };
+
+  const capturePhotoFromVideo = () => {
+    closeCameraModal();
+    const snapName = `locandina-scatto-${new Date().toISOString().slice(11, 19).replace(/:/g, '')}.jpg`;
+    setSelectedFlyerName(snapName);
+    handleAutomaticCommunitySubmission({
+      submittedVia: 'FLYER_PHOTO_OCR',
+      imageFileName: snapName
     });
   };
 
@@ -314,25 +374,14 @@ export default function App() {
     });
   }, [events, priceFilter, categoryFilter, onlyLiveNow, searchQuery]);
 
-  // Group events chronologically hour-by-hour starting from the next hour
+  // Build all 24 hourly slots so hours without events (e.g. 03:00 AM) are left empty
   const hourlyGroups = useMemo(() => {
-    const map = new Map();
-    for (const ev of filteredEvents) {
-      if (!map.has(ev.slotKey)) {
-        map.set(ev.slotKey, {
-          slotKey: ev.slotKey,
-          slotHour: ev.slotHour,
-          isTomorrow: ev.isTomorrow,
-          weekday: ev.weekday,
-          dayMonth: ev.dayMonth,
-          timeBlock: ev.timeBlock,
-          events: []
-        });
-      }
-      map.get(ev.slotKey).events.push(ev);
+    const all24Slots = buildFull24HourlySlots(filteredEvents, nowMs);
+    if (onlyLiveNow || searchQuery.trim() !== '') {
+      return all24Slots.filter((slot) => slot.events.length > 0);
     }
-    return Array.from(map.values());
-  }, [filteredEvents]);
+    return all24Slots;
+  }, [filteredEvents, nowMs, onlyLiveNow, searchQuery]);
 
   // Time block quick-jump links ("Stasera", "Stanotte", "Domani Mattina", "Domani Pomeriggio")
   const timeBlockJumps = useMemo(() => {
@@ -341,7 +390,7 @@ export default function App() {
       if (!seen.has(group.timeBlock.id)) {
         seen.set(group.timeBlock.id, {
           id: group.timeBlock.id,
-          label: `${group.timeBlock.label} (${group.slotHour})`,
+          label: `${group.timeBlock.icon || ''} ${group.timeBlock.label} (${group.slotHour})`,
           targetSlotKey: group.slotKey
         });
       }
@@ -525,7 +574,7 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-[#0b0c0e] text-zinc-100 antialiased">
-      {/* Top Status Bar (Public View — No Safeguard Buttons) */}
+      {/* Top Status Bar */}
       <div className="border-b border-zinc-800 bg-[#08090b] px-4 py-2 text-xs">
         <div className="max-w-5xl mx-auto flex flex-wrap items-center justify-between gap-2">
           <div className="flex items-center gap-2">
@@ -564,9 +613,9 @@ export default function App() {
 
           <div className="flex items-center gap-3">
             <div className="px-3 py-2 rounded-lg bg-zinc-900 border border-zinc-800 text-xs">
-              <div className="text-zinc-400">HAPPENING NOW</div>
+              <div className="text-zinc-400">PROSSIME ORE</div>
               <div className="font-bold text-orange-400 font-mono mt-0.5">
-                {happeningNowCount} eventi live / a breve
+                {happeningNowCount} eventi in partenza
               </div>
             </div>
             <div className="px-3 py-2 rounded-lg bg-zinc-900 border border-zinc-800 text-xs">
@@ -647,7 +696,7 @@ export default function App() {
                 }`}
               >
                 <Sparkles className="w-3.5 h-3.5 text-orange-400" />
-                Solo Happening Now
+                Solo In Partenza
               </button>
             </div>
           </div>
@@ -692,39 +741,31 @@ export default function App() {
 
       {/* Main 24-Hour Rolling Timeline */}
       <main className="max-w-5xl mx-auto px-4 py-6 space-y-8">
-        {/* Public Community Event Submission (Link / Flyer Photo — Zero Safeguard Exposure) */}
-        <section className="rounded-xl bg-[#111318] border border-zinc-800 p-4 sm:p-5 space-y-4">
+        {/* =================================================================== */}
+        {/* REDESIGNED COMMUNITY RADAR — ONLY 2 FUNCTIONS:                      */}
+        {/* 1. Invia Link  |  2. Invia Locandina (Scegli Foto o Scatta Foto)    */}
+        {/* All details extracted automatically in backend by the service.      */}
+        {/* =================================================================== */}
+        <section className="rounded-xl bg-[#111318] border border-zinc-800 p-4 sm:p-5 space-y-4 shadow-xl">
           <div className="flex flex-wrap items-center justify-between gap-2 border-b border-zinc-800 pb-3">
-            <div className="flex flex-wrap items-center gap-2">
-              <button
-                type="button"
-                onClick={() => setStudioTab('link')}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 ${
-                  studioTab === 'link' ? 'bg-white text-black' : 'bg-zinc-900 text-zinc-300 border border-zinc-800'
-                }`}
-              >
-                <PlusCircle className="w-3.5 h-3.5" />
-                1. Segnala da Link (URL)
-              </button>
-              <button
-                type="button"
-                onClick={() => setStudioTab('flyer')}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 ${
-                  studioTab === 'flyer' ? 'bg-white text-black' : 'bg-zinc-900 text-zinc-300 border border-zinc-800'
-                }`}
-              >
-                <Upload className="w-3.5 h-3.5" />
-                2. Segnala da Foto Locandina
-              </button>
+            <div className="flex items-center gap-2.5">
+              <span className="px-2 py-0.5 rounded bg-orange-500/20 text-orange-400 border border-orange-500/40 text-xs font-extrabold uppercase font-mono">
+                COMMUNITY RADAR
+              </span>
+              <div>
+                <h2 className="text-sm sm:text-base font-bold text-white leading-tight">
+                  Segnala un Evento a Milano: Invia Link o Locandina
+                </h2>
+                <p className="text-xs text-zinc-400">
+                  Tutti i dettagli (titolo, luogo, indirizzo, orario, prezzo e categoria) vengono estratti e aggiunti in automatico in backend dal servizio.
+                </p>
+              </div>
             </div>
-            <span className="text-xs text-zinc-400">
-              Segnala un evento non previsto nelle prossime 24h
-            </span>
           </div>
 
           {publicFeedbackBanner && (
             <div
-              className={`p-3 rounded-lg border text-xs ${
+              className={`p-3.5 rounded-xl border text-xs ${
                 publicFeedbackBanner.type === 'pending'
                   ? 'bg-amber-500/15 border-amber-500/40 text-amber-200'
                   : 'bg-emerald-500/15 border-emerald-500/40 text-emerald-200'
@@ -734,247 +775,322 @@ export default function App() {
             </div>
           )}
 
-          {studioTab === 'link' && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+            {/* FUNCTION 1: INVIA LINK */}
             <form
               onSubmit={(e) => {
                 e.preventDefault();
-                handleCommunitySubmission({
+                if (!linkUrl.trim()) return;
+                handleAutomaticCommunitySubmission({
                   submittedVia: 'LINK_URL',
-                  rawSource: linkUrl,
-                  title: linkTitle,
-                  venue: linkVenue,
-                  category: linkCategory,
-                  isFree: linkIsFree
+                  rawSource: linkUrl.trim()
                 });
+                setLinkUrl('');
               }}
-              className="grid grid-cols-1 md:grid-cols-4 gap-3 text-xs"
+              className="p-4 rounded-xl bg-[#0b0c0e] border border-zinc-800 flex flex-col justify-between gap-3"
             >
-              <input
-                type="url"
-                required
-                value={linkUrl}
-                onChange={(e) => setLinkUrl(e.target.value)}
-                placeholder="URL evento (es. https://www.casadellacultura.it/...)"
-                className="px-3 py-2 rounded-lg bg-zinc-950 border border-zinc-800 text-white"
-              />
-              <input
-                type="text"
-                value={linkTitle}
-                onChange={(e) => setLinkTitle(e.target.value)}
-                placeholder="Titolo (opzionale, estratto dal link)"
-                className="px-3 py-2 rounded-lg bg-zinc-950 border border-zinc-800 text-white"
-              />
-              <input
-                type="text"
-                value={linkVenue}
-                onChange={(e) => setLinkVenue(e.target.value)}
-                placeholder="Luogo e indirizzo (es. Casa della Cultura, Via Borgogna 3)"
-                className="px-3 py-2 rounded-lg bg-zinc-950 border border-zinc-800 text-white"
-              />
-              <button
-                type="submit"
-                className="px-4 py-2 rounded-lg bg-orange-500 hover:bg-orange-400 text-black font-extrabold uppercase"
-              >
-                Invia Evento tramite Link
-              </button>
-            </form>
-          )}
+              <div className="space-y-1.5">
+                <div className="font-bold text-white text-sm flex items-center gap-2">
+                  <Link2 className="w-4 h-4 text-orange-400" />
+                  <span>1. Invia Link Evento</span>
+                </div>
+                <p className="text-zinc-400">
+                  Incolla l&apos;URL dell&apos;evento (sito web, post Instagram/Facebook, Eventbrite, DICE...). Il backend estrarrà tutti i dettagli automaticamente.
+                </p>
+              </div>
 
-          {studioTab === 'flyer' && (
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                handleCommunitySubmission({
-                  submittedVia: 'FLYER_PHOTO_OCR',
-                  rawSource: flyerSource,
-                  title: flyerTitle,
-                  venue: flyerVenue,
-                  category: flyerCategory,
-                  isFree: true,
-                  description: flyerOcrPreview
-                });
-              }}
-              className="grid grid-cols-1 md:grid-cols-4 gap-3 text-xs"
-            >
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 pt-1">
+                <input
+                  type="url"
+                  required
+                  value={linkUrl}
+                  onChange={(e) => setLinkUrl(e.target.value)}
+                  placeholder="https://www.casadellacultura.it/eventi/..."
+                  className="flex-1 px-3 py-2.5 rounded-lg bg-[#131519] border border-zinc-700 text-white placeholder-zinc-500 focus:border-orange-500 outline-none"
+                />
+                <button
+                  type="submit"
+                  className="px-4 py-2.5 rounded-lg bg-orange-500 hover:bg-orange-400 text-black font-extrabold uppercase tracking-wider shrink-0 transition cursor-pointer"
+                >
+                  Invia Link →
+                </button>
+              </div>
+            </form>
+
+            {/* FUNCTION 2: INVIA LOCANDINA (SCEGLI FOTO O SCATTA FOTO) */}
+            <div className="p-4 rounded-xl bg-[#0b0c0e] border border-zinc-800 flex flex-col justify-between gap-3">
+              <div className="space-y-1.5">
+                <div className="font-bold text-white text-sm flex items-center gap-2">
+                  <Camera className="w-4 h-4 text-orange-400" />
+                  <span>2. Invia Locandina (Scegli Foto o Scatta Foto)</span>
+                </div>
+                <p className="text-zinc-400">
+                  Carica un&apos;immagine dalla galleria o scatta una foto a un manifesto in città: il servizio Vision OCR in backend compilerà automaticamente l&apos;evento.
+                </p>
+              </div>
+
+              {/* Hidden file inputs for Scegli Foto & Scatta Foto */}
               <input
+                ref={fileChooseInputRef}
                 type="file"
                 accept="image/*"
+                className="hidden"
                 onChange={(e) => {
                   const file = e.target.files?.[0];
-                  if (file) {
-                    setFlyerOcrPreview(`Lettura completata su locandina "${file.name}"`);
-                    if (!flyerTitle) setFlyerTitle(`Assemblea / Evento da Locandina (${file.name})`);
-                    if (!flyerVenue) setFlyerVenue('Circolo ARCI Bellezza, Via Giovanni Bellezza 16');
-                    if (!flyerSource) setFlyerSource('https://www.arcibellezza.it');
-                  }
+                  if (!file) return;
+                  setSelectedFlyerName(file.name);
+                  handleAutomaticCommunitySubmission({
+                    submittedVia: 'FLYER_PHOTO_OCR',
+                    imageFileName: file.name
+                  });
+                  e.target.value = '';
                 }}
-                className="px-2 py-1.5 rounded-lg bg-zinc-950 border border-zinc-800 text-zinc-300"
               />
               <input
-                type="text"
-                required
-                value={flyerTitle}
-                onChange={(e) => setFlyerTitle(e.target.value)}
-                placeholder="Titolo sulla locandina"
-                className="px-3 py-2 rounded-lg bg-zinc-950 border border-zinc-800 text-white"
+                ref={fileCameraInputRef}
+                type="file"
+                accept="image/*"
+                capture="environment"
+                className="hidden"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (!file) return;
+                  setSelectedFlyerName(file.name);
+                  handleAutomaticCommunitySubmission({
+                    submittedVia: 'FLYER_PHOTO_OCR',
+                    imageFileName: file.name
+                  });
+                  e.target.value = '';
+                }}
               />
-              <input
-                type="text"
-                required
-                value={flyerSource}
-                onChange={(e) => setFlyerSource(e.target.value)}
-                placeholder="Sito web o profilo social sulla locandina"
-                className="px-3 py-2 rounded-lg bg-zinc-950 border border-zinc-800 text-white"
-              />
-              <button
-                type="submit"
-                className="px-4 py-2 rounded-lg bg-orange-500 hover:bg-orange-400 text-black font-extrabold uppercase"
-              >
-                Invia da Locandina
-              </button>
-            </form>
-          )}
+
+              <div className="grid grid-cols-2 gap-2.5 pt-1">
+                <button
+                  type="button"
+                  onClick={() => fileChooseInputRef.current?.click()}
+                  className="px-3.5 py-2.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-white border border-zinc-700 font-bold flex items-center justify-center gap-2 transition cursor-pointer"
+                >
+                  <ImageIcon className="w-4 h-4 text-orange-400" />
+                  <span>Scegli Foto</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={handleOpenCameraCapture}
+                  className="px-3.5 py-2.5 rounded-lg bg-orange-500 hover:bg-orange-400 text-black font-extrabold flex items-center justify-center gap-2 transition cursor-pointer"
+                >
+                  <Camera className="w-4 h-4" />
+                  <span>Scatta Foto</span>
+                </button>
+              </div>
+
+              {selectedFlyerName && (
+                <div className="text-[11px] text-emerald-400 font-mono truncate">
+                  ✓ Ultima locandina elaborata dal backend: {selectedFlyerName}
+                </div>
+              )}
+            </div>
+          </div>
         </section>
 
-        {hourlyGroups.map((group) => (
-          <section key={group.slotKey} id={`slot-${group.slotKey}`} className="space-y-3">
-            <div className="flex items-center justify-between border-b border-zinc-800 pb-2.5">
-              <div className="flex items-center gap-3">
-                <span className="px-3 py-1 rounded-lg bg-zinc-900 border border-zinc-700 font-mono font-black text-base text-white">
-                  {group.slotHour}
-                </span>
-                <span className="text-sm font-bold text-zinc-200">{group.timeBlock.label}</span>
-                <span className="text-xs font-mono px-2 py-0.5 rounded bg-zinc-900 text-zinc-400">
-                  {group.isTomorrow ? 'DOMANI' : 'OGGI'} • {group.weekday} {group.dayMonth}
-                </span>
+        {/* Camera Modal for Desktop "Scatta Foto" */}
+        {isCameraOpen && (
+          <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+            <div className="max-w-md w-full rounded-2xl bg-[#111318] border border-zinc-800 p-5 space-y-4">
+              <div className="flex items-center justify-between">
+                <h3 className="text-sm font-bold text-white flex items-center gap-2">
+                  <Camera className="w-4 h-4 text-orange-400" />
+                  Scatta Foto alla Locandina
+                </h3>
+                <button
+                  type="button"
+                  onClick={closeCameraModal}
+                  className="text-zinc-400 hover:text-white"
+                >
+                  <X className="w-4 h-4" />
+                </button>
               </div>
-              <span className="text-xs font-mono text-zinc-400">
-                {group.events.length} {group.events.length === 1 ? 'evento' : 'eventi'}
-              </span>
+              <div className="rounded-xl overflow-hidden bg-black aspect-video flex items-center justify-center border border-zinc-800">
+                <video ref={videoRef} autoPlay playsInline className="w-full h-full object-cover" />
+              </div>
+              <div className="flex items-center justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={closeCameraModal}
+                  className="px-3 py-2 rounded-lg bg-zinc-800 text-zinc-300 text-xs font-semibold"
+                >
+                  Annulla
+                </button>
+                <button
+                  type="button"
+                  onClick={capturePhotoFromVideo}
+                  className="px-4 py-2 rounded-lg bg-orange-500 hover:bg-orange-400 text-black font-extrabold text-xs uppercase"
+                >
+                  📸 Scatta &amp; Invia al Backend
+                </button>
+              </div>
             </div>
+          </div>
+        )}
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {group.events.map((ev) => {
-                const isExpanded = expandedIds.has(ev.id);
-                return (
-                  <article
-                    key={ev.id}
-                    className={`rounded-xl p-4 sm:p-5 border transition ${
-                      ev.isHappeningNow
-                        ? 'bg-[#15181e] border-orange-500/60'
-                        : 'bg-[#131519] border-zinc-800 hover:border-zinc-700'
+        {/* 24-Hour Hourly Timeline (including empty hours left empty) */}
+        {hourlyGroups.map((group) => {
+          const isEmptyHour = group.events.length === 0;
+          return (
+            <section key={group.slotKey} id={`slot-${group.slotKey}`} className="space-y-3">
+              <div
+                className={`flex items-center justify-between border-b pb-2.5 ${
+                  isEmptyHour ? 'border-zinc-900 opacity-60' : 'border-zinc-800'
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <span
+                    className={`px-3 py-1 rounded-lg font-mono font-black text-base ${
+                      isEmptyHour
+                        ? 'bg-zinc-900/50 border border-zinc-800/70 text-zinc-500'
+                        : 'bg-zinc-900 border border-zinc-700 text-white'
                     }`}
                   >
-                    <div className="flex flex-wrap items-center justify-between gap-2 mb-2.5">
-                      <div className="flex items-center gap-2">
-                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-zinc-950 border border-zinc-800 text-xs font-mono font-bold text-white">
-                          <Clock className="w-3.5 h-3.5 text-orange-400" />
-                          {ev.startHM} – {ev.endHM}
-                        </span>
-                        {ev.isHappeningNow && (
-                          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-orange-500 text-black uppercase font-mono">
-                            HAPPENING NOW
-                          </span>
+                    {group.slotHour}
+                  </span>
+                  <span className={`text-sm font-bold ${isEmptyHour ? 'text-zinc-500' : 'text-zinc-200'}`}>
+                    {group.timeBlock.icon} {group.timeBlock.label}
+                  </span>
+                  <span className="text-xs font-mono px-2 py-0.5 rounded bg-zinc-900 text-zinc-400">
+                    {group.isTomorrow ? 'DOMANI' : 'OGGI'} • {group.weekday} {group.dayMonth}
+                  </span>
+                </div>
+                <span className="text-xs font-mono text-zinc-500">
+                  {isEmptyHour
+                    ? 'Nessun evento in questa fascia oraria'
+                    : `${group.events.length} ${group.events.length === 1 ? 'evento' : 'eventi'}`}
+                </span>
+              </div>
+
+              {!isEmptyHour && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {group.events.map((ev) => {
+                    const isExpanded = expandedIds.has(ev.id);
+                    return (
+                      <article
+                        key={ev.id}
+                        className={`rounded-xl p-4 sm:p-5 border transition ${
+                          ev.isHappeningNow
+                            ? 'bg-[#15181e] border-orange-500/60'
+                            : 'bg-[#131519] border-zinc-800 hover:border-zinc-700'
+                        }`}
+                      >
+                        <div className="flex flex-wrap items-center justify-between gap-2 mb-2.5">
+                          <div className="flex items-center gap-2">
+                            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-zinc-950 border border-zinc-800 text-xs font-mono font-bold text-white">
+                              <Clock className="w-3.5 h-3.5 text-orange-400" />
+                              {ev.startHM} – {ev.endHM}
+                            </span>
+                            {ev.isHappeningNow && (
+                              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-orange-500 text-black uppercase font-mono">
+                                IN PARTENZA
+                              </span>
+                            )}
+                          </div>
+
+                          {ev.isFree ? (
+                            <span className="px-2.5 py-0.5 rounded text-xs font-extrabold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 uppercase font-mono">
+                              GRATIS
+                            </span>
+                          ) : (
+                            <span className="px-2.5 py-0.5 rounded text-xs font-semibold bg-zinc-800 text-zinc-200 border border-zinc-700 font-mono">
+                              €€ / Biglietto • {ev.priceDetails}
+                            </span>
+                          )}
+                        </div>
+
+                        <div className="flex items-start justify-between gap-2">
+                          <h3 className="text-base sm:text-lg font-bold text-white leading-snug">
+                            {ev.title}
+                          </h3>
+                          <button
+                            type="button"
+                            onClick={() => toggleExpand(ev.id)}
+                            className="p-1.5 rounded-lg bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-white"
+                            aria-label="Espandi scheda"
+                          >
+                            {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                          </button>
+                        </div>
+
+                        <div className="mt-2 flex items-center gap-1.5 text-xs text-zinc-300 font-semibold">
+                          <MapPin className="w-3.5 h-3.5 text-orange-400 shrink-0" />
+                          <span>{ev.venueName}</span>
+                          <span className="text-zinc-500 font-normal">— {ev.address}</span>
+                        </div>
+
+                        <p className="mt-2.5 text-xs sm:text-sm text-zinc-300 leading-relaxed">
+                          {ev.description}
+                        </p>
+
+                        {isExpanded && (
+                          <div className="mt-3 pt-3 border-t border-zinc-800 text-xs text-zinc-400 space-y-1">
+                            <div>
+                              <strong className="text-zinc-200">Ingresso:</strong> {ev.priceDetails}
+                            </div>
+                            <div>
+                              <strong className="text-zinc-200">Quartiere:</strong> {ev.neighborhood}
+                            </div>
+                            <div>
+                              <strong className="text-zinc-200">Fascia Oraria (Europe/Rome):</strong> {ev.weekday} {ev.dayMonth} • {ev.startHM} → {ev.endHM}
+                            </div>
+                          </div>
                         )}
-                      </div>
 
-                      {ev.isFree ? (
-                        <span className="px-2.5 py-0.5 rounded text-xs font-extrabold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 uppercase font-mono">
-                          GRATIS
-                        </span>
-                      ) : (
-                        <span className="px-2.5 py-0.5 rounded text-xs font-semibold bg-zinc-800 text-zinc-200 border border-zinc-700 font-mono">
-                          €€ / Biglietto • {ev.priceDetails}
-                        </span>
-                      )}
-                    </div>
+                        {/* Mandatory Outbound Deep Links */}
+                        <div className="mt-4 pt-3 border-t border-zinc-800/90 flex flex-wrap items-center justify-between gap-2">
+                          <div className="flex items-center gap-2">
+                            <a
+                              href={ev.mapsUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-zinc-100 hover:bg-white text-black font-bold text-xs transition"
+                            >
+                              <MapPin className="w-3.5 h-3.5 text-orange-600" />
+                              Google Maps
+                            </a>
+                            <a
+                              href={ev.instagramUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-zinc-200 border border-zinc-700 font-semibold text-xs transition"
+                            >
+                              <Instagram className="w-3.5 h-3.5 text-pink-400" />
+                              IG
+                            </a>
+                            <a
+                              href={ev.facebookUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-zinc-200 border border-zinc-700 font-semibold text-xs transition"
+                            >
+                              <Facebook className="w-3.5 h-3.5 text-sky-400" />
+                              FB
+                            </a>
+                          </div>
 
-                    <div className="flex items-start justify-between gap-2">
-                      <h3 className="text-base sm:text-lg font-bold text-white leading-snug">
-                        {ev.title}
-                      </h3>
-                      <button
-                        type="button"
-                        onClick={() => toggleExpand(ev.id)}
-                        className="p-1.5 rounded-lg bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-white"
-                        aria-label="Espandi scheda"
-                      >
-                        {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-                      </button>
-                    </div>
-
-                    <div className="mt-2 flex items-center gap-1.5 text-xs text-zinc-300 font-semibold">
-                      <MapPin className="w-3.5 h-3.5 text-orange-400 shrink-0" />
-                      <span>{ev.venueName}</span>
-                      <span className="text-zinc-500 font-normal">— {ev.address}</span>
-                    </div>
-
-                    <p className="mt-2.5 text-xs sm:text-sm text-zinc-300 leading-relaxed">
-                      {ev.description}
-                    </p>
-
-                    {isExpanded && (
-                      <div className="mt-3 pt-3 border-t border-zinc-800 text-xs text-zinc-400 space-y-1">
-                        <div>
-                          <strong className="text-zinc-200">Ingresso:</strong> {ev.priceDetails}
+                          <a
+                            href={ev.sourceUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1 text-xs font-semibold text-orange-400 hover:text-orange-300"
+                          >
+                            <span>Fonte / Info</span>
+                            <ExternalLink className="w-3.5 h-3.5" />
+                          </a>
                         </div>
-                        <div>
-                          <strong className="text-zinc-200">Quartiere:</strong> {ev.neighborhood}
-                        </div>
-                        <div>
-                          <strong className="text-zinc-200">Fonte verificata:</strong> {ev.sourceName}
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Mandatory Outbound Deep Links */}
-                    <div className="mt-4 pt-3 border-t border-zinc-800/90 flex flex-wrap items-center justify-between gap-2">
-                      <div className="flex items-center gap-2">
-                        <a
-                          href={ev.mapsUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-zinc-100 hover:bg-white text-black font-bold text-xs transition"
-                        >
-                          <MapPin className="w-3.5 h-3.5 text-orange-600" />
-                          Google Maps
-                        </a>
-                        <a
-                          href={ev.instagramUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-zinc-200 border border-zinc-700 font-semibold text-xs transition"
-                        >
-                          <Instagram className="w-3.5 h-3.5 text-pink-400" />
-                          IG
-                        </a>
-                        <a
-                          href={ev.facebookUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-zinc-200 border border-zinc-700 font-semibold text-xs transition"
-                        >
-                          <Facebook className="w-3.5 h-3.5 text-sky-400" />
-                          FB
-                        </a>
-                      </div>
-
-                      <a
-                        href={ev.sourceUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1 text-xs font-semibold text-orange-400 hover:text-orange-300"
-                      >
-                        <span>Fonte / Info</span>
-                        <ExternalLink className="w-3.5 h-3.5" />
-                      </a>
-                    </div>
-                  </article>
-                );
-              })}
-            </div>
-          </section>
-        ))}
+                      </article>
+                    );
+                  })}
+                </div>
+              )}
+            </section>
+          );
+        })}
       </main>
 
       {/* Public Footer with discreet hidden #admin entry link */}
