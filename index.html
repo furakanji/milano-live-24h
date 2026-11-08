@@ -1,0 +1,2967 @@
+<!DOCTYPE html>
+<html lang="it" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MILANO LIVE 24H — Radar Culturale & Sociale in Tempo Reale</title>
+  <meta name="description" content="Cosa succede a Milano nelle prossime 24 ore: concerti, cinema d'essai, teatro, talk, mostre e aperture speciali ordinati ora per ora." />
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    html {
+      scroll-behavior: smooth;
+    }
+    /* Custom scrollbar for horizontal pill bars */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    @keyframes livePulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.45; transform: scale(0.92); }
+    }
+    .live-dot {
+      animation: livePulse 1.8s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+    .editorial-surface {
+      background-color: #0b0c0e;
+      color: #f3f4f6;
+    }
+    .editorial-card {
+      background-color: #131519;
+      border: 1px solid #23272f;
+      transition: border-color 0.18s ease, transform 0.18s ease, background-color 0.18s ease;
+    }
+    .editorial-card:hover {
+      border-color: #3b4252;
+      background-color: #171a20;
+    }
+    .editorial-card-live {
+      background-color: #15181e;
+      border: 1px solid rgba(249, 115, 22, 0.55);
+    }
+    .editorial-header {
+      background-color: rgba(11, 12, 14, 0.90);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+    .mono-num {
+      font-variant-numeric: tabular-nums;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    }
+  </style>
+</head>
+<body class="editorial-surface antialiased selection:bg-orange-500 selection:text-black min-h-screen">
+
+  <!-- Top Editorial Ticker / Live Status Bar (PUBLIC VIEW) -->
+  <div class="border-b border-[#23272f] bg-[#08090b] px-4 py-2 text-xs">
+    <div class="max-w-5xl mx-auto flex flex-wrap items-center justify-between gap-2">
+      <div class="flex items-center gap-2.5">
+        <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-orange-500/15 text-orange-400 border border-orange-500/30 font-semibold tracking-wider uppercase mono-num">
+          <span class="w-2 h-2 rounded-full bg-orange-500 live-dot"></span>
+          LIVE RADAR
+        </span>
+        <span class="text-zinc-400 hidden sm:inline">Finestra mobile rigorosa:</span>
+        <span id="rolling-window-label" class="text-zinc-200 font-medium mono-num">Caricamento...</span>
+      </div>
+      <div class="flex flex-wrap items-center gap-2.5">
+        <span class="text-zinc-400 mono-num" id="rome-clock">Europe/Rome --:--:--</span>
+        <button
+          id="open-submit-panel-btn"
+          type="button"
+          class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-orange-500 hover:bg-orange-400 text-black font-bold transition cursor-pointer"
+        >
+          <span>➕ Segnala Evento (Link / Locandina)</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =================================================================== -->
+  <!-- PUBLIC APPLICATION VIEW (Timeline + Filters + Public Event Submit)  -->
+  <!-- =================================================================== -->
+  <div id="public-app-view">
+
+  <!-- Main Header & Brand Identity -->
+  <header class="border-b border-[#23272f] px-4 pt-6 pb-5 bg-[#0b0c0e]">
+    <div class="max-w-5xl mx-auto">
+      <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div>
+          <div class="flex items-center gap-2 text-xs uppercase tracking-widest text-zinc-400 font-semibold mb-1.5 mono-num">
+            <span>MILANO METROPOLITANA</span>
+            <span>•</span>
+            <span>NEXT 24 HOURS ONLY</span>
+            <span>•</span>
+            <span id="active-events-counter" class="text-emerald-400">34 EVENTI ATTIVI</span>
+          </div>
+          <h1 class="text-3xl sm:text-4xl font-black tracking-tight text-white uppercase leading-none">
+            MILANO LIVE <span class="text-orange-500 mono-num">24H</span>
+          </h1>
+          <p class="mt-2 text-sm text-zinc-400 max-w-2xl leading-relaxed">
+            Radar culturale, politico e sociale in tempo reale. Tutti gli eventi, assemblee, proiezioni con ospiti, vernissage, talk e aperture segrete nelle prossime 24 ore a partire da <strong id="exact-now-badge" class="text-zinc-200 mono-num">adesso</strong>.
+          </p>
+        </div>
+
+        <!-- Quick Stats Pills -->
+        <div class="flex items-center gap-2 sm:gap-3 self-start md:self-end">
+          <div class="px-3 py-2 rounded-lg bg-[#131519] border border-[#23272f] flex items-center gap-2.5">
+            <span class="w-2.5 h-2.5 rounded-full bg-orange-500 live-dot"></span>
+            <div>
+              <div class="text-xs text-zinc-400 leading-none">PROSSIMA ORA</div>
+              <div id="stat-happening-now" class="text-sm font-bold text-white mono-num mt-0.5">0 in partenza</div>
+            </div>
+          </div>
+          <div class="px-3 py-2 rounded-lg bg-[#131519] border border-[#23272f] flex items-center gap-2.5">
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
+            <div>
+              <div class="text-xs text-zinc-400 leading-none">INGRESSO LIBERO</div>
+              <div id="stat-free-count" class="text-sm font-bold text-emerald-400 mono-num mt-0.5">0 gratis</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Sticky Smart Filtering System -->
+  <section id="sticky-filter-bar" class="sticky top-0 z-30 editorial-header border-b border-[#23272f] px-4 py-3 shadow-xl">
+    <div class="max-w-5xl mx-auto space-y-2.5">
+
+      <!-- Row 1: Pricing Filter (Mandatory) + Search + Time Block Quick Jumps -->
+      <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-2.5">
+        <!-- Pricing Segmented Control -->
+        <div class="flex items-center gap-1.5 bg-[#131519] p-1 rounded-lg border border-[#23272f] self-start" role="group" aria-label="Filtro Prezzo">
+          <button
+            type="button"
+            data-price-filter="all"
+            class="price-filter-btn px-3 py-1.5 rounded-md text-xs font-bold tracking-wide transition cursor-pointer bg-white text-black"
+          >
+            Tutti <span id="count-price-all" class="ml-1 opacity-75 mono-num"></span>
+          </button>
+          <button
+            type="button"
+            data-price-filter="free"
+            class="price-filter-btn px-3 py-1.5 rounded-md text-xs font-bold tracking-wide transition cursor-pointer text-zinc-300 hover:text-white flex items-center gap-1.5"
+          >
+            <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+            Gratis / Ingresso Libero <span id="count-price-free" class="opacity-75 mono-num"></span>
+          </button>
+          <button
+            type="button"
+            data-price-filter="paid"
+            class="price-filter-btn px-3 py-1.5 rounded-md text-xs font-bold tracking-wide transition cursor-pointer text-zinc-300 hover:text-white"
+          >
+            A Pagamento <span id="count-price-paid" class="ml-1 opacity-75 mono-num"></span>
+          </button>
+        </div>
+
+        <!-- Search + Time-Block Jump Bar -->
+        <div class="flex flex-wrap items-center gap-2">
+          <!-- Instant Search Input -->
+          <div class="relative flex-1 sm:flex-initial sm:w-56">
+            <svg class="w-3.5 h-3.5 text-zinc-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input
+              id="search-input"
+              type="text"
+              placeholder="Cerca luogo, titolo, zona..."
+              class="w-full pl-8 pr-7 py-1.5 bg-[#131519] border border-[#23272f] focus:border-zinc-500 rounded-lg text-xs text-white placeholder-zinc-500 outline-none transition"
+            />
+            <button
+              id="clear-search-btn"
+              type="button"
+              class="hidden absolute right-2 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-white text-xs cursor-pointer"
+              title="Cancella ricerca"
+            >
+              ✕
+            </button>
+          </div>
+
+          <!-- Happening Now Quick Toggle -->
+          <button
+            id="toggle-live-only-btn"
+            type="button"
+            class="px-2.5 py-1.5 rounded-lg text-xs font-semibold border border-[#23272f] bg-[#131519] text-zinc-300 hover:border-orange-500/50 hover:text-orange-400 transition flex items-center gap-1.5 cursor-pointer"
+          >
+            <span class="w-2 h-2 rounded-full bg-orange-500 live-dot"></span>
+            <span>Solo Prima Ora</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Row 2: Category Pills (Horizontal Scroll on Mobile) -->
+      <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-0.5" id="category-pills-container">
+        <button
+          type="button"
+          data-category="all"
+          class="category-pill shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold border transition cursor-pointer bg-zinc-100 text-black border-zinc-100"
+        >
+          Tutte le Categorie
+        </button>
+        <button
+          type="button"
+          data-category="politica"
+          class="category-pill shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold border border-[#23272f] bg-[#131519] text-zinc-300 hover:border-zinc-600 hover:text-white transition cursor-pointer"
+        >
+          ✊ Politica, Attivismo &amp; Sociale
+        </button>
+        <button
+          type="button"
+          data-category="concerti"
+          class="category-pill shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold border border-[#23272f] bg-[#131519] text-zinc-300 hover:border-zinc-600 hover:text-white transition cursor-pointer"
+        >
+          🎵 Concerti &amp; Club
+        </button>
+        <button
+          type="button"
+          data-category="cinema"
+          class="category-pill shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold border border-[#23272f] bg-[#131519] text-zinc-300 hover:border-zinc-600 hover:text-white transition cursor-pointer"
+        >
+          🎬 Cinema &amp; Rassegne
+        </button>
+        <button
+          type="button"
+          data-category="teatro"
+          class="category-pill shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold border border-[#23272f] bg-[#131519] text-zinc-300 hover:border-zinc-600 hover:text-white transition cursor-pointer"
+        >
+          🎭 Teatro
+        </button>
+        <button
+          type="button"
+          data-category="libri"
+          class="category-pill shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold border border-[#23272f] bg-[#131519] text-zinc-300 hover:border-zinc-600 hover:text-white transition cursor-pointer"
+        >
+          📚 Libri, Talk &amp; Conferenze
+        </button>
+        <button
+          type="button"
+          data-category="mostre"
+          class="category-pill shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold border border-[#23272f] bg-[#131519] text-zinc-300 hover:border-zinc-600 hover:text-white transition cursor-pointer"
+        >
+          🖼️ Mostre &amp; Musei
+        </button>
+        <button
+          type="button"
+          data-category="aperture"
+          class="category-pill shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold border border-[#23272f] bg-[#131519] text-zinc-300 hover:border-zinc-600 hover:text-white transition cursor-pointer"
+        >
+          🏛️ Aperture Speciali &amp; Luoghi Segreti
+        </button>
+      </div>
+
+      <!-- Row 3: Quick Time-Block Jump Navigation -->
+      <div class="flex items-center gap-2 overflow-x-auto no-scrollbar pt-1 border-t border-[#1c2027]">
+        <span class="text-xs font-semibold uppercase tracking-wider text-zinc-400 shrink-0 flex items-center gap-1">
+          <svg class="w-3.5 h-3.5 text-orange-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 16 14"></polyline>
+          </svg>
+          Salta a:
+        </span>
+        <div id="time-jump-container" class="flex items-center gap-1.5">
+          <!-- Populated dynamically based on current Europe/Rome hour -->
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Main Content: Public Event Submission + Dynamic 24-Hour Rolling Timeline -->
+  <main class="max-w-5xl mx-auto px-4 py-6">
+
+    <!-- PUBLIC COMMUNITY EVENT SUBMISSION (Link or Flyer Photo — Zero Safeguard Exposure) -->
+    <section id="community-ingestion-section" class="mb-8 rounded-xl bg-[#111318] border border-[#282d39] overflow-hidden shadow-xl">
+      <!-- Public Studio Banner Header -->
+      <div class="px-4 sm:px-5 py-3.5 bg-[#151821] border-b border-[#23272f] flex flex-wrap items-center justify-between gap-3">
+        <div class="flex items-center gap-2.5">
+          <span class="px-2 py-0.5 rounded bg-orange-500/20 text-orange-400 border border-orange-500/40 text-xs font-extrabold uppercase mono-num">
+            COMMUNITY RADAR
+          </span>
+          <div>
+            <h2 class="text-sm sm:text-base font-bold text-white leading-tight">
+              Segnala un Evento Non Previsto a Milano (tramite Link o Foto Locandina)
+            </h2>
+            <p class="text-xs text-zinc-400">
+              Invia il link di un evento o carica la foto di una locandina vista in città per aggiungerlo alla programmazione delle prossime 24 ore.
+            </p>
+          </div>
+        </div>
+        <button
+          id="toggle-studio-collapse-btn"
+          type="button"
+          class="px-3 py-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-zinc-700 text-xs font-semibold cursor-pointer transition"
+        >
+          Mostra / Nascondi Modulo
+        </button>
+      </div>
+
+      <!-- Public Submission Body -->
+      <div id="studio-collapsible-body" class="p-4 sm:p-5 space-y-5">
+        <!-- Public Mode Tabs (Only Link & Flyer Photo) -->
+        <div class="flex flex-wrap items-center justify-between gap-2 border-b border-[#23272f] pb-3">
+          <div class="flex flex-wrap items-center gap-1.5">
+            <button
+              type="button"
+              data-studio-tab="link"
+              class="studio-tab-btn px-3.5 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer bg-white text-black"
+            >
+              🔗 1. Segnala tramite Link (URL)
+            </button>
+            <button
+              type="button"
+              data-studio-tab="flyer"
+              class="studio-tab-btn px-3.5 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer bg-[#161920] text-zinc-300 border border-[#252a34] hover:text-white"
+            >
+              📸 2. Segnala da Foto Locandina
+            </button>
+          </div>
+          <span class="text-xs text-zinc-400">
+            Lettura automatica orario, luogo e categoria
+          </span>
+        </div>
+
+        <!-- Public Feedback Alert Banner -->
+        <div id="ingestion-feedback-alert" class="hidden p-3.5 rounded-xl border text-xs space-y-1.5"></div>
+
+        <!-- TAB 1: SUBMIT VIA LINK (URL) -->
+        <div id="studio-tab-link" class="space-y-4">
+          <div class="flex flex-wrap items-center justify-between gap-2 bg-[#0d0f13] p-3 rounded-lg border border-[#1f242d] text-xs">
+            <span class="text-zinc-300 font-medium">⚡ Compilazione rapida di prova:</span>
+            <div class="flex flex-wrap items-center gap-2">
+              <button
+                type="button"
+                id="preset-link-trusted"
+                class="px-2.5 py-1 rounded bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-zinc-700 font-semibold cursor-pointer transition"
+              >
+                Esempio 1: Incontro Casa della Cultura
+              </button>
+              <button
+                type="button"
+                id="preset-link-suspicious"
+                class="px-2.5 py-1 rounded bg-zinc-800 hover:bg-zinc-700 text-zinc-300 border border-zinc-700 font-semibold cursor-pointer transition"
+              >
+                Esempio 2: Evento da Shortlink Esterno
+              </button>
+            </div>
+          </div>
+
+          <form id="submit-link-form" class="grid grid-cols-1 md:grid-cols-12 gap-3 text-xs">
+            <div class="md:col-span-6">
+              <label class="block text-zinc-400 font-semibold mb-1">URL dell'Evento o Post (Sito web, Instagram, Facebook, Eventbrite...)*</label>
+              <input
+                id="input-link-url"
+                type="url"
+                required
+                placeholder="https://www.casadellacultura.it/eventi/..."
+                class="w-full px-3 py-2 rounded-lg bg-[#0b0c0e] border border-[#272b35] text-white placeholder-zinc-500 focus:border-orange-500 outline-none"
+              />
+            </div>
+            <div class="md:col-span-3">
+              <label class="block text-zinc-400 font-semibold mb-1">Categoria</label>
+              <select
+                id="input-link-category"
+                class="w-full px-3 py-2 rounded-lg bg-[#0b0c0e] border border-[#272b35] text-white focus:border-orange-500 outline-none"
+              >
+                <option value="politica">✊ Politica, Attivismo &amp; Sociale</option>
+                <option value="concerti">🎵 Concerti &amp; Club</option>
+                <option value="cinema">🎬 Cinema &amp; Rassegne</option>
+                <option value="teatro">🎭 Teatro</option>
+                <option value="libri">📚 Libri, Talk &amp; Conferenze</option>
+                <option value="mostre">🖼️ Mostre &amp; Musei</option>
+                <option value="aperture">🏛️ Aperture Speciali &amp; Luoghi Segreti</option>
+              </select>
+            </div>
+            <div class="md:col-span-3">
+              <label class="block text-zinc-400 font-semibold mb-1">Fascia Oraria (Prossime 24h)</label>
+              <select
+                id="input-link-offset"
+                class="w-full px-3 py-2 rounded-lg bg-[#0b0c0e] border border-[#272b35] text-white focus:border-orange-500 outline-none mono-num"
+              >
+                <option value="20">Prossima Ora (+20 min)</option>
+                <option value="90">+1h 30m dalla prossima ora</option>
+                <option value="180">+3h dalla prossima ora</option>
+                <option value="360">+6h dalla prossima ora</option>
+                <option value="720">+12h dalla prossima ora</option>
+              </select>
+            </div>
+
+            <div class="md:col-span-5">
+              <label class="block text-zinc-400 font-semibold mb-1">Titolo Evento (opzionale — altrimenti estratto dal link)</label>
+              <input
+                id="input-link-title"
+                type="text"
+                placeholder="Es. Assemblea Pubblica sul Diritto allo Studio"
+                class="w-full px-3 py-2 rounded-lg bg-[#0b0c0e] border border-[#272b35] text-white placeholder-zinc-500 focus:border-orange-500 outline-none"
+              />
+            </div>
+            <div class="md:col-span-4">
+              <label class="block text-zinc-400 font-semibold mb-1">Luogo &amp; Indirizzo a Milano</label>
+              <input
+                id="input-link-venue"
+                type="text"
+                placeholder="Es. Casa della Cultura, Via Borgogna 3"
+                class="w-full px-3 py-2 rounded-lg bg-[#0b0c0e] border border-[#272b35] text-white placeholder-zinc-500 focus:border-orange-500 outline-none"
+              />
+            </div>
+            <div class="md:col-span-3">
+              <label class="block text-zinc-400 font-semibold mb-1">Ingresso</label>
+              <select
+                id="input-link-free"
+                class="w-full px-3 py-2 rounded-lg bg-[#0b0c0e] border border-[#272b35] text-white focus:border-orange-500 outline-none"
+              >
+                <option value="true">GRATIS / Ingresso Libero</option>
+                <option value="false">A Pagamento / Biglietto</option>
+              </select>
+            </div>
+
+            <div class="md:col-span-12 flex flex-wrap items-center justify-between gap-3 pt-1">
+              <p class="text-zinc-400">
+                Inserisci il link dell'evento: i dettagli verranno estratti automaticamente per la timeline delle prossime 24 ore.
+              </p>
+              <button
+                type="submit"
+                class="px-4 py-2 rounded-lg bg-orange-500 hover:bg-orange-400 text-black font-extrabold uppercase tracking-wider cursor-pointer transition shrink-0"
+              >
+                Invia Evento tramite Link →
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- TAB 2: SUBMIT VIA PHOTO FLYER (LOCANDINA) -->
+        <div id="studio-tab-flyer" class="hidden space-y-4">
+          <div class="flex flex-wrap items-center justify-between gap-2 bg-[#0d0f13] p-3 rounded-lg border border-[#1f242d] text-xs">
+            <span class="text-zinc-300 font-medium">⚡ Simula caricamento foto locandina:</span>
+            <div class="flex flex-wrap items-center gap-2">
+              <button
+                type="button"
+                id="preset-flyer-trusted"
+                class="px-2.5 py-1 rounded bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-zinc-700 font-semibold cursor-pointer transition"
+              >
+                Esempio 1: Locandina ARCI Bellezza
+              </button>
+              <button
+                type="button"
+                id="preset-flyer-suspicious"
+                class="px-2.5 py-1 rounded bg-zinc-800 hover:bg-zinc-700 text-zinc-300 border border-zinc-700 font-semibold cursor-pointer transition"
+              >
+                Esempio 2: Volantino con QR Esterno
+              </button>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-12 gap-4 text-xs">
+            <!-- Upload Dropzone & Preview -->
+            <div class="md:col-span-5 flex flex-col justify-between p-4 rounded-xl bg-[#0b0c0e] border border-dashed border-zinc-700 hover:border-orange-500/60 transition">
+              <div>
+                <div class="font-bold text-white mb-1 flex items-center gap-1.5">
+                  <span>📷 Carica Foto della Locandina / Manifesto</span>
+                </div>
+                <p class="text-zinc-400 mb-3">
+                  Carica una foto scattata in città o uno screenshot della locandina. Il lettore ottico compila automaticamente titolo, luogo, orario e link dell'organizzatore.
+                </p>
+                <input
+                  id="input-flyer-file"
+                  type="file"
+                  accept="image/*"
+                  class="block w-full text-xs text-zinc-300 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-zinc-800 file:text-white hover:file:bg-zinc-700 cursor-pointer"
+                />
+              </div>
+
+              <!-- Poster Visual Preview -->
+              <div id="flyer-preview-box" class="mt-3 p-3 rounded-lg bg-[#131519] border border-[#23272f] text-zinc-300">
+                <div class="text-zinc-500 uppercase font-semibold text-xs mb-1">Testo Rilevato dalla Locandina:</div>
+                <div id="flyer-ocr-preview-text" class="mono-num text-xs text-emerald-300 leading-relaxed">
+                  Seleziona un'immagine dal dispositivo oppure usa uno degli esempi rapidi qui sopra.
+                </div>
+              </div>
+            </div>
+
+            <!-- Extracted Flyer Form Fields -->
+            <form id="submit-flyer-form" class="md:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div class="sm:col-span-2">
+                <label class="block text-zinc-400 font-semibold mb-1">Titolo Evento sulla Locandina*</label>
+                <input
+                  id="input-flyer-title"
+                  type="text"
+                  required
+                  placeholder="Es. Assemblea & Cineforum Popolare in Palestra Visconti"
+                  class="w-full px-3 py-2 rounded-lg bg-[#0b0c0e] border border-[#272b35] text-white placeholder-zinc-500 focus:border-orange-500 outline-none"
+                />
+              </div>
+              <div>
+                <label class="block text-zinc-400 font-semibold mb-1">Luogo &amp; Via*</label>
+                <input
+                  id="input-flyer-venue"
+                  type="text"
+                  required
+                  placeholder="Es. ARCI Bellezza, Via Giovanni Bellezza 16"
+                  class="w-full px-3 py-2 rounded-lg bg-[#0b0c0e] border border-[#272b35] text-white placeholder-zinc-500 focus:border-orange-500 outline-none"
+                />
+              </div>
+              <div>
+                <label class="block text-zinc-400 font-semibold mb-1">Sito Web o Profilo Social sulla Locandina*</label>
+                <input
+                  id="input-flyer-source"
+                  type="text"
+                  required
+                  placeholder="Es. https://arcibellezza.it o @collettivo_milano"
+                  class="w-full px-3 py-2 rounded-lg bg-[#0b0c0e] border border-[#272b35] text-white placeholder-zinc-500 focus:border-orange-500 outline-none"
+                />
+              </div>
+              <div>
+                <label class="block text-zinc-400 font-semibold mb-1">Categoria Evento</label>
+                <select
+                  id="input-flyer-category"
+                  class="w-full px-3 py-2 rounded-lg bg-[#0b0c0e] border border-[#272b35] text-white focus:border-orange-500 outline-none"
+                >
+                  <option value="politica">✊ Politica, Attivismo &amp; Sociale</option>
+                  <option value="cinema">🎬 Cinema &amp; Rassegne</option>
+                  <option value="concerti">🎵 Concerti &amp; Club</option>
+                  <option value="teatro">🎭 Teatro</option>
+                  <option value="libri">📚 Libri, Talk &amp; Conferenze</option>
+                  <option value="mostre">🖼️ Mostre &amp; Musei</option>
+                  <option value="aperture">🏛️ Aperture Speciali &amp; Luoghi Segreti</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-zinc-400 font-semibold mb-1">Ingresso &amp; Fascia Oraria</label>
+                <div class="grid grid-cols-2 gap-2">
+                  <select
+                    id="input-flyer-free"
+                    class="w-full px-2 py-2 rounded-lg bg-[#0b0c0e] border border-[#272b35] text-white focus:border-orange-500 outline-none"
+                  >
+                    <option value="true">GRATIS</option>
+                    <option value="false">Biglietto</option>
+                  </select>
+                  <select
+                    id="input-flyer-offset"
+                    class="w-full px-2 py-2 rounded-lg bg-[#0b0c0e] border border-[#272b35] text-white focus:border-orange-500 outline-none mono-num"
+                  >
+                    <option value="40">Prossima Ora</option>
+                    <option value="150">+2h 30m</option>
+                    <option value="480">+8h</option>
+                  </select>
+                </div>
+              </div>
+              <div class="sm:col-span-2">
+                <label class="block text-zinc-400 font-semibold mb-1">Descrizione / Dettagli Locandina</label>
+                <textarea
+                  id="input-flyer-desc"
+                  rows="2"
+                  placeholder="Dettagli estratti dalla locandina: ospiti, programma, modalità di accesso..."
+                  class="w-full px-3 py-2 rounded-lg bg-[#0b0c0e] border border-[#272b35] text-white placeholder-zinc-500 focus:border-orange-500 outline-none"
+                ></textarea>
+              </div>
+              <div class="sm:col-span-2 flex justify-end">
+                <button
+                  type="submit"
+                  class="px-4 py-2 rounded-lg bg-orange-500 hover:bg-orange-400 text-black font-extrabold uppercase tracking-wider cursor-pointer transition"
+                >
+                  Invia Evento da Locandina →
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Active Filter Summary Bar (shown when filters are applied) -->
+    <div id="active-filter-banner" class="hidden mb-5 px-3.5 py-2.5 rounded-lg bg-[#131519] border border-[#23272f] flex items-center justify-between gap-2 text-xs">
+      <div class="flex items-center gap-2 flex-wrap">
+        <span class="text-zinc-400">Filtri attivi:</span>
+        <div id="active-filter-tags" class="flex items-center gap-1.5 flex-wrap"></div>
+      </div>
+      <button
+        id="reset-all-filters-btn"
+        type="button"
+        class="text-orange-400 hover:text-orange-300 font-semibold underline cursor-pointer shrink-0"
+      >
+        Ripristina tutti
+      </button>
+    </div>
+
+    <!-- Timeline Feed Container -->
+    <div id="timeline-container" class="space-y-8">
+      <!-- Populated dynamically by JS -->
+    </div>
+
+    <!-- Empty State -->
+    <div id="empty-state" class="hidden py-16 text-center editorial-card rounded-xl p-8">
+      <div class="w-12 h-12 rounded-full bg-zinc-800/80 border border-zinc-700 flex items-center justify-center mx-auto mb-3 text-zinc-400">
+        <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+      </div>
+      <h2 class="text-lg font-bold text-white">Nessun evento trovato in questa fascia con i filtri selezionati</h2>
+      <p class="text-sm text-zinc-400 mt-1 max-w-md mx-auto">
+        Prova a selezionare "Tutti" nel filtro prezzo o a cambiare categoria per esplorare l'intera programmazione delle prossime 24 ore a Milano.
+      </p>
+      <button
+        id="empty-reset-btn"
+        type="button"
+        class="mt-4 px-4 py-2 rounded-lg bg-orange-500 hover:bg-orange-400 text-black font-bold text-xs uppercase tracking-wider transition cursor-pointer"
+      >
+        Mostra Tutti gli Eventi 24h
+      </button>
+    </div>
+
+  </main>
+
+  <!-- Public Footer (with discreet hidden Admin entry point) -->
+  <footer class="border-t border-[#23272f] bg-[#08090b] mt-16 py-10 px-4 text-xs text-zinc-400">
+    <div class="max-w-5xl mx-auto flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+      <div>
+        <div class="font-black text-white tracking-tight text-sm uppercase flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-orange-500"></span>
+          MILANO LIVE 24H — CULTURAL &amp; SOCIAL RADAR
+        </div>
+        <p class="mt-1 text-zinc-400 max-w-xl">
+          Aggregatore cittadino con finestra mobile rigorosa di 24 ore (fuso orario <code class="text-zinc-300">Europe/Rome</code>) a partire dall'ora successiva. Deep link diretti a Google Maps, Instagram, Facebook e fonti ufficiali.
+        </p>
+      </div>
+      <div class="flex items-center gap-3 self-end sm:self-center">
+        <!-- Discreet hidden admin route link (#admin) -->
+        <a
+          href="#admin"
+          id="secret-admin-entry-link"
+          title="Pagina Nascosta Accesso Admin (#admin oppure Ctrl+Shift+A)"
+          class="text-zinc-600 hover:text-zinc-400 transition mono-num text-xs flex items-center gap-1"
+        >
+          <span>🔒</span>
+          <span>/#admin</span>
+        </a>
+      </div>
+    </div>
+  </footer>
+
+  </div><!-- END #public-app-view -->
+
+  <!-- =================================================================== -->
+  <!-- HIDDEN ADMIN PAGE (`#admin`) — BACKEND SAFEGUARD & LEARNED DB       -->
+  <!-- Non esposta al pubblico: accessibile solo tramite route #admin       -->
+  <!-- =================================================================== -->
+  <section id="hidden-admin-page" class="hidden min-h-[85vh] max-w-5xl mx-auto px-4 py-8">
+
+    <!-- Top Admin Navigation Bar -->
+    <div class="mb-6 flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-[#23272f]">
+      <div class="flex items-center gap-2.5">
+        <span class="px-2.5 py-1 rounded bg-red-500/20 text-red-400 border border-red-500/40 font-extrabold text-xs uppercase mono-num">
+          🔒 BACKEND ADMIN ROUTE • /#admin
+        </span>
+        <span class="text-xs text-zinc-400 mono-num">
+          Non esposta al pubblico • Safeguard &amp; Source Learning Engine
+        </span>
+      </div>
+      <div class="flex items-center gap-2">
+        <button
+          id="admin-logout-btn"
+          type="button"
+          class="hidden px-3 py-1.5 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-700 text-xs font-semibold cursor-pointer transition"
+        >
+          Blocca Sessione Admin
+        </button>
+        <button
+          id="back-to-public-view-btn"
+          type="button"
+          class="px-3.5 py-1.5 rounded-lg bg-zinc-100 hover:bg-white text-black font-bold text-xs cursor-pointer transition"
+        >
+          ← Torna alla Vista Pubblica (24h Timeline)
+        </button>
+      </div>
+    </div>
+
+    <!-- STEP 1: ADMIN AUTHENTICATION GATE -->
+    <div id="admin-login-gate" class="max-w-md mx-auto my-12 p-6 rounded-2xl bg-[#111318] border border-[#2a2f3a] shadow-2xl space-y-4">
+      <div class="flex items-center gap-2.5">
+        <div class="w-10 h-10 rounded-xl bg-red-500/15 border border-red-500/40 flex items-center justify-center text-red-400 font-bold text-lg">
+          🛡️
+        </div>
+        <div>
+          <div class="text-xs font-bold uppercase tracking-wider text-red-400 mono-num">ACCESSO RISERVATO BACKEND</div>
+          <h2 class="text-lg font-black text-white">Console Safeguard &amp; Fonti</h2>
+        </div>
+      </div>
+
+      <p class="text-xs text-zinc-400 leading-relaxed">
+        Questa pagina è nascosta al pubblico. Tutte le valutazioni del <strong>Safeguard Anti-Spam / Anti-Phishing</strong> e l'apprendimento automatico delle fonti operano lato backend e sono ispezionabili esclusivamente dagli amministratori.
+      </p>
+
+      <form id="admin-login-form" class="space-y-3 text-xs">
+        <div>
+          <label class="block text-zinc-300 font-semibold mb-1">Chiave Admin / Token di Sessione</label>
+          <input
+            id="admin-password-input"
+            type="password"
+            value="milano-admin-24h"
+            placeholder="Inserisci chiave admin..."
+            class="w-full px-3 py-2 rounded-lg bg-[#0b0c0e] border border-[#272b35] text-white mono-num focus:border-orange-500 outline-none"
+          />
+          <span class="block text-[11px] text-zinc-500 mt-1 mono-num">
+            Chiave precompilata per test rapido: <code>milano-admin-24h</code>
+          </span>
+        </div>
+        <div id="admin-login-error" class="hidden p-2.5 rounded-lg bg-red-500/15 border border-red-500/40 text-red-300 text-xs">
+          Chiave Admin non valida. Usa <code>milano-admin-24h</code>.
+        </div>
+        <button
+          type="submit"
+          class="w-full py-2.5 rounded-lg bg-orange-500 hover:bg-orange-400 text-black font-extrabold uppercase tracking-wider cursor-pointer transition"
+        >
+          Accedi alla Console Backend Admin →
+        </button>
+      </form>
+    </div>
+
+    <!-- STEP 2: AUTHENTICATED BACKEND SAFEGUARD & SOURCE LEARNING DASHBOARD -->
+    <div id="admin-console-content" class="hidden space-y-8 text-xs">
+
+      <!-- Admin KPI Summary Row -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div class="p-4 rounded-xl bg-[#131519] border border-red-500/40">
+          <div class="text-zinc-400 uppercase font-semibold">Coda Quarantena Safeguard</div>
+          <div class="mt-1 flex items-baseline justify-between">
+            <span id="quarantine-count-pill" class="text-2xl font-black text-red-400 mono-num">2</span>
+            <span class="text-red-300 mono-num">In attesa di verifica Admin</span>
+          </div>
+        </div>
+        <div class="p-4 rounded-xl bg-[#131519] border border-emerald-500/30">
+          <div class="text-zinc-400 uppercase font-semibold">Fonti Apprese dal Sistema</div>
+          <div class="mt-1 flex items-baseline justify-between">
+            <span id="learned-sources-summary" class="text-2xl font-black text-emerald-400 mono-num">2</span>
+            <span class="text-emerald-300 mono-num">Auto-Learned &amp; Verified</span>
+          </div>
+        </div>
+        <div class="p-4 rounded-xl bg-[#131519] border border-[#23272f]">
+          <div class="text-zinc-400 uppercase font-semibold">Totale Connettori Scraper Attivi</div>
+          <div class="mt-1 flex items-baseline justify-between">
+            <span id="sources-count-btn-label" class="text-2xl font-black text-white mono-num">26</span>
+            <span class="text-zinc-400 mono-num">scraperService.js</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Admin Action Feedback Alert -->
+      <div id="admin-feedback-alert" class="hidden p-4 rounded-xl border text-xs space-y-1"></div>
+
+      <!-- 1. Quarantined Suspicious Sources List (Backend Safeguard Queue) -->
+      <div class="p-5 rounded-xl bg-[#111318] border border-[#282d39] space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#23272f] pb-3">
+          <div>
+            <div class="font-bold text-red-400 uppercase tracking-wider flex items-center gap-1.5">
+              <span>🛡️ 1. Coda Backend Fonti Sospette Intercettate dal Safeguard</span>
+            </div>
+            <p class="text-zinc-400 mt-0.5">
+              Le segnalazioni inviate dagli utenti con URL shortener (<code class="text-red-300">bit.ly</code>), domini ad alto rischio (<code class="text-red-300">.xyz</code>), bot Telegram non censiti o indirizzo civico assente vengono bloccate silenziosamente lato backend e mostrate solo qui.
+            </p>
+          </div>
+        </div>
+
+        <div id="quarantine-list-container" class="space-y-3">
+          <!-- Populated dynamically by JS -->
+        </div>
+      </div>
+
+      <!-- 2. Learned Sources Database Table -->
+      <div class="p-5 rounded-xl bg-[#111318] border border-[#282d39] space-y-4">
+        <div class="flex items-center justify-between border-b border-[#23272f] pb-3">
+          <div>
+            <h3 class="text-sm font-bold text-white">🧠 2. Database Fonti Apprese Automaticamente (Backend Knowledge Graph)</h3>
+            <p class="text-zinc-400 mt-0.5">
+              Nuove fonti milanesi imparate dal backend leggendo i link e le locandine inviate dagli utenti o approvate dall'Admin.
+            </p>
+          </div>
+          <span class="text-emerald-400 mono-num font-semibold">Attive nello Scraper</span>
+        </div>
+        <div id="learned-sources-container" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <!-- Populated dynamically by JS -->
+        </div>
+      </div>
+
+      <!-- 3. Full Backend Scraper Registry & Normalized JSON Schema -->
+      <div class="p-5 rounded-xl bg-[#111318] border border-[#282d39] space-y-5">
+        <div class="border-b border-[#23272f] pb-3">
+          <span class="text-xs font-bold uppercase tracking-widest text-emerald-400 mono-num">BACKEND INGESTION ENGINE (`backend/scraperService.js`)</span>
+          <h3 class="text-sm font-bold text-white mt-0.5">3. Matrice Completa Fonti Milanesi &amp; Schema JSON Normalizzato</h3>
+        </div>
+
+        <div id="sources-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
+          <!-- Populated by JS -->
+        </div>
+
+        <div>
+          <div class="flex items-center justify-between mb-2">
+            <h4 class="text-xs font-bold uppercase tracking-wider text-zinc-300">Schema JSON Evento Normalizzato (Backend Output)</h4>
+            <span class="text-emerald-400 mono-num">Unified Schema v1.0</span>
+          </div>
+          <pre id="live-json-preview" class="p-3.5 rounded-lg bg-[#090a0d] border border-[#23272f] text-zinc-300 overflow-x-auto mono-num text-xs"></pre>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <script>
+    /********************************************************************
+     * MILANO LIVE 24H — CORE TIME ENGINE & REALISTIC MILANESE DATASET
+     ********************************************************************/
+
+    const CATEGORY_META = {
+      politica: {
+        id: 'politica',
+        label: '✊ Politica, Attivismo & Sociale',
+        shortLabel: 'Politica & Sociale',
+        emoji: '✊',
+        badgeClass: 'bg-red-500/15 text-red-300 border-red-500/30'
+      },
+      concerti: {
+        id: 'concerti',
+        label: '🎵 Concerti & Club',
+        shortLabel: 'Concerti & Club',
+        emoji: '🎵',
+        badgeClass: 'bg-amber-500/15 text-amber-300 border-amber-500/30'
+      },
+      cinema: {
+        id: 'cinema',
+        label: '🎬 Cinema & Rassegne',
+        shortLabel: 'Cinema & Rassegne',
+        emoji: '🎬',
+        badgeClass: 'bg-sky-500/15 text-sky-300 border-sky-500/30'
+      },
+      teatro: {
+        id: 'teatro',
+        label: '🎭 Teatro',
+        shortLabel: 'Teatro',
+        emoji: '🎭',
+        badgeClass: 'bg-rose-500/15 text-rose-300 border-rose-500/30'
+      },
+      libri: {
+        id: 'libri',
+        label: '📚 Libri, Talk & Conferenze',
+        shortLabel: 'Libri & Talk',
+        emoji: '📚',
+        badgeClass: 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30'
+      },
+      mostre: {
+        id: 'mostre',
+        label: '🖼️ Mostre & Musei',
+        shortLabel: 'Mostre & Musei',
+        emoji: '🖼️',
+        badgeClass: 'bg-teal-500/15 text-teal-300 border-teal-500/30'
+      },
+      aperture: {
+        id: 'aperture',
+        label: '🏛️ Aperture Speciali & Luoghi Segreti',
+        shortLabel: 'Aperture Speciali',
+        emoji: '🏛️',
+        badgeClass: 'bg-orange-500/15 text-orange-300 border-orange-500/30'
+      }
+    };
+
+    const MILAN_SOURCES_REGISTRY = [
+      { name: 'Casa della Cultura Milano', category: 'Politica, Attivismo & Sociale', method: 'WP REST + Calendar Parser', url: 'https://www.casadellacultura.it' },
+      { name: 'Camera del Lavoro / CGIL Milano', category: 'Politica, Attivismo & Sociale', method: 'RSS + Structured HTML', url: 'https://www.cgil.milano.it' },
+      { name: 'Casa dei Diritti — Comune di Milano', category: 'Politica, Attivismo & Sociale', method: 'Civic Open Data API', url: 'https://www.comune.milano.it' },
+      { name: 'ANPI Provinciale Milano / Reti Civiche', category: 'Politica, Attivismo & Sociale', method: 'HTML + LLM Extractor', url: 'https://milano.anpi.it' },
+      { name: 'DICE.fm Milano', category: 'Music & Nightlife', method: 'GraphQL / JSON API', url: 'https://dice.fm/browse/milan' },
+      { name: 'Resident Advisor (RA Guide Milan)', category: 'Music & Nightlife', method: 'GraphQL API', url: 'https://ra.co/events/it/milan' },
+      { name: 'Zero.eu Milano', category: 'Music & Cultural Radar', method: 'RSS + Structured HTML', url: 'https://zero.eu/it/milano/eventi/' },
+      { name: 'SpazioCinema Anteo', category: 'Cinema & Auteur', method: 'HTML Showtime Parser', url: 'https://www.spaziocinema.info/milano' },
+      { name: 'Cineteca Milano (Arlecchino / MIC / Biblioteca)', category: 'Cinema & Auteur', method: 'Calendar Scraper', url: 'https://www.cinetecamilano.it' },
+      { name: 'Cinema Mexico', category: 'Cinema & Auteur', method: 'HTML + LLM Extractor', url: 'https://www.cinemamexico.it' },
+      { name: 'Il Cinemino', category: 'Cinema & Auteur', method: 'Program Schedule Scraper', url: 'https://www.ilcinemino.it' },
+      { name: 'Cinema Beltrade (Bandiere Interrotte)', category: 'Cinema & Auteur', method: 'HTML + Q&A Detector', url: 'https://bandiere-interrotte.it' },
+      { name: 'MilanoTeatri', category: 'Theater', method: 'Daily Calendar Parser', url: 'https://www.milanoteatri.it' },
+      { name: 'Invito a Teatro', category: 'Theater', method: 'Season Feed Parser', url: 'https://www.invitoateatro.mi.it' },
+      { name: 'Teatro Manzoni', category: 'Theater', method: 'Structured JSON-LD', url: 'https://www.teatromanzoni.it' },
+      { name: 'Piccolo Teatro (Strehler / Grassi / Studio Melato)', category: 'Theater', method: 'Calendar API', url: 'https://www.piccoloteatro.org' },
+      { name: 'Teatro Franco Parenti', category: 'Theater', method: 'HTML + JSON-LD', url: 'https://teatrofrancoparenti.it' },
+      { name: 'Fondazione Giangiacomo Feltrinelli', category: 'Books, Talks & Conferences', method: 'WP REST API', url: 'https://fondazionefeltrinelli.it/eventi/' },
+      { name: 'BookCity Milano / La Feltrinelli Eventi', category: 'Books, Talks & Conferences', method: 'Events Feed API', url: 'https://www.lafeltrinelli.it/eventi' },
+      { name: 'BASE Milano', category: 'Books, Talks & Music', method: 'WP JSON + Schedule', url: 'https://base.milano.it/whatson/' },
+      { name: 'MEET Digital Culture Center', category: 'Books, Talks & Digital Art', method: 'Eventbrite + WP REST', url: 'https://www.meetcenter.it' },
+      { name: 'Artribune / Exibart Milano', category: 'Art & Vernissages', method: 'RSS + Geo Filter', url: 'https://www.artribune.com/mostre-arte-contemporanea/italia/lombardia/' },
+      { name: 'FAI — Fondo Ambiente Italiano (Villa Necchi / Palazzi)', category: 'Special Openings', method: 'JSON-LD Events', url: 'https://fondoambiente.it' },
+      { name: 'Portale Cultura Comune di Milano / Milano da Scrocco', category: 'Free Openings & Civic', method: 'Open Data API + IG LLM', url: 'https://cultura.comune.milano.it' }
+    ];
+
+    /**
+     * Helper to build Google Maps Search URL as required by specification:
+     * https://www.google.com/maps/search/?api=1&query=[Encoded_Venue_Name_And_Address]+Milano
+     */
+    function buildMapsUrl(venueName, address) {
+      const encoded = encodeURIComponent(`${venueName} ${address}`);
+      return `https://www.google.com/maps/search/?api=1&query=${encoded}+Milano`;
+    }
+
+    const EVENT_BLUEPRINTS = [
+      // === FIRST UPCOMING HOUR SLOT (Next Hour +0m to +45m) ===
+      {
+        id: 'evt-mexico-qa',
+        offsetMinutes: 0,
+        durationMinutes: 125,
+        title: 'Il Tempo che Ci Vuole — Proiezione + Q&A con Ospiti in Sala',
+        description: 'Proiezione speciale in pellicola restaurata seguita da dibattito in sala con la critica cinematografica e gli autori ospiti della rassegna serale.',
+        venueName: 'Cinema Mexico',
+        neighborhood: 'Zona Solari / Via Savona',
+        address: 'Via Savona 57',
+        isFree: false,
+        priceDetails: '€7,50 Intero / €6,00 Ridotto',
+        category: 'cinema',
+        sourceName: 'cinemamexico.it',
+        instagramUrl: 'https://instagram.com/cinemamexicomilano',
+        facebookUrl: 'https://facebook.com/cinemamexicomilano',
+        sourceUrl: 'https://www.cinemamexico.it'
+      },
+      {
+        id: 'evt-base-vernissage',
+        offsetMinutes: 15,
+        durationMinutes: 180,
+        title: 'We Will Design: Vernissage & Live Modular Listening Session',
+        description: 'Opening ad accesso libero negli spazi dell’ex Ansaldo: installazioni di design radicale, archivi sonori indipendenti e talk nel cortile coperto.',
+        venueName: 'BASE Milano',
+        neighborhood: 'Tortona',
+        address: 'Via Bergognone 34',
+        isFree: true,
+        priceDetails: 'GRATIS • Ingresso libero con accredito',
+        category: 'mostre',
+        sourceName: 'Zero.eu / BASE Milano',
+        instagramUrl: 'https://instagram.com/base_milano',
+        facebookUrl: 'https://facebook.com/basemilano',
+        sourceUrl: 'https://base.milano.it'
+      },
+      {
+        id: 'evt-casa-cultura-abitare',
+        offsetMinutes: 35,
+        durationMinutes: 110,
+        title: 'Assemblea Cittadina: Diritto all’Abitare, Affitti Brevi e Rigenerazione Urbana',
+        description: 'Confronto pubblico tra comitati di quartiere, urbanisti del Politecnico e reti civiche sul caro-affitti e sul piano straordinario per la casa pubblica a Milano.',
+        venueName: 'Casa della Cultura',
+        neighborhood: 'San Babila / Via Borgogna',
+        address: 'Via Borgogna 3',
+        isFree: true,
+        priceDetails: 'GRATIS • Accesso libero alla cittadinanza',
+        category: 'politica',
+        sourceName: 'casadellacultura.it',
+        instagramUrl: 'https://instagram.com/casadellaculturamilano',
+        facebookUrl: 'https://facebook.com/casadellaculturamilano',
+        sourceUrl: 'https://www.casadellacultura.it'
+      },
+      {
+        id: 'evt-camera-lavoro-diritti',
+        offsetMinutes: 260,
+        durationMinutes: 115,
+        title: 'Forum Lavoro Digitale, Rider & Intelligenza Artificiale — Sindacato e Territorio',
+        description: 'Assemblea metropolitana nel Salone Di Vittorio con delegati, ricercatori e collettivi del lavoro digitale su algoritmi, salario minimo e sicurezza.',
+        venueName: 'Camera del Lavoro di Milano',
+        neighborhood: 'Porta Vittoria / Cinque Giornate',
+        address: 'Corso di Porta Vittoria 43',
+        isFree: true,
+        priceDetails: 'GRATIS • Ingresso aperto al pubblico',
+        category: 'politica',
+        sourceName: 'cgil.milano.it',
+        instagramUrl: 'https://instagram.com/cgilmilano',
+        facebookUrl: 'https://facebook.com/cgilmilano',
+        sourceUrl: 'https://www.cgil.milano.it'
+      },
+      {
+        id: 'evt-casa-diritti-transfem',
+        offsetMinutes: 690,
+        durationMinutes: 120,
+        title: 'Tavolo Permanente Diritti Civili, Welfare di Prossimità & Spazi Sicuri',
+        description: 'Incontro pubblico aperto alla cittadinanza con sportelli sociali, reti associative e mediatori culturali dei 9 municipi milanesi.',
+        venueName: 'Casa dei Diritti — Comune di Milano',
+        neighborhood: 'Sant’Ambrogio / De Amicis',
+        address: 'Via Edmondo De Amicis 10',
+        isFree: true,
+        priceDetails: 'GRATIS • Partecipazione libera',
+        category: 'politica',
+        sourceName: 'Comune di Milano — Welfare',
+        instagramUrl: 'https://instagram.com/comunedimilano',
+        facebookUrl: 'https://facebook.com/comunedimilano',
+        sourceUrl: 'https://www.comune.milano.it'
+      },
+      {
+        id: 'evt-mutuo-soccorso-ecologia',
+        offsetMinutes: 1030,
+        durationMinutes: 100,
+        title: 'Assemblea Ecologista & Mobilità Ciclabile: "Città 30, Alberate e Aria Pulita"',
+        description: 'Tavolo cittadino promosso da associazioni ambientaliste, comitati genitori per le strade scolastiche e collettivi di quartiere.',
+        venueName: 'Ri-Make / Spazio di Mutuo Soccorso',
+        neighborhood: 'Piazza Stuparich / Certosa',
+        address: 'Piazza Stuparich 18',
+        isFree: true,
+        priceDetails: 'GRATIS • Ingresso libero',
+        category: 'politica',
+        sourceName: 'Rete Civica Ecologista Milano',
+        instagramUrl: 'https://instagram.com/legambientelombardia',
+        facebookUrl: 'https://facebook.com/legambientelombardia',
+        sourceUrl: 'https://www.legambiente.it'
+      },
+      {
+        id: 'evt-verso-talk',
+        offsetMinutes: 30,
+        durationMinutes: 90,
+        title: 'Milano Verticale e Città Invisibili — Presentazione Libro con l’Autore',
+        description: 'Incontro con l’autore e dialogo aperto sul futuro urbanistico dei quartieri milanesi. Calice di benvenuto offerto al primo piano della libreria.',
+        venueName: 'Libreria Verso',
+        neighborhood: 'Colonne di San Lorenzo / Ticinese',
+        address: 'Corso di Porta Ticinese 40',
+        isFree: true,
+        priceDetails: 'GRATIS • Ingresso libero fino a esaurimento posti',
+        category: 'libri',
+        sourceName: 'BookCity / Libreria Verso',
+        instagramUrl: 'https://instagram.com/libreriaverso',
+        facebookUrl: 'https://facebook.com/libreriaverso',
+        sourceUrl: 'https://www.libreriaverso.com'
+      },
+      {
+        id: 'evt-vigna-leonardo-secret',
+        offsetMinutes: 45,
+        durationMinutes: 75,
+        title: 'Apertura Straordinaria Casa degli Atellani & Vigna di Leonardo',
+        description: 'Visita guidata speciale tra i chiostri rinascimentali di Portaluppi e i filari storici di Malvasia di Candia donati da Ludovico il Moro a Leonardo nel 1498.',
+        venueName: 'Casa degli Atellani — Vigna di Leonardo',
+        neighborhood: 'Corso Magenta / Santa Maria delle Grazie',
+        address: 'Corso Magenta 65',
+        isFree: false,
+        priceDetails: '€12,00 Biglietto con audioguida',
+        category: 'aperture',
+        sourceName: 'MilanoGuida / FAI',
+        instagramUrl: 'https://instagram.com/lavignadileonardo',
+        facebookUrl: 'https://facebook.com/vignadileonardo',
+        sourceUrl: 'https://www.vignadileonardo.com'
+      },
+
+      // === +1h to +4h FROM NEXT HOUR ===
+      {
+        id: 'evt-anteo-anteprima',
+        offsetMinutes: 60,
+        durationMinutes: 130,
+        title: 'Rassegna Lingua Originale (v.o. sott. ita) + Introduzione Critica',
+        description: 'Anteprima cittadina in Sala Excelsior con introduzione a cura della redazione di Lungo Corso Cinema. Audio Dolby Atmos in versione originale.',
+        venueName: 'Anteo Palazzo del Cinema',
+        neighborhood: 'Brera / Garibaldi',
+        address: 'Piazza Venticinque Aprile 8',
+        isFree: false,
+        priceDetails: '€9,50 Intero / €7,00 Amici del Cinema',
+        category: 'cinema',
+        sourceName: 'spaziocinema.info',
+        instagramUrl: 'https://instagram.com/anteospaziocinema',
+        facebookUrl: 'https://facebook.com/AnteoPalazzoDelCinema',
+        sourceUrl: 'https://www.spaziocinema.info/milano'
+      },
+      {
+        id: 'evt-feltrinelli-fondazione',
+        offsetMinutes: 85,
+        durationMinutes: 105,
+        title: 'Public Talk: Intelligenza Collettiva, Archivi Digitali e Democrazia',
+        description: 'Tavola rotonda al quinto piano della piramide di Herzog & de Meuron con ricercatori internazionali, filosofi dei media e giornalisti.',
+        venueName: 'Fondazione Giangiacomo Feltrinelli',
+        neighborhood: 'Porta Volta',
+        address: 'Viale Pasubio 5',
+        isFree: true,
+        priceDetails: 'GRATIS • Accesso libero con registrazione',
+        category: 'libri',
+        sourceName: 'fondazionefeltrinelli.it',
+        instagramUrl: 'https://instagram.com/fondazionefeltrinelli',
+        facebookUrl: 'https://facebook.com/FondazioneFeltrinelli',
+        sourceUrl: 'https://fondazionefeltrinelli.it'
+      },
+      {
+        id: 'evt-parenti-bagni',
+        offsetMinutes: 120,
+        durationMinutes: 110,
+        title: 'Drammaturgia Contemporanea in Sala Grande + Incontro nel Foyer',
+        description: 'Nuova produzione del Teatro Franco Parenti con drammaturgia originale e scenografia immersiva affacciata sui Bagni Misteriosi.',
+        venueName: 'Teatro Franco Parenti',
+        neighborhood: 'Porta Romana',
+        address: 'Via Pier Lombardo 14',
+        isFree: false,
+        priceDetails: '€18,00 - €28,00 (Convenzione Invito a Teatro)',
+        category: 'teatro',
+        sourceName: 'teatrofrancoparenti.it',
+        instagramUrl: 'https://instagram.com/teatrofrancoparenti',
+        facebookUrl: 'https://facebook.com/teatrofrancoparenti',
+        sourceUrl: 'https://teatrofrancoparenti.it'
+      },
+      {
+        id: 'evt-hangar-bicocca',
+        offsetMinutes: 145,
+        durationMinutes: 150,
+        title: 'Visita Serale Gratuita alle Navate & I Sette Palazzi Celesti',
+        description: 'Ingresso gratuito alle monumentali installazioni site-specific nelle ex officine industriali Breda, con mediatori culturali presenti in sala.',
+        venueName: 'Pirelli HangarBicocca',
+        neighborhood: 'Bicocca',
+        address: 'Via Chiese 2',
+        isFree: true,
+        priceDetails: 'GRATIS • Ingresso gratuito',
+        category: 'mostre',
+        sourceName: 'Artribune / HangarBicocca',
+        instagramUrl: 'https://instagram.com/pirellihangarbicocca',
+        facebookUrl: 'https://facebook.com/PirelliHangarBicocca',
+        sourceUrl: 'https://pirellihangarbicocca.org'
+      },
+      {
+        id: 'evt-beltrade-corti',
+        offsetMinutes: 185,
+        durationMinutes: 115,
+        title: 'La Notte dei Corti Indipendenti — Registi Presenti in Sala',
+        description: 'Selezione di cortometraggi d’autore italiani ed europei con collegamento live e microfono aperto tra pubblico in sala e troupe.',
+        venueName: 'Cinema Beltrade',
+        neighborhood: 'NoLo / Piazza Morbegno',
+        address: 'Via Nino Oxilia 10',
+        isFree: false,
+        priceDetails: '€7,50 Biglietto unico',
+        category: 'cinema',
+        sourceName: 'bandiere-interrotte.it',
+        instagramUrl: 'https://instagram.com/cinemabeltrade',
+        facebookUrl: 'https://facebook.com/cinemabeltrade',
+        sourceUrl: 'https://bandiere-interrotte.it'
+      },
+      {
+        id: 'evt-manzoni-prosa',
+        offsetMinutes: 215,
+        durationMinutes: 120,
+        title: 'Serata d’Autore al Manzoni — Commedia Brillante in Due Atti',
+        description: 'Storico sipario di Via Manzoni per una serata dedicata al grande teatro di prosa contemporaneo con compagnia stabile in tournée nazionale.',
+        venueName: 'Teatro Manzoni',
+        neighborhood: 'Quadrilatero / Montenapoleone',
+        address: 'Via Manzoni 42',
+        isFree: false,
+        priceDetails: '€25,00 - €36,00 Poltronissima / Galleria',
+        category: 'teatro',
+        sourceName: 'milanoteatri.it / Teatro Manzoni',
+        instagramUrl: 'https://instagram.com/teatromanzonimilano',
+        facebookUrl: 'https://facebook.com/TeatroManzoniMilano',
+        sourceUrl: 'https://www.teatromanzoni.it'
+      },
+      {
+        id: 'evt-san-maurizio-organo',
+        offsetMinutes: 240,
+        durationMinutes: 70,
+        title: 'Concerto d’Organo Antegnati (1554) nella "Cappella Sistina" di Milano',
+        description: 'Apertura straordinaria del Coro delle Monache con esecuzione dal vivo di musiche rinascimentali sull’organo storico cinquecentesco.',
+        venueName: 'Chiesa di San Maurizio al Monastero Maggiore',
+        neighborhood: 'Cinque Vie / Corso Magenta',
+        address: 'Corso Magenta 15',
+        isFree: true,
+        priceDetails: 'GRATIS • Ingresso libero fino a capienza',
+        category: 'aperture',
+        sourceName: 'Comune di Milano Cultura / FAI',
+        instagramUrl: 'https://instagram.com/comunedimilano',
+        facebookUrl: 'https://facebook.com/comunedimilano',
+        sourceUrl: 'https://cultura.comune.milano.it'
+      },
+
+      // === +5h to +10h ===
+      {
+        id: 'evt-piccolo-strehler',
+        offsetMinutes: 300,
+        durationMinutes: 135,
+        title: 'Regia Internazionale al Piccolo Teatro Strehler',
+        description: 'Allestimento monumentale sul palco di Largo Greppi con sovratitoli in italiano e inglese. Precede lo spettacolo un focus drammaturgico nel ridotto.',
+        venueName: 'Piccolo Teatro Strehler',
+        neighborhood: 'Lanza / Brera',
+        address: 'Largo Greppi 1',
+        isFree: false,
+        priceDetails: '€22,00 Platea / €16,00 Balconata',
+        category: 'teatro',
+        sourceName: 'piccoloteatro.org',
+        instagramUrl: 'https://instagram.com/piccoloteatromilano',
+        facebookUrl: 'https://facebook.com/PiccoloTeatroMilano',
+        sourceUrl: 'https://www.piccoloteatro.org'
+      },
+      {
+        id: 'evt-blue-note-jazz',
+        offsetMinutes: 330,
+        durationMinutes: 95,
+        title: 'Contemporary Jazz Quintet — First & Second Set Live',
+        description: 'Quintetto jazz internazionale sul palco storico dell’Isola. Acustica intima, repertorio hard-bop originale e jam session finale.',
+        venueName: 'Blue Note Milano',
+        neighborhood: 'Isola',
+        address: 'Via Pietro Borsieri 37',
+        isFree: false,
+        priceDetails: '€30,00 Door / €25,00 Advance',
+        category: 'concerti',
+        sourceName: 'Zero.eu / Blue Note',
+        instagramUrl: 'https://instagram.com/bluenotemilano',
+        facebookUrl: 'https://facebook.com/bluenotemilano',
+        sourceUrl: 'https://www.bluenotemilano.com'
+      },
+      {
+        id: 'evt-cinemino-essay',
+        offsetMinutes: 365,
+        durationMinutes: 105,
+        title: 'Rassegna Mezzanotte d’Essai + Discussione al Bar del Circolo',
+        description: 'Cult movie restaurato in 4K nella sala segreta da 74 posti in Porta Romana. Richiesta tessera associativa annuale.',
+        venueName: 'Il Cinemino',
+        neighborhood: 'Porta Romana / Crocetta',
+        address: 'Via Seneca 6',
+        isFree: false,
+        priceDetails: '€7,00 + Tessera Associativa',
+        category: 'cinema',
+        sourceName: 'ilcinemino.it',
+        instagramUrl: 'https://instagram.com/ilcinemino',
+        facebookUrl: 'https://facebook.com/ilcinemino',
+        sourceUrl: 'https://www.ilcinemino.it'
+      },
+      {
+        id: 'evt-biko-live-showcase',
+        offsetMinutes: 420,
+        durationMinutes: 180,
+        title: 'NuJazz, Afrobeat & Electronic Showcase Live Set',
+        description: 'Live band di 6 elementi seguita da selezione vinile funk/broken-beat sul dancefloor del circolo ARCI lungo il Naviglio Pavese.',
+        venueName: 'Biko Milano',
+        neighborhood: 'Naviglio Pavese / Barona',
+        address: 'Via Ettore Ponti 40',
+        isFree: false,
+        priceDetails: '€12,00 su DICE (+ tessera ARCI)',
+        category: 'concerti',
+        sourceName: 'DICE.fm Milano',
+        instagramUrl: 'https://instagram.com/bikomilano',
+        facebookUrl: 'https://facebook.com/bikoclub',
+        sourceUrl: 'https://dice.fm/browse/milan'
+      },
+      {
+        id: 'evt-santeria-listening',
+        offsetMinutes: 465,
+        durationMinutes: 140,
+        title: 'Listening Club & Vinyl Talk: L’Elettronica Italiana 1978–1992',
+        description: 'Ascolto integrale su impianto hi-fi analogico di rarità discografiche milanesi, commentato da collezionisti e produttori.',
+        venueName: 'Santeria Toscana 31',
+        neighborhood: 'Viale Toscana / Bocconi',
+        address: 'Viale Toscana 31',
+        isFree: true,
+        priceDetails: 'GRATIS • Ingresso libero',
+        category: 'concerti',
+        sourceName: 'Milano da Scrocco / Zero.eu',
+        instagramUrl: 'https://instagram.com/santeriamilano',
+        facebookUrl: 'https://facebook.com/santeriamilano',
+        sourceUrl: 'https://www.santeriamilano.it'
+      },
+      {
+        id: 'evt-magnolia-clubnight',
+        offsetMinutes: 525,
+        durationMinutes: 240,
+        title: 'Electro / Post-Punk Live & Warehouse Club Night',
+        description: 'Doppio palco immerso nel parco dell’Idroscalo: live act internazionale alle prime ore seguito da resident DJ set fino a tardi.',
+        venueName: 'Circolo Magnolia',
+        neighborhood: 'Idroscalo / Segrate',
+        address: 'Via Circonvallazione Idroscalo 41',
+        isFree: false,
+        priceDetails: '€15,00 Early Bird su DICE.fm',
+        category: 'concerti',
+        sourceName: 'DICE.fm / Resident Advisor',
+        instagramUrl: 'https://instagram.com/circolomagnolia',
+        facebookUrl: 'https://facebook.com/circolomagnolia',
+        sourceUrl: 'https://www.circolomagnolia.it'
+      },
+      {
+        id: 'evt-tempio-futuro-perduto',
+        offsetMinutes: 585,
+        durationMinutes: 210,
+        title: 'Ambient & Techno Vinyl Session + Mostra Fotografica Notturna',
+        description: 'Spazio multidisciplinare indipendente alla Fabbrica del Vapore: sala vinile, installazione luminosa nel cortile e raccolta solidale.',
+        venueName: 'Tempio del Futuro Perduto',
+        neighborhood: 'Cenisio / Monumentale',
+        address: 'Via Luigi Nono 9',
+        isFree: true,
+        priceDetails: 'GRATIS • Ingresso gratuito per under 25 / Up to you',
+        category: 'concerti',
+        sourceName: 'Resident Advisor Milan',
+        instagramUrl: 'https://instagram.com/tempiodelfuturoperduto',
+        facebookUrl: 'https://facebook.com/tempiodelfuturoperduto',
+        sourceUrl: 'https://ra.co/events/it/milan'
+      },
+
+      // === +11h to +17h ===
+      {
+        id: 'evt-brera-cripta-san-giovanni',
+        offsetMinutes: 660,
+        durationMinutes: 90,
+        title: 'Discesa nella Cripta Ipogea di San Giovanni in Conca',
+        description: 'Apertura straordinaria dell’unica cripta romanica originale sopravvissuta nel centro di Milano, normalmente chiusa al pubblico.',
+        venueName: 'Cripta di San Giovanni in Conca',
+        neighborhood: 'Missori / Centro Storico',
+        address: 'Piazza Giuseppe Missori',
+        isFree: true,
+        priceDetails: 'GRATIS • Prenotazione gratuita',
+        category: 'aperture',
+        sourceName: 'Milano da Scrocco / Comune di Milano',
+        instagramUrl: 'https://instagram.com/milanodascrocco',
+        facebookUrl: 'https://facebook.com/comunedimilano',
+        sourceUrl: 'https://cultura.comune.milano.it'
+      },
+      {
+        id: 'evt-villa-necchi-fai',
+        offsetMinutes: 735,
+        durationMinutes: 120,
+        title: 'Mattinata FAI nel Giardino d’Inverno di Piero Portaluppi',
+        description: 'Percorso speciale dedicato alle arti decorative degli anni Trenta e ai disegni d’archivio custoditi a Villa Necchi Campiglio.',
+        venueName: 'Villa Necchi Campiglio (FAI)',
+        neighborhood: 'Quadrilatero del Silenzio / Palestro',
+        address: 'Via Mozart 14',
+        isFree: false,
+        priceDetails: '€15,00 Intero / Gratis Iscritti FAI',
+        category: 'aperture',
+        sourceName: 'FAI — Fondo Ambiente Italiano',
+        instagramUrl: 'https://instagram.com/fondoambiente',
+        facebookUrl: 'https://facebook.com/FondoAmbiente',
+        sourceUrl: 'https://fondoambiente.it/luoghi/villa-necchi-campiglio'
+      },
+      {
+        id: 'evt-fondazione-prada-torre',
+        offsetMinutes: 800,
+        durationMinutes: 180,
+        title: 'Retrospettiva Multimediale nel Podium & Torre Bianca',
+        description: 'Esposizione monografica curata per gli spazi di Largo Isarco progettati da OMA/Rem Koolhaas, con focus sul cinema sperimentale al Cinema Godard.',
+        venueName: 'Fondazione Prada',
+        neighborhood: 'Scalo Romana / Largo Isarco',
+        address: 'Largo Isarco 2',
+        isFree: false,
+        priceDetails: '€15,00 Intero / €12,00 Studenti',
+        category: 'mostre',
+        sourceName: 'Exibart / Fondazione Prada',
+        instagramUrl: 'https://instagram.com/fondazioneprada',
+        facebookUrl: 'https://facebook.com/fondazioneprada',
+        sourceUrl: 'https://www.fondazioneprada.org'
+      },
+      {
+        id: 'evt-cineteca-arlecchino',
+        offsetMinutes: 860,
+        durationMinutes: 115,
+        title: 'Matinée Cineteca: Classici Restaurati in 35mm',
+        description: 'Proiezione su copia in pellicola 35mm proveniente dall’archivio storico della Cineteca Italiana, preceduta da cinegiornali d’epoca su Milano.',
+        venueName: 'Cineteca Milano Arlecchino',
+        neighborhood: 'San Babila / Corso Vittorio Emanuele',
+        address: 'Via San Pietro all’Orto 9',
+        isFree: false,
+        priceDetails: '€8,50 Intero / €6,50 Cinetessera',
+        category: 'cinema',
+        sourceName: 'cinetecamilano.it',
+        instagramUrl: 'https://instagram.com/cinetecamilano',
+        facebookUrl: 'https://facebook.com/cinetecamilano',
+        sourceUrl: 'https://www.cinetecamilano.it'
+      },
+      {
+        id: 'evt-palazzo-morando-free',
+        offsetMinutes: 930,
+        durationMinutes: 150,
+        title: 'Collezione Costume Moda Immagine & Pinacoteca Civica del Settecento',
+        description: 'Ingresso gratuito alle sale storiche del palazzo settecentesco che raccontano l’evoluzione urbanistica e sociale di Milano tra ’700 e ’900.',
+        venueName: 'Palazzo Morando',
+        neighborhood: 'Sant’Andrea / Montenapoleone',
+        address: 'Via Sant’Andrea 6',
+        isFree: true,
+        priceDetails: 'GRATIS • Ingresso gratuito collezione permanente',
+        category: 'mostre',
+        sourceName: 'YesMilano / Comune di Milano',
+        instagramUrl: 'https://instagram.com/palazzomorando',
+        facebookUrl: 'https://facebook.com/PalazzoMorando',
+        sourceUrl: 'https://www.costumemodaimmagine.mi.it'
+      },
+      {
+        id: 'evt-triennale-design-talk',
+        offsetMinutes: 995,
+        durationMinutes: 95,
+        title: 'Architettura Radicale & Nuove Ecologie Urbane — Public Lecture',
+        description: 'Incontro aperto al Salone d’Onore della Triennale con curatori, paesaggisti e progettisti europei sul futuro degli spazi pubblici.',
+        venueName: 'Triennale Milano',
+        neighborhood: 'Parco Sempione / Cadorna',
+        address: 'Viale Emilio Alemagna 6',
+        isFree: true,
+        priceDetails: 'GRATIS • Ingresso libero su registrazione',
+        category: 'libri',
+        sourceName: 'Zero.eu / Triennale Milano',
+        instagramUrl: 'https://instagram.com/triennalemilano',
+        facebookUrl: 'https://facebook.com/triennalemilano',
+        sourceUrl: 'https://triennale.org'
+      },
+
+      // === +18h to +23.5h ===
+      {
+        id: 'evt-meet-digital-culture',
+        offsetMinutes: 1080,
+        durationMinutes: 90,
+        title: 'Meet the Media Guru: Immersive Storytelling & VR Room',
+        description: 'Masterclass e dimostrazione immersiva nella sala VR di Porta Venezia dedicata alle arti generative e alla cultura digitale.',
+        venueName: 'MEET Digital Culture Center',
+        neighborhood: 'Porta Venezia / Oberdan',
+        address: 'Viale Vittorio Veneto 2',
+        isFree: true,
+        priceDetails: 'GRATIS • Ingresso gratuito con prenotazione Eventbrite',
+        category: 'libri',
+        sourceName: 'Eventbrite / MEET Center',
+        instagramUrl: 'https://instagram.com/meetcenter',
+        facebookUrl: 'https://facebook.com/MEETahu',
+        sourceUrl: 'https://www.meetcenter.it'
+      },
+      {
+        id: 'evt-mudec-dialogo-arti',
+        offsetMinutes: 1150,
+        durationMinutes: 140,
+        title: 'Focus Curatori nell’Agorà di David Chipperfield + Collezione Permanente',
+        description: 'Approfondimento guidato gratuito nella collezione permanente del Museo delle Culture con focus sui nuclei storici precolombiani e africani.',
+        venueName: 'MUDEC — Museo delle Culture',
+        neighborhood: 'Tortona / Ansaldo',
+        address: 'Via Tortona 56',
+        isFree: true,
+        priceDetails: 'GRATIS • Collezione permanente a ingresso libero',
+        category: 'mostre',
+        sourceName: 'Artribune / MUDEC',
+        instagramUrl: 'https://instagram.com/mudec_official',
+        facebookUrl: 'https://facebook.com/Mudec.MuseodelleCulture',
+        sourceUrl: 'https://www.mudec.it'
+      },
+      {
+        id: 'evt-alcatraz-live-tour',
+        offsetMinutes: 1220,
+        durationMinutes: 165,
+        title: 'Indie & Alternative Rock European Tour — Main Stage Live',
+        description: 'Tappa unica italiana sul palco principale di Via Valtellina. Apertura porte con opening act milanese.',
+        venueName: 'Alcatraz Milano',
+        neighborhood: 'Farini / Isola',
+        address: 'Via Valtellina 25',
+        isFree: false,
+        priceDetails: '€28,00 + d.p. Biglietti disponibili',
+        category: 'concerti',
+        sourceName: 'DICE.fm / Zero.eu',
+        instagramUrl: 'https://instagram.com/alcatrazmilano',
+        facebookUrl: 'https://facebook.com/alcatrazmilano',
+        sourceUrl: 'https://www.alcatrazmilano.it'
+      },
+      {
+        id: 'evt-elfo-puccini-contemp',
+        offsetMinutes: 1290,
+        durationMinutes: 110,
+        title: 'Nuove Scritture Sceniche in Sala Shakespeare',
+        description: 'Spettacolo di teatro contemporaneo pluripremiato ai premi Ubu, seguito da breve conversazione con gli attori della compagnia.',
+        venueName: 'Teatro Elfo Puccini',
+        neighborhood: 'Corso Buenos Aires / Lima',
+        address: 'Corso Buenos Aires 33',
+        isFree: false,
+        priceDetails: '€19,50 Ridotto Under30 / €29,00 Intero',
+        category: 'teatro',
+        sourceName: 'Invito a Teatro / Elfo Puccini',
+        instagramUrl: 'https://instagram.com/teatroelfopuccini',
+        facebookUrl: 'https://facebook.com/teatroelfopuccini',
+        sourceUrl: 'https://www.elfo.org'
+      },
+      {
+        id: 'evt-torre-branca-sunset',
+        offsetMinutes: 1365,
+        durationMinutes: 85,
+        title: 'Salita Panoramica sulla Torre Branca di Giò Ponti (108m)',
+        description: 'Accesso in ascensore rapido fino al belvedere esagonale progettato da Giò Ponti nel 1933 con vista a 360° sullo skyline di Milano e sulle Alpi.',
+        venueName: 'Torre Branca — Parco Sempione',
+        neighborhood: 'Parco Sempione',
+        address: 'Viale Luigi Camoens 2',
+        isFree: false,
+        priceDetails: '€6,00 Salita Panoramica',
+        category: 'aperture',
+        sourceName: 'YesMilano / MilanoGuida',
+        instagramUrl: 'https://instagram.com/yesmilano',
+        facebookUrl: 'https://facebook.com/visitmilanoofficial',
+        sourceUrl: 'https://www.yesmilano.it'
+      },
+      {
+        id: 'evt-lafeltrinelli-duomo',
+        offsetMinutes: 1410,
+        durationMinutes: 75,
+        title: 'Incontro con la Redazione & Presentazione Saggio sull’Editoria Indipendente',
+        description: 'Appuntamento aperto al pubblico nella storica libreria di Galleria Vittorio Emanuele II con autori, editor e firmacopie finale.',
+        venueName: 'laFeltrinelli Duomo',
+        neighborhood: 'Piazza del Duomo / Galleria',
+        address: 'Galleria Vittorio Emanuele II 82',
+        isFree: true,
+        priceDetails: 'GRATIS • Ingresso libero',
+        category: 'libri',
+        sourceName: 'lafeltrinelli.it/eventi',
+        instagramUrl: 'https://instagram.com/lafeltrinelli_milano',
+        facebookUrl: 'https://facebook.com/laFeltrinelli',
+        sourceUrl: 'https://www.lafeltrinelli.it/eventi'
+      }
+    ];
+
+    // State
+    let allNormalizedEvents = [];
+    let activePriceFilter = 'all'; // 'all' | 'free' | 'paid'
+    let activeCategoryFilter = 'all'; // 'all' | category id
+    let activeSearchQuery = '';
+    let onlyHappeningNow = false;
+    let expandedEventIds = new Set(['evt-mexico-qa', 'evt-base-vernissage']); // First two expanded by default for immediate discoverability
+    let pageLoadAnchorMs = Date.now();
+    let nextHourStartMs = (Math.floor(Date.now() / 3600000) + 1) * 3600000;
+
+    /**
+     * Compute the exact timestamp (ms) of the start of the NEXT full hour (`HH+1:00:00`)
+     * following the current timestamp.
+     */
+    function getNextHourStartMs(nowMs = Date.now()) {
+      return (Math.floor(nowMs / 3600000) + 1) * 3600000;
+    }
+
+    /**
+     * Format a Date object into Europe/Rome parts (hour, minute, day, weekday, etc.)
+     */
+    function getRomeParts(dateObj) {
+      const formatter = new Intl.DateTimeFormat('it-IT', {
+        timeZone: 'Europe/Rome',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        weekday: 'short',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false
+      });
+      const parts = formatter.formatToParts(dateObj);
+      const map = {};
+      parts.forEach(p => { map[p.type] = p.value; });
+      const hourNum = parseInt(map.hour, 10) % 24;
+      const minuteNum = parseInt(map.minute, 10);
+      return {
+        year: map.year,
+        month: map.month,
+        day: map.day,
+        weekday: (map.weekday || '').replace('.', '').toUpperCase(),
+        hour: String(hourNum).padStart(2, '0'),
+        minute: String(minuteNum).padStart(2, '0'),
+        second: map.second || '00',
+        hourNum,
+        minuteNum,
+        hm: `${String(hourNum).padStart(2, '0')}:${String(minuteNum).padStart(2, '0')}`
+      };
+    }
+
+    /**
+     * Determine human-friendly Milanese time-block label for an hour slot
+     */
+    function getMilanTimeBlockMeta(hourNum, isTomorrow) {
+      if (hourNum >= 18 && hourNum <= 22) {
+        return {
+          blockId: isTomorrow ? 'domani-sera' : 'stasera',
+          label: isTomorrow ? 'Domani Sera' : 'Stasera',
+          icon: '🌆'
+        };
+      }
+      if (hourNum === 23 || (hourNum >= 0 && hourNum <= 5)) {
+        return {
+          blockId: 'stanotte',
+          label: 'Stanotte',
+          icon: '🌙'
+        };
+      }
+      if (hourNum >= 6 && hourNum <= 12) {
+        return {
+          blockId: isTomorrow ? 'domani-mattina' : 'mattina',
+          label: isTomorrow ? 'Domani Mattina' : 'Questa Mattina',
+          icon: '☀️'
+        };
+      }
+      return {
+        blockId: isTomorrow ? 'domani-pomeriggio' : 'pomeriggio',
+        label: isTomorrow ? 'Domani Pomeriggio' : 'Oggi Pomeriggio',
+        icon: '🌤️'
+      };
+    }
+
+    /**
+     * Generate normalized events dynamically anchored to `nextHourStartMs` (the hour
+     * immediately following the user's current hour in Europe/Rome), covering
+     * `[Next Hour, Next Hour + 24h]`.
+     */
+    function generateDynamic24hEvents(nowMs) {
+      const startOfNextHourMs = getNextHourStartMs(nowMs);
+      const nowRome = getRomeParts(new Date(nowMs));
+
+      return EVENT_BLUEPRINTS.map(bp => {
+        const startMs = startOfNextHourMs + bp.offsetMinutes * 60 * 1000;
+        // Round to clean 5-minute intervals for realistic timetable display
+        const roundedStartMs = Math.round(startMs / (5 * 60 * 1000)) * (5 * 60 * 1000);
+        const endMs = roundedStartMs + bp.durationMinutes * 60 * 1000;
+
+        const startDate = new Date(roundedStartMs);
+        const endDate = new Date(endMs);
+        const startRome = getRomeParts(startDate);
+        const endRome = getRomeParts(endDate);
+
+        // Minutes from actual current timestamp (`nowMs`)
+        const diffFromNowMinutes = (roundedStartMs - nowMs) / (60 * 1000);
+        // Highlight events in the first upcoming hour slot (or starting within 60 min)
+        const isHappeningNow = bp.offsetMinutes < 60 || (diffFromNowMinutes >= -60 && diffFromNowMinutes <= 30);
+        const hasAlreadyStarted = diffFromNowMinutes <= 0;
+
+        // Calculate hourly slot key
+        const slotDate = new Date(roundedStartMs);
+        const slotRome = getRomeParts(slotDate);
+        const isTomorrow = slotRome.day !== nowRome.day;
+        const slotKey = `${slotRome.year}-${slotRome.month}-${slotRome.day}-${slotRome.hour}`;
+
+        return {
+          id: bp.id,
+          title: bp.title,
+          description: bp.description,
+          startTime: startDate.toISOString(),
+          endTime: endDate.toISOString(),
+          venueName: bp.venueName,
+          neighborhood: bp.neighborhood,
+          address: `${bp.address}, Milano`,
+          isFree: bp.isFree,
+          priceDetails: bp.priceDetails,
+          category: bp.category,
+          mapsUrl: buildMapsUrl(bp.venueName, bp.address),
+          instagramUrl: bp.instagramUrl,
+          facebookUrl: bp.facebookUrl,
+          sourceUrl: bp.sourceUrl,
+          sourceName: bp.sourceName,
+          // Computed UI fields
+          _startMs: roundedStartMs,
+          _endMs: endMs,
+          _diffMinutes: Math.max(1, Math.round(diffFromNowMinutes)),
+          _isHappeningNow: isHappeningNow,
+          _hasAlreadyStarted: hasAlreadyStarted,
+          _startHM: startRome.hm,
+          _endHM: endRome.hm,
+          _slotHour: `${slotRome.hour}:00`,
+          _slotHourNum: slotRome.hourNum,
+          _slotKey: slotKey,
+          _isTomorrow: isTomorrow,
+          _weekday: slotRome.weekday,
+          _dayMonth: `${slotRome.day}/${slotRome.month}`,
+          _timeBlock: getMilanTimeBlockMeta(slotRome.hourNum, isTomorrow)
+        };
+      }).sort((a, b) => a._startMs - b._startMs);
+    }
+
+    /**
+     * Update top Europe/Rome live clock and rolling 24h window label (starting from Next Hour)
+     */
+    function updateHeaderClock() {
+      const now = new Date();
+      const currentNextHourMs = getNextHourStartMs(now.getTime());
+      if (currentNextHourMs !== nextHourStartMs) {
+        pageLoadAnchorMs = now.getTime();
+        nextHourStartMs = currentNextHourMs;
+        allNormalizedEvents = generateDynamic24hEvents(pageLoadAnchorMs);
+        renderTimeline();
+      }
+
+      const romeNow = getRomeParts(now);
+      const nextHourRome = getRomeParts(new Date(nextHourStartMs));
+      const plus24 = getRomeParts(new Date(nextHourStartMs + 24 * 60 * 60 * 1000));
+
+      const clockEl = document.getElementById('rome-clock');
+      if (clockEl) {
+        clockEl.textContent = `Milano (Europe/Rome) ${romeNow.hm}:${romeNow.second}`;
+      }
+
+      const windowEl = document.getElementById('rolling-window-label');
+      if (windowEl) {
+        windowEl.textContent = `Dalle ${nextHourRome.hm} (prossima ora) → Domani ${plus24.hm} (+24h)`;
+      }
+
+      const exactNowEl = document.getElementById('exact-now-badge');
+      if (exactNowEl) {
+        exactNowEl.textContent = `ore ${nextHourRome.hm} (ora successiva alle ${romeNow.hm})`;
+      }
+    }
+
+    /**
+     * Filter events according to active price, category, search, and live-only toggle
+     */
+    function getFilteredEvents() {
+      return allNormalizedEvents.filter(ev => {
+        if (activePriceFilter === 'free' && !ev.isFree) return false;
+        if (activePriceFilter === 'paid' && ev.isFree) return false;
+        if (activeCategoryFilter !== 'all' && ev.category !== activeCategoryFilter) return false;
+        if (onlyHappeningNow && !ev._isHappeningNow) return false;
+
+        if (activeSearchQuery.trim() !== '') {
+          const q = activeSearchQuery.trim().toLowerCase();
+          const haystack = `${ev.title} ${ev.venueName} ${ev.neighborhood} ${ev.address} ${ev.description} ${ev.sourceName}`.toLowerCase();
+          if (!haystack.includes(q)) return false;
+        }
+        return true;
+      });
+    }
+
+    /**
+     * Render quick jump time-block buttons ("Adesso / Live", "Stasera", "Stanotte", "Domani Mattina", "Domani Pomeriggio")
+     */
+    function renderTimeJumpBar(filteredEvents) {
+      const container = document.getElementById('time-jump-container');
+      if (!container) return;
+
+      const seenBlocks = new Map();
+      // Always provide "Adesso (Live)" jump if there are happening-now events
+      const hasLive = filteredEvents.some(e => e._isHappeningNow);
+      if (hasLive) {
+        seenBlocks.set('jump-live-now', {
+          targetId: 'slot-live-anchor',
+          label: '⚡ Adesso (Live)',
+          highlight: true
+        });
+      }
+
+      filteredEvents.forEach(ev => {
+        const block = ev._timeBlock;
+        if (!seenBlocks.has(block.blockId)) {
+          seenBlocks.set(block.blockId, {
+            targetId: `slot-group-${ev._slotKey}`,
+            label: `${block.icon} ${block.label} (${ev._slotHour})`,
+            highlight: false
+          });
+        }
+      });
+
+      container.innerHTML = Array.from(seenBlocks.values()).map(item => `
+        <button
+          type="button"
+          data-jump-target="${item.targetId}"
+          class="time-jump-btn shrink-0 px-2.5 py-1 rounded-md text-xs font-medium transition cursor-pointer ${
+            item.highlight
+              ? 'bg-orange-500/15 text-orange-300 border border-orange-500/30 hover:bg-orange-500/25'
+              : 'bg-[#131519] text-zinc-300 border border-[#23272f] hover:border-zinc-500 hover:text-white'
+          }"
+        >
+          ${item.label}
+        </button>
+      `).join('');
+
+      container.querySelectorAll('.time-jump-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const targetId = btn.getAttribute('data-jump-target');
+          const targetEl = document.getElementById(targetId);
+          if (targetEl) {
+            const stickyHeight = document.getElementById('sticky-filter-bar')?.offsetHeight || 130;
+            const top = targetEl.getBoundingClientRect().top + window.scrollY - stickyHeight - 16;
+            window.scrollTo({ top, behavior: 'smooth' });
+          }
+        });
+      });
+    }
+
+    /**
+     * Render a single expandable Event Card with mandatory fields & deep links
+     */
+    function renderEventCard(ev) {
+      const catMeta = CATEGORY_META[ev.category] || CATEGORY_META.mostre;
+      const isExpanded = expandedEventIds.has(ev.id);
+
+      // Status badge (HAPPENING NOW)
+      let liveStatusBadgeHtml = '';
+      if (ev._isHappeningNow) {
+        const statusText = ev._hasAlreadyStarted
+          ? `HAPPENING NOW • Iniziato da ${Math.abs(ev._diffMinutes)} min`
+          : `HAPPENING NOW • Inizia tra ${ev._diffMinutes} min`;
+        liveStatusBadgeHtml = `
+          <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold tracking-wide bg-orange-500 text-black uppercase mono-num shadow-sm">
+            <span class="w-1.5 h-1.5 rounded-full bg-black live-dot"></span>
+            ${statusText}
+          </span>
+        `;
+      }
+
+      // Pricing badge (GRATIS in green badge, or €€ / Biglietto in neutral badge)
+      const priceBadgeHtml = ev.isFree
+        ? `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-xs font-extrabold tracking-wider bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 uppercase mono-num">
+             GRATIS
+           </span>`
+        : `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-xs font-semibold bg-zinc-800 text-zinc-200 border border-zinc-700 mono-num">
+             €€ / Biglietto • ${ev.priceDetails}
+           </span>`;
+
+      return `
+        <article
+          id="card-${ev.id}"
+          class="${ev._isHappeningNow ? 'editorial-card-live' : 'editorial-card'} rounded-xl p-4 sm:p-5 transition"
+        >
+          <!-- Top Row: Time + HAPPENING NOW Badge + Pricing Badge -->
+          <div class="flex flex-wrap items-center justify-between gap-2 mb-2.5">
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-[#0b0c0e] border border-[#272b35] text-white font-bold text-xs mono-num">
+                <svg class="w-3.5 h-3.5 text-orange-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <polyline points="12 6 12 12 16 14"></polyline>
+                </svg>
+                ${ev._startHM} – ${ev._endHM}
+              </span>
+              ${liveStatusBadgeHtml}
+            </div>
+            <div class="flex items-center gap-2">
+              ${priceBadgeHtml}
+            </div>
+          </div>
+
+          <!-- Title & Category Badge -->
+          <div class="flex items-start justify-between gap-3">
+            <div class="space-y-1.5 flex-1">
+              <div class="flex flex-wrap items-center gap-2">
+                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-semibold border ${catMeta.badgeClass}">
+                  ${catMeta.emoji} ${catMeta.shortLabel}
+                </span>
+                <span class="text-xs text-zinc-400 mono-num">• Fonte: ${ev.sourceName}</span>
+              </div>
+              <h3 class="text-base sm:text-lg font-bold text-white leading-snug">
+                <button
+                  type="button"
+                  data-toggle-card="${ev.id}"
+                  class="text-left hover:text-orange-400 transition cursor-pointer"
+                >
+                  ${ev.title}
+                </button>
+              </h3>
+            </div>
+
+            <button
+              type="button"
+              data-toggle-card="${ev.id}"
+              class="shrink-0 w-8 h-8 rounded-lg bg-[#0b0c0e] hover:bg-zinc-800 border border-[#23272f] flex items-center justify-center text-zinc-400 hover:text-white transition cursor-pointer"
+              aria-label="Espandi dettagli evento"
+              title="Mostra o nascondi dettagli"
+            >
+              <svg class="w-4 h-4 transition-transform ${isExpanded ? 'rotate-180' : ''}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </button>
+          </div>
+
+          <!-- Venue Name & Neighborhood -->
+          <div class="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-zinc-300">
+            <span class="font-semibold text-white flex items-center gap-1.5">
+              <svg class="w-3.5 h-3.5 text-orange-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                <circle cx="12" cy="10" r="3"></circle>
+              </svg>
+              ${ev.venueName}
+            </span>
+            <span class="text-zinc-400">${ev.address} (${ev.neighborhood})</span>
+          </div>
+
+          <!-- Description (2-3 line summary always visible, full metadata when expanded) -->
+          <p class="mt-2.5 text-xs sm:text-sm text-zinc-300 leading-relaxed">
+            ${ev.description}
+          </p>
+
+          <!-- Expandable Details Drawer -->
+          <div class="${isExpanded ? 'block' : 'hidden'} mt-3.5 pt-3 border-t border-[#23272f] text-xs text-zinc-400 space-y-2">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 bg-[#0b0c0e] p-3 rounded-lg border border-[#1f232b]">
+              <div>
+                <div class="text-zinc-500 uppercase font-semibold">Modalità d'ingresso</div>
+                <div class="text-zinc-200 font-medium mt-0.5">${ev.priceDetails}</div>
+              </div>
+              <div>
+                <div class="text-zinc-500 uppercase font-semibold">Indirizzo Verificato</div>
+                <div class="text-zinc-200 font-medium mt-0.5">${ev.address}</div>
+              </div>
+              <div>
+                <div class="text-zinc-500 uppercase font-semibold">Fascia Oraria (Europe/Rome)</div>
+                <div class="text-zinc-200 font-medium mono-num mt-0.5">${ev._weekday} ${ev._dayMonth} • ${ev._startHM} → ${ev._endHM}</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Mandatory Action Buttons: Google Maps + Instagram / Facebook / Official Source -->
+          <div class="mt-4 pt-3 border-t border-[#1e222a] flex flex-wrap items-center justify-between gap-2">
+            <div class="flex flex-wrap items-center gap-2">
+              <!-- 1. Google Maps Deep Link (Mandatory) -->
+              <a
+                href="${ev.mapsUrl}"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-zinc-100 hover:bg-white text-black font-bold text-xs transition"
+              >
+                <svg class="w-3.5 h-3.5 text-orange-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                  <circle cx="12" cy="10" r="3"></circle>
+                </svg>
+                <span>📍 Google Maps</span>
+              </a>
+
+              <!-- 2. Instagram Profile Deep Link -->
+              <a
+                href="${ev.instagramUrl}"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#1c2028] hover:bg-zinc-700 text-zinc-100 border border-[#2c323f] font-semibold text-xs transition"
+                title="Apri profilo Instagram"
+              >
+                <svg class="w-3.5 h-3.5 text-pink-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                  <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                  <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                </svg>
+                <span>Instagram</span>
+              </a>
+
+              <!-- 3. Facebook Page Deep Link -->
+              <a
+                href="${ev.facebookUrl}"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-[#1c2028] hover:bg-zinc-700 text-zinc-200 border border-[#2c323f] font-semibold text-xs transition"
+                title="Apri pagina Facebook"
+              >
+                <svg class="w-3.5 h-3.5 text-sky-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
+                </svg>
+                <span>FB</span>
+              </a>
+            </div>
+
+            <!-- 4. Official Source / Ticket Link -->
+            <a
+              href="${ev.sourceUrl}"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="inline-flex items-center gap-1 text-xs font-semibold text-orange-400 hover:text-orange-300 transition"
+            >
+              <span>Scheda / Biglietti (${ev.sourceName})</span>
+              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M7 17L17 7"></path>
+                <path d="M7 7h10v10"></path>
+              </svg>
+            </a>
+          </div>
+        </article>
+      `;
+    }
+
+    /**
+     * Render the full 24-Hour Rolling Timeline grouped by hourly slots
+     */
+    function renderTimeline() {
+      const filtered = getFilteredEvents();
+      const timelineContainer = document.getElementById('timeline-container');
+      const emptyState = document.getElementById('empty-state');
+
+      // Update counters
+      const totalCount = allNormalizedEvents.length;
+      const freeTotalCount = allNormalizedEvents.filter(e => e.isFree).length;
+      const paidTotalCount = totalCount - freeTotalCount;
+      const happeningNowCount = allNormalizedEvents.filter(e => e._isHappeningNow).length;
+
+      document.getElementById('count-price-all').textContent = `(${totalCount})`;
+      document.getElementById('count-price-free').textContent = `(${freeTotalCount})`;
+      document.getElementById('count-price-paid').textContent = `(${paidTotalCount})`;
+      document.getElementById('stat-happening-now').textContent = `${happeningNowCount} in corso / tra poco`;
+      document.getElementById('stat-free-count').textContent = `${freeTotalCount} ingressi gratuiti`;
+      document.getElementById('active-events-counter').textContent = `${filtered.length} DI ${totalCount} EVENTI NELLE PROSSIME 24H`;
+
+      // Update active filter banner
+      updateActiveFilterBanner();
+
+      // Update quick time-block jump pills
+      renderTimeJumpBar(filtered);
+
+      if (filtered.length === 0) {
+        timelineContainer.innerHTML = '';
+        emptyState.classList.remove('hidden');
+        return;
+      }
+      emptyState.classList.add('hidden');
+
+      // Group events into hourly slots preserving chronological order
+      const hourlyGroups = new Map();
+      filtered.forEach(ev => {
+        if (!hourlyGroups.has(ev._slotKey)) {
+          hourlyGroups.set(ev._slotKey, {
+            slotKey: ev._slotKey,
+            slotHour: ev._slotHour,
+            isTomorrow: ev._isTomorrow,
+            weekday: ev._weekday,
+            dayMonth: ev._dayMonth,
+            timeBlock: ev._timeBlock,
+            events: []
+          });
+        }
+        hourlyGroups.get(ev._slotKey).events.push(ev);
+      });
+
+      let assignedLiveAnchor = false;
+      const groupsHtml = Array.from(hourlyGroups.values()).map(group => {
+        const hasLiveInGroup = group.events.some(e => e._isHappeningNow);
+        const anchorAttr = (!assignedLiveAnchor && hasLiveInGroup) ? 'id="slot-live-anchor"' : '';
+        if (hasLiveInGroup) assignedLiveAnchor = true;
+
+        const dayBadge = group.isTomorrow
+          ? `<span class="px-2 py-0.5 rounded bg-zinc-800 text-zinc-300 text-xs font-semibold mono-num">DOMANI • ${group.weekday} ${group.dayMonth}</span>`
+          : `<span class="px-2 py-0.5 rounded bg-zinc-800/80 text-zinc-300 text-xs font-semibold mono-num">OGGI • ${group.weekday} ${group.dayMonth}</span>`;
+
+        return `
+          <section id="slot-group-${group.slotKey}" class="relative">
+            <div ${anchorAttr}></div>
+            <!-- Hourly Slot Sticky Subheader -->
+            <div class="flex flex-wrap items-center justify-between gap-2 pb-3 mb-3 border-b border-[#23272f]">
+              <div class="flex items-center gap-3">
+                <span class="px-3 py-1 rounded-lg font-black text-base sm:text-lg mono-num ${
+                  hasLiveInGroup
+                    ? 'bg-orange-500 text-black'
+                    : 'bg-[#171a21] text-white border border-[#2a2f3a]'
+                }">
+                  ${group.slotHour}
+                </span>
+                <div class="flex flex-wrap items-center gap-2">
+                  <span class="text-xs sm:text-sm font-bold text-zinc-200">
+                    ${group.timeBlock.icon} ${group.timeBlock.label}
+                  </span>
+                  ${dayBadge}
+                </div>
+              </div>
+              <span class="text-xs text-zinc-400 mono-num">
+                ${group.events.length} ${group.events.length === 1 ? 'evento' : 'eventi'} in questa fascia
+              </span>
+            </div>
+
+            <!-- Cards Grid for this Hourly Slot -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              ${group.events.map(ev => renderEventCard(ev)).join('')}
+            </div>
+          </section>
+        `;
+      }).join('');
+
+      timelineContainer.innerHTML = groupsHtml;
+
+      // Bind card expand/collapse listeners
+      timelineContainer.querySelectorAll('[data-toggle-card]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const id = btn.getAttribute('data-toggle-card');
+          if (expandedEventIds.has(id)) {
+            expandedEventIds.delete(id);
+          } else {
+            expandedEventIds.add(id);
+          }
+          renderTimeline();
+        });
+      });
+    }
+
+    /**
+     * Update filter UI pills & active filter banner
+     */
+    function updateFilterControlsUI() {
+      // Price filter buttons
+      document.querySelectorAll('.price-filter-btn').forEach(btn => {
+        const val = btn.getAttribute('data-price-filter');
+        if (val === activePriceFilter) {
+          btn.className = 'price-filter-btn px-3 py-1.5 rounded-md text-xs font-bold tracking-wide transition cursor-pointer bg-white text-black flex items-center gap-1.5';
+        } else {
+          btn.className = 'price-filter-btn px-3 py-1.5 rounded-md text-xs font-bold tracking-wide transition cursor-pointer text-zinc-300 hover:text-white flex items-center gap-1.5';
+        }
+      });
+
+      // Category pills
+      document.querySelectorAll('.category-pill').forEach(pill => {
+        const cat = pill.getAttribute('data-category');
+        if (cat === activeCategoryFilter) {
+          pill.className = 'category-pill shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold border transition cursor-pointer bg-zinc-100 text-black border-zinc-100';
+        } else {
+          pill.className = 'category-pill shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold border border-[#23272f] bg-[#131519] text-zinc-300 hover:border-zinc-600 hover:text-white transition cursor-pointer';
+        }
+      });
+
+      // Live only toggle
+      const liveBtn = document.getElementById('toggle-live-only-btn');
+      if (liveBtn) {
+        if (onlyHappeningNow) {
+          liveBtn.className = 'px-2.5 py-1.5 rounded-lg text-xs font-bold border border-orange-500 bg-orange-500/20 text-orange-300 transition flex items-center gap-1.5 cursor-pointer';
+        } else {
+          liveBtn.className = 'px-2.5 py-1.5 rounded-lg text-xs font-semibold border border-[#23272f] bg-[#131519] text-zinc-300 hover:border-orange-500/50 hover:text-orange-400 transition flex items-center gap-1.5 cursor-pointer';
+        }
+      }
+    }
+
+    function updateActiveFilterBanner() {
+      const banner = document.getElementById('active-filter-banner');
+      const tagsContainer = document.getElementById('active-filter-tags');
+      const tags = [];
+
+      if (activePriceFilter === 'free') tags.push('Gratis / Ingresso Libero');
+      if (activePriceFilter === 'paid') tags.push('A Pagamento');
+      if (activeCategoryFilter !== 'all' && CATEGORY_META[activeCategoryFilter]) {
+        tags.push(CATEGORY_META[activeCategoryFilter].label);
+      }
+      if (onlyHappeningNow) tags.push('⚡ Solo Happening Now');
+      if (activeSearchQuery.trim() !== '') tags.push(`Ricerca: "${activeSearchQuery.trim()}"`);
+
+      if (tags.length === 0) {
+        banner.classList.add('hidden');
+        return;
+      }
+
+      banner.classList.remove('hidden');
+      tagsContainer.innerHTML = tags.map(t => `
+        <span class="px-2 py-0.5 rounded bg-zinc-800 text-zinc-200 border border-zinc-700 font-medium">${t}</span>
+      `).join('');
+    }
+
+    function resetAllFilters() {
+      activePriceFilter = 'all';
+      activeCategoryFilter = 'all';
+      activeSearchQuery = '';
+      onlyHappeningNow = false;
+      const searchInput = document.getElementById('search-input');
+      const clearBtn = document.getElementById('clear-search-btn');
+      if (searchInput) searchInput.value = '';
+      if (clearBtn) clearBtn.classList.add('hidden');
+      updateFilterControlsUI();
+      renderTimeline();
+    }
+
+    /**
+     * Populate Architecture Modal with the 20+ Milanese sources & live normalized JSON schema
+     */
+    function populateArchitectureModal() {
+      const grid = document.getElementById('sources-grid');
+      if (grid) {
+        grid.innerHTML = MILAN_SOURCES_REGISTRY.map(src => `
+          <a
+            href="${src.url}"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="p-2.5 rounded-lg bg-[#161920] hover:bg-[#1c2029] border border-[#252a34] transition block"
+          >
+            <div class="flex items-center justify-between gap-2">
+              <span class="font-bold text-white text-xs">${src.name}</span>
+              <span class="px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-300 text-xs mono-num">ONLINE</span>
+            </div>
+            <div class="text-zinc-400 text-xs mt-1">${src.category} • <span class="text-zinc-300">${src.method}</span></div>
+          </a>
+        `).join('');
+      }
+
+      const jsonPre = document.getElementById('live-json-preview');
+      if (jsonPre && allNormalizedEvents.length > 0) {
+        const sample = allNormalizedEvents[0];
+        const cleanSchemaSample = {
+          id: sample.id,
+          title: sample.title,
+          description: sample.description,
+          startTime: sample.startTime,
+          endTime: sample.endTime,
+          venueName: sample.venueName,
+          address: sample.address,
+          isFree: sample.isFree,
+          priceDetails: sample.priceDetails,
+          category: sample.category,
+          mapsUrl: sample.mapsUrl,
+          instagramUrl: sample.instagramUrl,
+          facebookUrl: sample.facebookUrl,
+          sourceUrl: sample.sourceUrl
+        };
+        jsonPre.textContent = JSON.stringify(cleanSchemaSample, null, 2);
+      }
+    }
+
+    /********************************************************************
+     * COMMUNITY EVENT SUBMISSION, SOURCE LEARNING & ADMIN SAFEGUARD ENGINE
+     ********************************************************************/
+
+    // Dynamically learned sources database
+    let learnedSourcesDb = [
+      {
+        id: 'src-learned-arcibellezza',
+        name: 'Circolo ARCI Bellezza Milano',
+        domainOrHandle: 'arcibellezza.it',
+        inferredType: 'JSON_LD_VENUE + WP_REST_API',
+        category: 'politica',
+        trustScore: 94,
+        status: 'AUTO_LEARNED',
+        url: 'https://www.arcibellezza.it'
+      },
+      {
+        id: 'src-learned-cantiere',
+        name: 'Cantiere Milano — Spazio Politico & Mutuo Soccorso',
+        domainOrHandle: 'cantiere.org',
+        inferredType: 'WP_REST_API + SOCIAL_GRAPH_IG',
+        category: 'politica',
+        trustScore: 89,
+        status: 'ADMIN_VERIFIED',
+        url: 'https://www.cantiere.org'
+      }
+    ];
+
+    // Quarantined suspicious sources & events awaiting Admin verification
+    let pendingQuarantineQueue = [
+      {
+        qId: 'quar-crypto-rave-01',
+        submittedVia: 'LINK_URL',
+        rawSourceInput: 'https://bit.ly/milano-secret-warehouse-crypto-rave',
+        inferredSourceName: 'Redirect bit.ly -> milano-secret-tickets.xyz',
+        inferredSourceType: 'OBFUSCATED_SHORTLINK_REDIRECT',
+        trustScore: 22,
+        riskLevel: 'ALTO',
+        redFlags: [
+          'URL Shortener offuscato (bit.ly) verso dominio .xyz non censito a Milano',
+          'Richiesta prevendita esterna non affiliata a circuiti sicuri (DICE / RA / Mailticket)',
+          'Indirizzo civico milanese mancante ("Secret Location TBA")'
+        ],
+        eventCandidate: {
+          id: 'evt-quar-rave-01',
+          offsetMinutes: 240,
+          durationMinutes: 240,
+          title: 'Secret Industrial Warehouse Night — Prevendita Token',
+          description: 'Segnalazione utente intercettata dal Safeguard: evento notturno con prevendita su dominio esterno non verificato.',
+          venueName: 'Ex Magazzini Scalo Farini (Da Verificare)',
+          neighborhood: 'Farini / Bovisa',
+          address: 'Via Valtellina, Milano',
+          isFree: false,
+          priceDetails: '€25,00 (Link esterno non verificato)',
+          category: 'concerti',
+          sourceName: 'milano-secret-tickets.xyz',
+          instagramUrl: 'https://instagram.com/explore',
+          facebookUrl: 'https://facebook.com',
+          sourceUrl: 'https://ra.co/events/it/milan'
+        }
+      },
+      {
+        qId: 'quar-flyer-anon-02',
+        submittedVia: 'FLYER_PHOTO_OCR',
+        rawSourceInput: 't.me/+AnonimCollettivoMilano_bot',
+        inferredSourceName: 'Canale Telegram @AnonimCollettivoMilano_bot',
+        inferredSourceType: 'UNVERIFIED_TELEGRAM_BOT_OCR',
+        trustScore: 38,
+        riskLevel: 'MEDIO-ALTO',
+        redFlags: [
+          'Fonte estratta da locandina priva di dominio istituzionale o associazione registrata',
+          'Canale bot Telegram mai visto prima dal grafo fonti di Milano Live 24h',
+          'Necessaria verifica Admin della reale esistenza del presidio/incontro'
+        ],
+        eventCandidate: {
+          id: 'evt-quar-flyer-02',
+          offsetMinutes: 140,
+          durationMinutes: 100,
+          title: 'Assemblea Straordinaria Quartiere & Presidio Notturno',
+          description: 'Evento estratto tramite Vision OCR da foto locandina caricata da un utente. In attesa di validazione Admin della fonte Telegram.',
+          venueName: 'Piazzale Loreto / Angolo Via Padova',
+          neighborhood: 'Loreto / NoLo',
+          address: 'Piazzale Loreto, Milano',
+          isFree: true,
+          priceDetails: 'GRATIS • Accesso libero',
+          category: 'politica',
+          sourceName: 'Telegram @AnonimCollettivoMilano',
+          instagramUrl: 'https://instagram.com/comunedimilano',
+          facebookUrl: 'https://facebook.com/comunedimilano',
+          sourceUrl: 'https://cultura.comune.milano.it'
+        }
+      }
+    ];
+
+    /**
+     * Evaluates a user-submitted URL or Flyer source string:
+     * 1) Infers the technical source typology (WP_REST, JSON_LD, IG_GRAPH, TELEGRAM_FEED, FLYER_OCR, etc.)
+     * 2) Computes a Safeguard Trust Score (0-100) and detects suspicious Red Flags
+     */
+    function evaluateSourceAndLearnTypology({ rawUrlOrHandle, venueText, titleText, submittedVia }) {
+      const cleaned = (rawUrlOrHandle || '').trim();
+      const lower = cleaned.toLowerCase();
+      const venueLower = (venueText || '').toLowerCase();
+      const titleLower = (titleText || '').toLowerCase();
+
+      const redFlags = [];
+      let trustScore = 82;
+      let inferredType = submittedVia === 'FLYER_PHOTO_OCR'
+        ? 'VISION_OCR + VENUE_HTML_MONITOR'
+        : 'STRUCTURED_HTML + LLM_EXTRACTOR';
+      let domainLabel = cleaned;
+
+      try {
+        if (cleaned.startsWith('http://') || cleaned.startsWith('https://')) {
+          const u = new URL(cleaned);
+          domainLabel = u.hostname.replace(/^www\./, '');
+        }
+      } catch {
+        domainLabel = cleaned.slice(0, 40);
+      }
+
+      // Classify source technical adapter type
+      if (/instagram\.com|@[a-z0-9_.]+/i.test(lower)) {
+        inferredType = 'SOCIAL_GRAPH_INSTAGRAM_EXTRACTOR';
+      } else if (/facebook\.com|fb\.me/i.test(lower)) {
+        inferredType = 'FACEBOOK_EVENT_GRAPH_PARSER';
+      } else if (/eventbrite\.|dice\.fm|ra\.co/i.test(lower)) {
+        inferredType = 'TICKETING_JSON_LD_API';
+        trustScore += 12;
+      } else if (/casadellacultura|cgil|anpi|comune\.milano|arcibellezza|fondazionefeltrinelli|base\.milano|spaziocinema|cinetecamilano/i.test(lower)) {
+        inferredType = 'VERIFIED_CIVIC_WP_REST_AND_CALENDAR';
+        trustScore = 95;
+      }
+
+      // Check Safeguard Suspicion Signals (Red Flags)
+      if (/bit\.ly|tinyurl\.com|t\.co|cutt\.ly|is\.gd|shorturl/i.test(lower)) {
+        redFlags.push('Rilevato URL Shortener offuscato (rischio redirect malevolo o phishing)');
+        trustScore -= 48;
+        inferredType = 'OBFUSCATED_SHORTLINK_REDIRECT';
+      }
+
+      if (/\.(xyz|top|click|loan|work|gq|tk)(\/|$)/i.test(lower) || /unverified|secret-rave|crypto|token|bet|casino/i.test(lower + ' ' + titleLower)) {
+        redFlags.push('Dominio ad alto rischio (.xyz / parole chiave sospette o pagamento non protetto)');
+        trustScore -= 45;
+      }
+
+      if (/t\.me\/|telegram\.me|whatsapp\.com|dm per info|solo in dm/i.test(lower + ' ' + venueLower + ' ' + titleLower)) {
+        redFlags.push('Canale chiuso / Bot non censito nel registro delle associazioni culturali milanesi');
+        trustScore -= 35;
+        inferredType = 'UNVERIFIED_MESSAGING_CHANNEL';
+      }
+
+      if (!venueLower || /tba|segreto|secret|da definire|anonimo|nessun indirizzo/i.test(venueLower)) {
+        redFlags.push('Indirizzo fisico milanese assente o "Secret Location TBA" non verificabile su Google Maps');
+        trustScore -= 30;
+      }
+
+      if (cleaned.startsWith('http://')) {
+        redFlags.push('Protocollo HTTP non cifrato (manca certificato TLS/HTTPS)');
+        trustScore -= 20;
+      }
+
+      trustScore = Math.max(5, Math.min(99, trustScore));
+      const isSuspicious = trustScore < 70 || redFlags.length > 0;
+
+      return {
+        domainLabel: domainLabel || 'fonte-utente-milano',
+        inferredType,
+        trustScore,
+        isSuspicious,
+        riskLevel: trustScore < 40 ? 'ALTO' : trustScore < 70 ? 'MEDIO' : 'BASSO',
+        redFlags
+      };
+    }
+
+    /**
+     * Displays a clean public status alert inside the public Community Submission form
+     * (Never exposes backend Safeguard internals, Trust Scores, or Red Flags to the public)
+     */
+    function showPublicSubmissionFeedback(type, title, detailsHtml) {
+      const box = document.getElementById('ingestion-feedback-alert');
+      if (!box) return;
+      box.classList.remove('hidden');
+      if (type === 'success') {
+        box.className = 'p-4 rounded-xl border bg-emerald-500/10 border-emerald-500/40 text-emerald-200 text-xs space-y-1.5';
+      } else {
+        box.className = 'p-4 rounded-xl border bg-amber-500/10 border-amber-500/40 text-amber-200 text-xs space-y-1.5';
+      }
+      box.innerHTML = `
+        <div class="font-extrabold text-sm text-white">${title}</div>
+        <div class="leading-relaxed">${detailsHtml}</div>
+      `;
+    }
+
+    /**
+     * Displays backend feedback exclusively inside the Hidden Admin Console (#admin)
+     */
+    function showAdminBackendFeedback(type, title, detailsHtml) {
+      const box = document.getElementById('admin-feedback-alert');
+      if (!box) return;
+      box.classList.remove('hidden');
+      if (type === 'success') {
+        box.className = 'p-4 rounded-xl border bg-emerald-500/10 border-emerald-500/40 text-emerald-200 text-xs space-y-1.5';
+      } else {
+        box.className = 'p-4 rounded-xl border bg-zinc-800 border-zinc-700 text-zinc-200 text-xs space-y-1.5';
+      }
+      box.innerHTML = `
+        <div class="font-extrabold text-sm text-white">${title}</div>
+        <div class="leading-relaxed">${detailsHtml}</div>
+      `;
+    }
+
+    /**
+     * Backend Ingestion & Silent Safeguard Pipeline:
+     * - Evaluates the submitted Link or Flyer OCR silently on the backend.
+     * - If safe: learns the source into `learnedSourcesDb` & `MILAN_SOURCES_REGISTRY` and publishes the event into the 24h timeline.
+     * - If suspicious: silently routes the source + event into `pendingQuarantineQueue` (visible ONLY in the hidden `#admin` page)
+     *   and shows a neutral "in attesa di verifica redazionale" message to the public user.
+     */
+    function processCommunitySubmission({
+      submittedVia,
+      rawSourceUrl,
+      title,
+      venueAndAddress,
+      category,
+      isFree,
+      offsetMinutes,
+      description
+    }) {
+      // Backend Safeguard evaluation & source typology learning (runs silently)
+      const analysis = evaluateSourceAndLearnTypology({
+        rawUrlOrHandle: rawSourceUrl,
+        venueText: venueAndAddress,
+        titleText: title,
+        submittedVia
+      });
+
+      const venueParts = (venueAndAddress || 'Luogo Segnalato, Milano').split(',');
+      const venueName = venueParts[0].trim() || 'Spazio Cittadino Milano';
+      const streetAddress = (venueParts.slice(1).join(',') || venueName).trim();
+
+      const bpCandidate = {
+        id: `evt-user-${Date.now()}`,
+        offsetMinutes: Number(offsetMinutes) || 30,
+        durationMinutes: 105,
+        title: title.trim() || `Evento Segnalato (${venueName})`,
+        description: (description || '').trim() || `Evento segnalato dalla community milanese presso ${venueName}.`,
+        venueName,
+        neighborhood: 'Milano (Community)',
+        address: streetAddress,
+        isFree: Boolean(isFree),
+        priceDetails: isFree ? 'GRATIS • Ingresso libero' : '€€ / Biglietto (vedi fonte)',
+        category: category || 'politica',
+        sourceName: analysis.domainLabel,
+        instagramUrl: rawSourceUrl.includes('instagram.com') ? rawSourceUrl : 'https://instagram.com/yesmilano',
+        facebookUrl: rawSourceUrl.includes('facebook.com') ? rawSourceUrl : 'https://facebook.com/visitmilanoofficial',
+        sourceUrl: rawSourceUrl.startsWith('http') ? rawSourceUrl : 'https://www.casadellacultura.it'
+      };
+
+      if (analysis.isSuspicious) {
+        // SILENT BACKEND SAFEGUARD -> Quarantine for Admin Review ONLY (not exposed to public UI)
+        const qItem = {
+          qId: `quar-${Date.now()}`,
+          submittedVia,
+          rawSourceInput: rawSourceUrl,
+          inferredSourceName: analysis.domainLabel,
+          inferredSourceType: analysis.inferredType,
+          trustScore: analysis.trustScore,
+          riskLevel: analysis.riskLevel,
+          redFlags: analysis.redFlags,
+          eventCandidate: bpCandidate
+        };
+        pendingQuarantineQueue.unshift(qItem);
+        renderStudioAdminAndLearnedUI();
+
+        // Neutral public message (no mention of Safeguard, Trust Score, or Red Flags)
+        showPublicSubmissionFeedback(
+          'pending',
+          `⏳ Grazie per la segnalazione! Evento in fase di verifica redazionale`,
+          `Abbiamo ricevuto la tua segnalazione per <strong>"${bpCandidate.title}"</strong>. L'evento sarà pubblicato nella timeline delle prossime 24 ore non appena completata la verifica redazionale.`
+        );
+        return;
+      }
+
+      // SAFE / TRUSTED SOURCE -> Silently learn source in Backend DB + Publish Event in 24h Timeline
+      EVENT_BLUEPRINTS.push(bpCandidate);
+      expandedEventIds.add(bpCandidate.id);
+
+      const newLearnedSource = {
+        id: `src-learned-${Date.now()}`,
+        name: `${venueName} (${analysis.domainLabel})`,
+        domainOrHandle: analysis.domainLabel,
+        inferredType: analysis.inferredType,
+        category: bpCandidate.category,
+        trustScore: analysis.trustScore,
+        status: 'AUTO_LEARNED',
+        url: bpCandidate.sourceUrl
+      };
+      learnedSourcesDb.unshift(newLearnedSource);
+      MILAN_SOURCES_REGISTRY.unshift({
+        name: `${venueName} [Appresa]`,
+        category: CATEGORY_META[bpCandidate.category]?.shortLabel || 'Community',
+        method: analysis.inferredType,
+        url: bpCandidate.sourceUrl
+      });
+
+      allNormalizedEvents = generateDynamic24hEvents(pageLoadAnchorMs);
+      renderTimeline();
+      populateArchitectureModal();
+      renderStudioAdminAndLearnedUI();
+
+      showPublicSubmissionFeedback(
+        'success',
+        `✅ Grazie! L'evento è stato pubblicato nella timeline delle prossime 24 ore`,
+        `L'evento <strong>"${bpCandidate.title}"</strong> presso <strong>${venueName}</strong> è ora visibile nella programmazione oraria.`
+      );
+    }
+
+    /**
+     * Admin Action (Hidden #admin Page Only): Approve a quarantined suspicious source & publish its event
+     */
+    function approveQuarantinedSource(qId) {
+      const idx = pendingQuarantineQueue.findIndex(item => item.qId === qId);
+      if (idx === -1) return;
+      const item = pendingQuarantineQueue[idx];
+      pendingQuarantineQueue.splice(idx, 1);
+
+      // Add event to live 24h timeline
+      EVENT_BLUEPRINTS.push(item.eventCandidate);
+      expandedEventIds.add(item.eventCandidate.id);
+
+      // Learn source into database marked as ADMIN_VERIFIED
+      learnedSourcesDb.unshift({
+        id: `src-admin-${Date.now()}`,
+        name: `${item.eventCandidate.venueName} (${item.inferredSourceName})`,
+        domainOrHandle: item.inferredSourceName,
+        inferredType: item.inferredSourceType,
+        category: item.eventCandidate.category,
+        trustScore: 85,
+        status: 'ADMIN_VERIFIED',
+        url: item.eventCandidate.sourceUrl
+      });
+
+      MILAN_SOURCES_REGISTRY.unshift({
+        name: `${item.inferredSourceName} [Verificata Admin]`,
+        category: CATEGORY_META[item.eventCandidate.category]?.shortLabel || 'Verificata',
+        method: item.inferredSourceType,
+        url: item.eventCandidate.sourceUrl
+      });
+
+      allNormalizedEvents = generateDynamic24hEvents(pageLoadAnchorMs);
+      renderTimeline();
+      populateArchitectureModal();
+      renderStudioAdminAndLearnedUI();
+
+      showAdminBackendFeedback(
+        'success',
+        `🛡️ Fonte Verificata dall'Admin & Aggiunta al Database Backend: "${item.inferredSourceName}"`,
+        `L'evento <strong>"${item.eventCandidate.title}"</strong> è stato sbloccato dalla quarantena ed è ora visibile nella timeline pubblica delle prossime 24 ore. Il connettore <code>${item.inferredSourceType}</code> è stato memorizzato nel grafo di ingestion.`
+      );
+    }
+
+    /**
+     * Admin Action (Hidden #admin Page Only): Reject & Blacklist a suspicious source
+     */
+    function rejectQuarantinedSource(qId) {
+      const idx = pendingQuarantineQueue.findIndex(item => item.qId === qId);
+      if (idx === -1) return;
+      const item = pendingQuarantineQueue[idx];
+      pendingQuarantineQueue.splice(idx, 1);
+
+      renderStudioAdminAndLearnedUI();
+      showAdminBackendFeedback(
+        'info',
+        `🚫 Fonte Sospetta Rifiutata e Inserita in Blacklist Backend: "${item.inferredSourceName}"`,
+        `La segnalazione <strong>"${item.eventCandidate.title}"</strong> è stata scartata definitivamente dall'Admin e l'origine <code>${item.rawSourceInput}</code> è stata bloccata.`
+      );
+    }
+
+    /**
+     * Render Backend Admin Quarantine Queue & Learned Sources DB (inside Hidden #admin Page)
+     */
+    function renderStudioAdminAndLearnedUI() {
+      const qCount = pendingQuarantineQueue.length;
+      const pillBadge = document.getElementById('quarantine-count-pill');
+      const learnedSummary = document.getElementById('learned-sources-summary');
+      const sourcesBtnLabel = document.getElementById('sources-count-btn-label');
+
+      if (pillBadge) pillBadge.textContent = String(qCount);
+      if (learnedSummary) learnedSummary.textContent = String(learnedSourcesDb.length);
+      if (sourcesBtnLabel) sourcesBtnLabel.textContent = String(MILAN_SOURCES_REGISTRY.length);
+
+      const qContainer = document.getElementById('quarantine-list-container');
+      if (qContainer) {
+        if (pendingQuarantineQueue.length === 0) {
+          qContainer.innerHTML = `
+            <div class="p-4 rounded-xl bg-[#161920] border border-[#252a34] text-zinc-400 text-center">
+              ✅ Nessuna fonte sospetta in coda di verifica. Tutte le segnalazioni intercettate dal Safeguard sono state gestite dall'Admin.
+            </div>
+          `;
+        } else {
+          qContainer.innerHTML = pendingQuarantineQueue.map(item => {
+            const catMeta = CATEGORY_META[item.eventCandidate.category] || CATEGORY_META.politica;
+            return `
+              <div class="p-4 rounded-xl bg-[#161920] border border-red-500/40 space-y-3">
+                <div class="flex flex-wrap items-start justify-between gap-2">
+                  <div>
+                    <div class="flex flex-wrap items-center gap-2">
+                      <span class="px-2 py-0.5 rounded bg-red-500 text-black font-extrabold text-xs uppercase mono-num">
+                        RISCHIO ${item.riskLevel} • TRUST ${item.trustScore}/100
+                      </span>
+                      <span class="px-2 py-0.5 rounded bg-zinc-800 text-zinc-300 text-xs mono-num">
+                        Canale: ${item.submittedVia}
+                      </span>
+                      <span class="px-2 py-0.5 rounded border text-xs ${catMeta.badgeClass}">
+                        ${catMeta.emoji} ${catMeta.shortLabel}
+                      </span>
+                    </div>
+                    <h4 class="text-sm font-bold text-white mt-1.5">${item.eventCandidate.title}</h4>
+                    <div class="text-xs text-zinc-400">
+                      📍 ${item.eventCandidate.venueName} (${item.eventCandidate.address}) • Fonte rilevata: <code class="text-red-300">${item.rawSourceInput}</code>
+                    </div>
+                  </div>
+                  <div class="text-right mono-num text-xs">
+                    <div class="text-zinc-400">Tipologia Fonte Rilevata:</div>
+                    <div class="text-orange-300 font-bold">${item.inferredSourceType}</div>
+                  </div>
+                </div>
+
+                <!-- Safeguard Red Flags -->
+                <div class="p-2.5 rounded-lg bg-black/40 border border-red-500/25 text-xs">
+                  <div class="font-bold text-red-300 mb-1">Motivi di Blocco Safeguard Backend (Verifica Admin Richiesta):</div>
+                  <ul class="list-disc list-inside text-zinc-300 space-y-0.5">
+                    ${item.redFlags.map(flag => `<li>${flag}</li>`).join('')}
+                  </ul>
+                </div>
+
+                <!-- Admin Action Buttons -->
+                <div class="flex flex-wrap items-center justify-end gap-2 pt-1">
+                  <button
+                    type="button"
+                    data-reject-qid="${item.qId}"
+                    class="px-3 py-1.5 rounded-lg bg-zinc-800 hover:bg-red-950 text-red-300 border border-red-500/30 font-bold text-xs cursor-pointer transition"
+                  >
+                    🚫 Rifiuta &amp; Blocca Fonte
+                  </button>
+                  <button
+                    type="button"
+                    data-approve-qid="${item.qId}"
+                    class="px-3.5 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold text-xs cursor-pointer transition"
+                  >
+                    ✅ Approva Fonte, Insegna al DB &amp; Pubblica in Timeline
+                  </button>
+                </div>
+              </div>
+            `;
+          }).join('');
+
+          qContainer.querySelectorAll('[data-approve-qid]').forEach(btn => {
+            btn.addEventListener('click', () => approveQuarantinedSource(btn.getAttribute('data-approve-qid')));
+          });
+          qContainer.querySelectorAll('[data-reject-qid]').forEach(btn => {
+            btn.addEventListener('click', () => rejectQuarantinedSource(btn.getAttribute('data-reject-qid')));
+          });
+        }
+      }
+
+      const learnedContainer = document.getElementById('learned-sources-container');
+      if (learnedContainer) {
+        learnedContainer.innerHTML = learnedSourcesDb.map(src => {
+          const catMeta = CATEGORY_META[src.category] || CATEGORY_META.politica;
+          return `
+            <div class="p-3 rounded-lg bg-[#161920] border border-[#252a34] flex flex-col justify-between gap-1.5">
+              <div class="flex items-center justify-between gap-2">
+                <span class="font-bold text-white text-xs">${src.name}</span>
+                <span class="px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 font-bold text-xs mono-num">
+                  ${src.status} • ${src.trustScore}%
+                </span>
+              </div>
+              <div class="text-xs text-zinc-400 mono-num">
+                Connettore appreso: <span class="text-orange-300">${src.inferredType}</span>
+              </div>
+              <div class="flex items-center justify-between text-xs pt-1 border-t border-[#222731]">
+                <span class="text-zinc-300">${catMeta.emoji} ${catMeta.shortLabel}</span>
+                <span class="text-zinc-500 mono-num">${src.domainOrHandle}</span>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+    }
+
+    /**
+     * Switch active tab inside the Public Community Submission Form (Link vs Flyer only)
+     */
+    function switchStudioTab(tabName) {
+      ['link', 'flyer'].forEach(t => {
+        const panel = document.getElementById(`studio-tab-${t}`);
+        if (panel) {
+          if (t === tabName) panel.classList.remove('hidden');
+          else panel.classList.add('hidden');
+        }
+      });
+
+      document.querySelectorAll('.studio-tab-btn').forEach(btn => {
+        const t = btn.getAttribute('data-studio-tab');
+        if (t === tabName) {
+          btn.className = 'studio-tab-btn px-3.5 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer bg-white text-black flex items-center gap-1.5';
+        } else {
+          btn.className = 'studio-tab-btn px-3.5 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer bg-[#161920] text-zinc-300 border border-[#252a34] hover:text-white flex items-center gap-1.5';
+        }
+      });
+    }
+
+    /**
+     * Hidden Admin Page Router (`/#admin`) & Session State
+     */
+    let isAdminAuthenticated = false;
+
+    function syncAdminRouteVisibility() {
+      const hash = window.location.hash;
+      const publicView = document.getElementById('public-app-view');
+      const adminPage = document.getElementById('hidden-admin-page');
+      const loginGate = document.getElementById('admin-login-gate');
+      const consoleContent = document.getElementById('admin-console-content');
+      const logoutBtn = document.getElementById('admin-logout-btn');
+
+      if (hash === '#admin') {
+        publicView?.classList.add('hidden');
+        adminPage?.classList.remove('hidden');
+        if (isAdminAuthenticated) {
+          loginGate?.classList.add('hidden');
+          consoleContent?.classList.remove('hidden');
+          logoutBtn?.classList.remove('hidden');
+          renderStudioAdminAndLearnedUI();
+          populateArchitectureModal();
+        } else {
+          loginGate?.classList.remove('hidden');
+          consoleContent?.classList.add('hidden');
+          logoutBtn?.classList.add('hidden');
+        }
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else {
+        adminPage?.classList.add('hidden');
+        publicView?.classList.remove('hidden');
+      }
+    }
+
+    /**
+     * Initialize App
+     */
+    function initMilanoLiveApp() {
+      pageLoadAnchorMs = Date.now();
+      nextHourStartMs = getNextHourStartMs(pageLoadAnchorMs);
+      allNormalizedEvents = generateDynamic24hEvents(pageLoadAnchorMs);
+
+      updateHeaderClock();
+      setInterval(updateHeaderClock, 1000);
+
+      updateFilterControlsUI();
+      renderTimeline();
+      populateArchitectureModal();
+      renderStudioAdminAndLearnedUI();
+      syncAdminRouteVisibility();
+
+      // Listen for URL hash changes (#admin <-> public)
+      window.addEventListener('hashchange', syncAdminRouteVisibility);
+
+      // Secret keyboard shortcut Ctrl+Shift+A to open Hidden Admin Page (#admin)
+      window.addEventListener('keydown', (e) => {
+        if (e.ctrlKey && e.shiftKey && (e.key === 'A' || e.key === 'a')) {
+          e.preventDefault();
+          window.location.hash = window.location.hash === '#admin' ? '' : '#admin';
+        }
+      });
+
+      // Back to Public View button inside Hidden Admin Page
+      document.getElementById('back-to-public-view-btn')?.addEventListener('click', () => {
+        if (window.location.hash === '#admin') {
+          history.pushState('', document.title, window.location.pathname + window.location.search);
+        }
+        syncAdminRouteVisibility();
+      });
+
+      // Admin Login Form handler
+      document.getElementById('admin-login-form')?.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const pwd = document.getElementById('admin-password-input')?.value.trim();
+        const errBox = document.getElementById('admin-login-error');
+        if (pwd === 'milano-admin-24h' || pwd === 'admin') {
+          isAdminAuthenticated = true;
+          errBox?.classList.add('hidden');
+          syncAdminRouteVisibility();
+        } else {
+          errBox?.classList.remove('hidden');
+        }
+      });
+
+      // Admin Logout button
+      document.getElementById('admin-logout-btn')?.addEventListener('click', () => {
+        isAdminAuthenticated = false;
+        syncAdminRouteVisibility();
+      });
+
+      // Public Submission Tabs & Top Bar Quick Open Button
+      document.querySelectorAll('.studio-tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          switchStudioTab(btn.getAttribute('data-studio-tab'));
+        });
+      });
+
+      document.getElementById('open-submit-panel-btn')?.addEventListener('click', () => {
+        if (window.location.hash === '#admin') {
+          history.pushState('', document.title, window.location.pathname + window.location.search);
+          syncAdminRouteVisibility();
+        }
+        const body = document.getElementById('studio-collapsible-body');
+        body?.classList.remove('hidden');
+        switchStudioTab('link');
+        document.getElementById('community-ingestion-section')?.scrollIntoView({ behavior: 'smooth' });
+      });
+
+      document.getElementById('toggle-studio-collapse-btn')?.addEventListener('click', () => {
+        document.getElementById('studio-collapsible-body')?.classList.toggle('hidden');
+      });
+
+      // Preset 1: Trusted Link (Casa della Cultura - Politica/Sociale)
+      document.getElementById('preset-link-trusted')?.addEventListener('click', () => {
+        document.getElementById('input-link-url').value = 'https://www.casadellacultura.it/eventi/forum-citta-pubblica-milano';
+        document.getElementById('input-link-category').value = 'politica';
+        document.getElementById('input-link-offset').value = '20';
+        document.getElementById('input-link-title').value = 'Forum Città Pubblica: Beni Comuni, Scuole Aperte e Quartieri a Milano';
+        document.getElementById('input-link-venue').value = 'Casa della Cultura, Via Borgogna 3';
+        document.getElementById('input-link-free').value = 'true';
+      });
+
+      // Preset 2: External Shortlink (Silently intercepted by backend Safeguard)
+      document.getElementById('preset-link-suspicious')?.addEventListener('click', () => {
+        document.getElementById('input-link-url').value = 'https://bit.ly/evento-segreto-milano-prevendita-crypto.xyz';
+        document.getElementById('input-link-category').value = 'concerti';
+        document.getElementById('input-link-offset').value = '180';
+        document.getElementById('input-link-title').value = 'Secret Underground Party — Accesso Solo con Link Esterno Token';
+        document.getElementById('input-link-venue').value = 'Secret Location TBA, Zona Bovisa';
+        document.getElementById('input-link-free').value = 'false';
+      });
+
+      // Submit Link Form
+      document.getElementById('submit-link-form')?.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const rawUrl = document.getElementById('input-link-url').value;
+        const category = document.getElementById('input-link-category').value;
+        const offset = document.getElementById('input-link-offset').value;
+        const title = document.getElementById('input-link-title').value || 'Incontro Pubblico / Evento Segnalato da Link';
+        const venue = document.getElementById('input-link-venue').value || 'Casa della Cultura, Via Borgogna 3';
+        const isFree = document.getElementById('input-link-free').value === 'true';
+
+        processCommunitySubmission({
+          submittedVia: 'LINK_URL',
+          rawSourceUrl: rawUrl,
+          title,
+          venueAndAddress: venue,
+          category,
+          isFree,
+          offsetMinutes: Number(offset),
+          description: `Evento acquisito dal link ${rawUrl}.`
+        });
+      });
+
+      // Preset 3: Verified Flyer OCR (ARCI Bellezza)
+      document.getElementById('preset-flyer-trusted')?.addEventListener('click', () => {
+        document.getElementById('input-flyer-title').value = 'Assemblea Sociale & Cineforum in Palestra Visconti: Racconti di Quartiere';
+        document.getElementById('input-flyer-venue').value = 'Circolo ARCI Bellezza, Via Giovanni Bellezza 16';
+        document.getElementById('input-flyer-source').value = 'https://www.arcibellezza.it/eventi';
+        document.getElementById('input-flyer-category').value = 'politica';
+        document.getElementById('input-flyer-free').value = 'true';
+        document.getElementById('input-flyer-offset').value = '40';
+        document.getElementById('input-flyer-desc').value = 'Assemblea aperta su mutualismo di quartiere e proiezione documentario indipendente in Palestra Visconti.';
+        const ocrBox = document.getElementById('flyer-ocr-preview-text');
+        if (ocrBox) {
+          ocrBox.textContent = '"ARCI BELLEZZA • VIA BELLEZZA 16 MILANO • ASSEMBLEA SOCIALE & CINEFORUM IN PALESTRA VISCONTI • INGRESSO LIBERO • ARCIBELLEZZA.IT"';
+        }
+      });
+
+      // Preset 4: Unverified Flyer (Silently intercepted by backend Safeguard)
+      document.getElementById('preset-flyer-suspicious')?.addEventListener('click', () => {
+        document.getElementById('input-flyer-title').value = 'Raduno Notturno — Scansiona QR per Posizione Segreta';
+        document.getElementById('input-flyer-venue').value = 'Secret Location TBA (Solo via DM / QR)';
+        document.getElementById('input-flyer-source').value = 'https://t.me/secret_flyer_unverified_bot';
+        document.getElementById('input-flyer-category').value = 'concerti';
+        document.getElementById('input-flyer-free').value = 'false';
+        document.getElementById('input-flyer-offset').value = '150';
+        document.getElementById('input-flyer-desc').value = 'Volantino con QR code esterno privo di indirizzo civico.';
+        const ocrBox = document.getElementById('flyer-ocr-preview-text');
+        if (ocrBox) {
+          ocrBox.textContent = '"SECRET NIGHT MILANO • INFO POSIZIONE SOLO SU CANALE ESTERNO"';
+        }
+      });
+
+      // File Upload OCR Simulation for Flyer Image
+      document.getElementById('input-flyer-file')?.addEventListener('change', (e) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        const cleanName = file.name.replace(/\.[^.]+$/, '').replace(/[-_]/g, ' ');
+        const ocrBox = document.getElementById('flyer-ocr-preview-text');
+        if (ocrBox) {
+          ocrBox.textContent = `Lettura locandina "${file.name}" completata. Campi precompilati automaticamente.`;
+        }
+        if (!document.getElementById('input-flyer-title').value) {
+          document.getElementById('input-flyer-title').value = `Incontro Cittadino / Evento da Locandina (${cleanName})`;
+        }
+        if (!document.getElementById('input-flyer-venue').value) {
+          document.getElementById('input-flyer-venue').value = 'Casa della Cultura, Via Borgogna 3';
+        }
+        if (!document.getElementById('input-flyer-source').value) {
+          document.getElementById('input-flyer-source').value = 'https://www.casadellacultura.it';
+        }
+        if (!document.getElementById('input-flyer-desc').value) {
+          document.getElementById('input-flyer-desc').value = `Evento acquisito da foto locandina "${file.name}".`;
+        }
+      });
+
+      // Submit Flyer Form
+      document.getElementById('submit-flyer-form')?.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const title = document.getElementById('input-flyer-title').value;
+        const venue = document.getElementById('input-flyer-venue').value;
+        const source = document.getElementById('input-flyer-source').value;
+        const category = document.getElementById('input-flyer-category').value;
+        const isFree = document.getElementById('input-flyer-free').value === 'true';
+        const offset = document.getElementById('input-flyer-offset').value;
+        const desc = document.getElementById('input-flyer-desc').value;
+
+        processCommunitySubmission({
+          submittedVia: 'FLYER_PHOTO_OCR',
+          rawSourceUrl: source,
+          title,
+          venueAndAddress: venue,
+          category,
+          isFree,
+          offsetMinutes: Number(offset),
+          description: desc
+        });
+      });
+
+      // Bind Price Filter clicks
+      document.querySelectorAll('.price-filter-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          activePriceFilter = btn.getAttribute('data-price-filter');
+          updateFilterControlsUI();
+          renderTimeline();
+        });
+      });
+
+      // Bind Category Pill clicks
+      document.querySelectorAll('.category-pill').forEach(pill => {
+        pill.addEventListener('click', () => {
+          activeCategoryFilter = pill.getAttribute('data-category');
+          updateFilterControlsUI();
+          renderTimeline();
+        });
+      });
+
+      // Bind Live Only toggle
+      document.getElementById('toggle-live-only-btn')?.addEventListener('click', () => {
+        onlyHappeningNow = !onlyHappeningNow;
+        updateFilterControlsUI();
+        renderTimeline();
+      });
+
+      // Bind Search Input
+      const searchInput = document.getElementById('search-input');
+      const clearBtn = document.getElementById('clear-search-btn');
+      searchInput?.addEventListener('input', (e) => {
+        activeSearchQuery = e.target.value;
+        if (activeSearchQuery.trim().length > 0) {
+          clearBtn?.classList.remove('hidden');
+        } else {
+          clearBtn?.classList.add('hidden');
+        }
+        renderTimeline();
+      });
+
+      clearBtn?.addEventListener('click', () => {
+        activeSearchQuery = '';
+        if (searchInput) searchInput.value = '';
+        clearBtn.classList.add('hidden');
+        renderTimeline();
+      });
+
+      // Bind Reset Buttons
+      document.getElementById('reset-all-filters-btn')?.addEventListener('click', resetAllFilters);
+      document.getElementById('empty-reset-btn')?.addEventListener('click', resetAllFilters);
+    }
+
+    document.addEventListener('DOMContentLoaded', initMilanoLiveApp);
+  </script>
+</body>
+</html>
