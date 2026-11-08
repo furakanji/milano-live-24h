@@ -276,10 +276,10 @@
   <!-- Main Content: Public Event Submission + Dynamic 24-Hour Rolling Timeline -->
   <main class="max-w-5xl mx-auto px-4 py-6">
 
-    <!-- PUBLIC COMMUNITY RADAR (Only 2 Functions: Invia Link or Locandina with Scegli Foto / Scatta Foto) -->
+    <!-- PUBLIC COMMUNITY RADAR (Closed by default on page load; 2 Functions: Invia Link or Locandina) -->
     <section id="community-ingestion-section" class="mb-8 rounded-xl bg-[#111318] border border-[#282d39] overflow-hidden shadow-xl">
-      <!-- Header -->
-      <div class="px-4 sm:px-5 py-3.5 bg-[#151821] border-b border-[#23272f] flex flex-wrap items-center justify-between gap-3">
+      <!-- Header (Always visible, click button to expand/collapse) -->
+      <div class="px-4 sm:px-5 py-3.5 bg-[#151821] flex flex-wrap items-center justify-between gap-3">
         <div class="flex items-center gap-2.5">
           <span class="px-2 py-0.5 rounded bg-orange-500/20 text-orange-400 border border-orange-500/40 text-xs font-extrabold uppercase mono-num">
             COMMUNITY RADAR
@@ -289,21 +289,22 @@
               Segnala un Evento a Milano: Invia Link o Locandina
             </h2>
             <p class="text-xs text-zinc-400">
-              Tutti i dettagli (titolo, luogo, indirizzo, orario, prezzo e categoria) vengono estratti e aggiunti in automatico in backend dal servizio.
+              Tutti i dettagli vengono estratti e aggiunti in automatico in backend dal servizio.
             </p>
           </div>
         </div>
         <button
           id="toggle-studio-collapse-btn"
           type="button"
-          class="px-3 py-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-zinc-700 text-xs font-semibold cursor-pointer transition"
+          aria-expanded="false"
+          class="px-3.5 py-1.5 rounded-lg bg-orange-500/15 hover:bg-orange-500/25 text-orange-300 border border-orange-500/40 text-xs font-bold cursor-pointer transition"
         >
-          Mostra / Nascondi
+          + Apri Community Radar
         </button>
       </div>
 
-      <!-- Body: Strictly 2 Functions Side-by-Side -->
-      <div id="studio-collapsible-body" class="p-4 sm:p-5 space-y-4">
+      <!-- Body: Closed (`hidden`) on page load; Strictly 2 Functions Side-by-Side -->
+      <div id="studio-collapsible-body" class="hidden p-4 sm:p-5 space-y-4 border-t border-[#23272f]">
         <!-- Public Feedback Alert Banner -->
         <div id="ingestion-feedback-alert" class="hidden p-3.5 rounded-xl border text-xs space-y-1.5"></div>
 
@@ -331,7 +332,7 @@
                 id="input-link-url"
                 type="url"
                 required
-                placeholder="https://www.casadellacultura.it/eventi/..."
+                placeholder="https://www.casadellacultura.it/..."
                 class="flex-1 px-3 py-2.5 rounded-lg bg-[#131519] border border-[#272b35] text-white placeholder-zinc-500 focus:border-orange-500 outline-none"
               />
               <button
@@ -492,19 +493,19 @@
           MILANO LIVE 24H — CULTURAL &amp; SOCIAL RADAR
         </div>
         <p class="mt-1 text-zinc-400 max-w-xl">
-          Aggregatore cittadino con finestra mobile rigorosa di 24 ore (fuso orario <code class="text-zinc-300">Europe/Rome</code>) a partire dall'ora successiva. Deep link diretti a Google Maps, Instagram, Facebook e fonti ufficiali.
+          Aggregatore cittadino con finestra mobile rigorosa di 24 ore (fuso orario <code class="text-zinc-300">Europe/Rome</code>) a partire dall'ora successiva. Deep link diretti a Google Maps e alle pagine ufficiali delle singole fonti.
         </p>
       </div>
       <div class="flex items-center gap-3 self-end sm:self-center">
-        <!-- Discreet hidden admin route link (#admin) -->
+        <!-- Discreet hidden admin route link (?admin=1 / #admin) -->
         <a
-          href="#admin"
+          href="?admin=1#admin"
           id="secret-admin-entry-link"
-          title="Pagina Nascosta Accesso Admin (#admin oppure Ctrl+Shift+A)"
+          title="Accesso Diretto Console Admin senza password"
           class="text-zinc-600 hover:text-zinc-400 transition mono-num text-xs flex items-center gap-1"
         >
           <span>🔒</span>
-          <span>/#admin</span>
+          <span>/?admin=1</span>
         </a>
       </div>
     </div>
@@ -513,29 +514,22 @@
   </div><!-- END #public-app-view -->
 
   <!-- =================================================================== -->
-  <!-- HIDDEN ADMIN PAGE (`#admin`) — BACKEND SAFEGUARD & LEARNED DB       -->
-  <!-- Non esposta al pubblico: accessibile solo tramite route #admin       -->
+  <!-- DIRECT ADMIN PAGE (`?admin=1` or `#admin`) — NO PASSWORD REQUIRED    -->
+  <!-- Includes: Active Sources Registry, Learned Sources DB & Safeguard   -->
   <!-- =================================================================== -->
   <section id="hidden-admin-page" class="hidden min-h-[85vh] max-w-5xl mx-auto px-4 py-8">
 
     <!-- Top Admin Navigation Bar -->
     <div class="mb-6 flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-[#23272f]">
       <div class="flex items-center gap-2.5">
-        <span class="px-2.5 py-1 rounded bg-red-500/20 text-red-400 border border-red-500/40 font-extrabold text-xs uppercase mono-num">
-          🔒 BACKEND ADMIN ROUTE • /#admin
+        <span class="px-2.5 py-1 rounded bg-orange-500/20 text-orange-400 border border-orange-500/40 font-extrabold text-xs uppercase mono-num">
+          🛡️ CONSOLE ADMIN • ACCESSO DIRETTO (SENZA PASSWORD)
         </span>
         <span class="text-xs text-zinc-400 mono-num">
-          Non esposta al pubblico • Safeguard &amp; Source Learning Engine
+          Elenco Fonti Attive • Database Fonti Apprese • Coda Safeguard
         </span>
       </div>
       <div class="flex items-center gap-2">
-        <button
-          id="admin-logout-btn"
-          type="button"
-          class="hidden px-3 py-1.5 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-700 text-xs font-semibold cursor-pointer transition"
-        >
-          Blocca Sessione Admin
-        </button>
         <button
           id="back-to-public-view-btn"
           type="button"
@@ -546,53 +540,25 @@
       </div>
     </div>
 
-    <!-- STEP 1: ADMIN AUTHENTICATION GATE -->
-    <div id="admin-login-gate" class="max-w-md mx-auto my-12 p-6 rounded-2xl bg-[#111318] border border-[#2a2f3a] shadow-2xl space-y-4">
-      <div class="flex items-center gap-2.5">
-        <div class="w-10 h-10 rounded-xl bg-red-500/15 border border-red-500/40 flex items-center justify-center text-red-400 font-bold text-lg">
-          🛡️
-        </div>
-        <div>
-          <div class="text-xs font-bold uppercase tracking-wider text-red-400 mono-num">ACCESSO RISERVATO BACKEND</div>
-          <h2 class="text-lg font-black text-white">Console Safeguard &amp; Fonti</h2>
-        </div>
-      </div>
-
-      <p class="text-xs text-zinc-400 leading-relaxed">
-        Questa pagina è nascosta al pubblico. Tutte le valutazioni del <strong>Safeguard Anti-Spam / Anti-Phishing</strong> e l'apprendimento automatico delle fonti operano lato backend e sono ispezionabili esclusivamente dagli amministratori.
-      </p>
-
-      <form id="admin-login-form" class="space-y-3 text-xs">
-        <div>
-          <label class="block text-zinc-300 font-semibold mb-1">Chiave Admin / Token di Sessione</label>
-          <input
-            id="admin-password-input"
-            type="password"
-            value="milano-admin-24h"
-            placeholder="Inserisci chiave admin..."
-            class="w-full px-3 py-2 rounded-lg bg-[#0b0c0e] border border-[#272b35] text-white mono-num focus:border-orange-500 outline-none"
-          />
-          <span class="block text-[11px] text-zinc-500 mt-1 mono-num">
-            Chiave precompilata per test rapido: <code>milano-admin-24h</code>
-          </span>
-        </div>
-        <div id="admin-login-error" class="hidden p-2.5 rounded-lg bg-red-500/15 border border-red-500/40 text-red-300 text-xs">
-          Chiave Admin non valida. Usa <code>milano-admin-24h</code>.
-        </div>
-        <button
-          type="submit"
-          class="w-full py-2.5 rounded-lg bg-orange-500 hover:bg-orange-400 text-black font-extrabold uppercase tracking-wider cursor-pointer transition"
-        >
-          Accedi alla Console Backend Admin →
-        </button>
-      </form>
-    </div>
-
-    <!-- STEP 2: AUTHENTICATED BACKEND SAFEGUARD & SOURCE LEARNING DASHBOARD -->
-    <div id="admin-console-content" class="hidden space-y-8 text-xs">
+    <!-- ADMIN DASHBOARD CONTENT (Directly accessible via URL without password) -->
+    <div id="admin-console-content" class="space-y-8 text-xs">
 
       <!-- Admin KPI Summary Row -->
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div class="p-4 rounded-xl bg-[#131519] border border-emerald-500/40">
+          <div class="text-zinc-400 uppercase font-semibold">Fonti Attive cui Attinge il Servizio</div>
+          <div class="mt-1 flex items-baseline justify-between">
+            <span id="sources-count-btn-label" class="text-2xl font-black text-emerald-400 mono-num">30</span>
+            <span class="text-emerald-300 mono-num">URL diretti verificati</span>
+          </div>
+        </div>
+        <div class="p-4 rounded-xl bg-[#131519] border border-orange-500/30">
+          <div class="text-zinc-400 uppercase font-semibold">Fonti Apprese dal Sistema</div>
+          <div class="mt-1 flex items-baseline justify-between">
+            <span id="learned-sources-summary" class="text-2xl font-black text-orange-400 mono-num">2</span>
+            <span class="text-orange-300 mono-num">Auto-Learned &amp; Verified</span>
+          </div>
+        </div>
         <div class="p-4 rounded-xl bg-[#131519] border border-red-500/40">
           <div class="text-zinc-400 uppercase font-semibold">Coda Quarantena Safeguard</div>
           <div class="mt-1 flex items-baseline justify-between">
@@ -600,31 +566,39 @@
             <span class="text-red-300 mono-num">In attesa di verifica Admin</span>
           </div>
         </div>
-        <div class="p-4 rounded-xl bg-[#131519] border border-emerald-500/30">
-          <div class="text-zinc-400 uppercase font-semibold">Fonti Apprese dal Sistema</div>
-          <div class="mt-1 flex items-baseline justify-between">
-            <span id="learned-sources-summary" class="text-2xl font-black text-emerald-400 mono-num">2</span>
-            <span class="text-emerald-300 mono-num">Auto-Learned &amp; Verified</span>
-          </div>
-        </div>
-        <div class="p-4 rounded-xl bg-[#131519] border border-[#23272f]">
-          <div class="text-zinc-400 uppercase font-semibold">Totale Connettori Scraper Attivi</div>
-          <div class="mt-1 flex items-baseline justify-between">
-            <span id="sources-count-btn-label" class="text-2xl font-black text-white mono-num">26</span>
-            <span class="text-zinc-400 mono-num">scraperService.js</span>
-          </div>
-        </div>
       </div>
 
       <!-- Admin Action Feedback Alert -->
       <div id="admin-feedback-alert" class="hidden p-4 rounded-xl border text-xs space-y-1"></div>
 
-      <!-- 1. Quarantined Suspicious Sources List (Backend Safeguard Queue) -->
+      <!-- 1. ELENCO COMPLETO DELLE FONTI CUI ATTINGE IL SERVIZIO -->
+      <div class="p-5 rounded-xl bg-[#111318] border border-emerald-500/30 space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#23272f] pb-3">
+          <div>
+            <span class="text-xs font-bold uppercase tracking-widest text-emerald-400 mono-num">ELENCO UFFICIALE FONTI DI INGESTIONE (`scraperService.js`)</span>
+            <h3 class="text-sm sm:text-base font-bold text-white mt-0.5">
+              📚 1. Elenco delle Fonti Milanesi cui Attinge il Servizio (Con Link Diretto Verificato)
+            </h3>
+            <p class="text-zinc-400 mt-0.5">
+              Tutte le pagine web ufficiali, i calendari teatrali/cinematografici e i portali culturali milanesi da cui il servizio legge direttamente le descrizioni e gli orari degli eventi.
+            </p>
+          </div>
+          <span class="px-2.5 py-1 rounded bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 font-bold mono-num shrink-0">
+            TUTTE ATTIVE &amp; VERIFICATE
+          </span>
+        </div>
+
+        <div id="sources-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
+          <!-- Populated dynamically by JS -->
+        </div>
+      </div>
+
+      <!-- 2. Quarantined Suspicious Sources List (Backend Safeguard Queue) -->
       <div class="p-5 rounded-xl bg-[#111318] border border-[#282d39] space-y-4">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#23272f] pb-3">
           <div>
             <div class="font-bold text-red-400 uppercase tracking-wider flex items-center gap-1.5">
-              <span>🛡️ 1. Coda Backend Fonti Sospette Intercettate dal Safeguard</span>
+              <span>🛡️ 2. Coda Backend Fonti Sospette Intercettate dal Safeguard</span>
             </div>
             <p class="text-zinc-400 mt-0.5">
               Le segnalazioni inviate dagli utenti con URL shortener (<code class="text-red-300">bit.ly</code>), domini ad alto rischio (<code class="text-red-300">.xyz</code>), bot Telegram non censiti o indirizzo civico assente vengono bloccate silenziosamente lato backend e mostrate solo qui.
@@ -637,11 +611,11 @@
         </div>
       </div>
 
-      <!-- 2. Learned Sources Database Table -->
+      <!-- 3. Learned Sources Database Table -->
       <div class="p-5 rounded-xl bg-[#111318] border border-[#282d39] space-y-4">
         <div class="flex items-center justify-between border-b border-[#23272f] pb-3">
           <div>
-            <h3 class="text-sm font-bold text-white">🧠 2. Database Fonti Apprese Automaticamente (Backend Knowledge Graph)</h3>
+            <h3 class="text-sm font-bold text-white">🧠 3. Database Fonti Apprese Automaticamente da Link e Locandine</h3>
             <p class="text-zinc-400 mt-0.5">
               Nuove fonti milanesi imparate dal backend leggendo i link e le locandine inviate dagli utenti o approvate dall'Admin.
             </p>
@@ -653,24 +627,13 @@
         </div>
       </div>
 
-      <!-- 3. Full Backend Scraper Registry & Normalized JSON Schema -->
-      <div class="p-5 rounded-xl bg-[#111318] border border-[#282d39] space-y-5">
-        <div class="border-b border-[#23272f] pb-3">
-          <span class="text-xs font-bold uppercase tracking-widest text-emerald-400 mono-num">BACKEND INGESTION ENGINE (`backend/scraperService.js`)</span>
-          <h3 class="text-sm font-bold text-white mt-0.5">3. Matrice Completa Fonti Milanesi &amp; Schema JSON Normalizzato</h3>
+      <!-- 4. Normalized JSON Schema Preview -->
+      <div class="p-5 rounded-xl bg-[#111318] border border-[#282d39] space-y-3">
+        <div class="flex items-center justify-between">
+          <h4 class="text-xs font-bold uppercase tracking-wider text-zinc-300">4. Schema JSON Evento Normalizzato (Backend Output)</h4>
+          <span class="text-emerald-400 mono-num">Unified Schema v1.0</span>
         </div>
-
-        <div id="sources-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
-          <!-- Populated by JS -->
-        </div>
-
-        <div>
-          <div class="flex items-center justify-between mb-2">
-            <h4 class="text-xs font-bold uppercase tracking-wider text-zinc-300">Schema JSON Evento Normalizzato (Backend Output)</h4>
-            <span class="text-emerald-400 mono-num">Unified Schema v1.0</span>
-          </div>
-          <pre id="live-json-preview" class="p-3.5 rounded-lg bg-[#090a0d] border border-[#23272f] text-zinc-300 overflow-x-auto mono-num text-xs"></pre>
-        </div>
+        <pre id="live-json-preview" class="p-3.5 rounded-lg bg-[#090a0d] border border-[#23272f] text-zinc-300 overflow-x-auto mono-num text-xs"></pre>
       </div>
 
     </div>
@@ -734,30 +697,36 @@
     };
 
     const MILAN_SOURCES_REGISTRY = [
-      { name: 'Casa della Cultura Milano', category: 'Politica, Attivismo & Sociale', method: 'WP REST + Calendar Parser', url: 'https://www.casadellacultura.it' },
-      { name: 'Camera del Lavoro / CGIL Milano', category: 'Politica, Attivismo & Sociale', method: 'RSS + Structured HTML', url: 'https://www.cgil.milano.it' },
-      { name: 'Casa dei Diritti — Comune di Milano', category: 'Politica, Attivismo & Sociale', method: 'Civic Open Data API', url: 'https://www.comune.milano.it' },
-      { name: 'ANPI Provinciale Milano / Reti Civiche', category: 'Politica, Attivismo & Sociale', method: 'HTML + LLM Extractor', url: 'https://milano.anpi.it' },
-      { name: 'DICE.fm Milano', category: 'Music & Nightlife', method: 'GraphQL / JSON API', url: 'https://dice.fm/browse/milan' },
-      { name: 'Resident Advisor (RA Guide Milan)', category: 'Music & Nightlife', method: 'GraphQL API', url: 'https://ra.co/events/it/milan' },
-      { name: 'Zero.eu Milano', category: 'Music & Cultural Radar', method: 'RSS + Structured HTML', url: 'https://zero.eu/it/milano/eventi/' },
-      { name: 'SpazioCinema Anteo', category: 'Cinema & Auteur', method: 'HTML Showtime Parser', url: 'https://www.spaziocinema.info/milano' },
-      { name: 'Cineteca Milano (Arlecchino / MIC / Biblioteca)', category: 'Cinema & Auteur', method: 'Calendar Scraper', url: 'https://www.cinetecamilano.it' },
-      { name: 'Cinema Mexico', category: 'Cinema & Auteur', method: 'HTML + LLM Extractor', url: 'https://www.cinemamexico.it' },
-      { name: 'Il Cinemino', category: 'Cinema & Auteur', method: 'Program Schedule Scraper', url: 'https://www.ilcinemino.it' },
-      { name: 'Cinema Beltrade (Bandiere Interrotte)', category: 'Cinema & Auteur', method: 'HTML + Q&A Detector', url: 'https://bandiere-interrotte.it' },
-      { name: 'MilanoTeatri', category: 'Theater', method: 'Daily Calendar Parser', url: 'https://www.milanoteatri.it' },
-      { name: 'Invito a Teatro', category: 'Theater', method: 'Season Feed Parser', url: 'https://www.invitoateatro.mi.it' },
-      { name: 'Teatro Manzoni', category: 'Theater', method: 'Structured JSON-LD', url: 'https://www.teatromanzoni.it' },
-      { name: 'Piccolo Teatro (Strehler / Grassi / Studio Melato)', category: 'Theater', method: 'Calendar API', url: 'https://www.piccoloteatro.org' },
-      { name: 'Teatro Franco Parenti', category: 'Theater', method: 'HTML + JSON-LD', url: 'https://teatrofrancoparenti.it' },
-      { name: 'Fondazione Giangiacomo Feltrinelli', category: 'Books, Talks & Conferences', method: 'WP REST API', url: 'https://fondazionefeltrinelli.it/eventi/' },
-      { name: 'BookCity Milano / La Feltrinelli Eventi', category: 'Books, Talks & Conferences', method: 'Events Feed API', url: 'https://www.lafeltrinelli.it/eventi' },
-      { name: 'BASE Milano', category: 'Books, Talks & Music', method: 'WP JSON + Schedule', url: 'https://base.milano.it/whatson/' },
-      { name: 'MEET Digital Culture Center', category: 'Books, Talks & Digital Art', method: 'Eventbrite + WP REST', url: 'https://www.meetcenter.it' },
-      { name: 'Artribune / Exibart Milano', category: 'Art & Vernissages', method: 'RSS + Geo Filter', url: 'https://www.artribune.com/mostre-arte-contemporanea/italia/lombardia/' },
-      { name: 'FAI — Fondo Ambiente Italiano (Villa Necchi / Palazzi)', category: 'Special Openings', method: 'JSON-LD Events', url: 'https://fondoambiente.it' },
-      { name: 'Portale Cultura Comune di Milano / Milano da Scrocco', category: 'Free Openings & Civic', method: 'Open Data API + IG LLM', url: 'https://cultura.comune.milano.it' }
+      { name: 'Santeria Toscana 31 — Calendario Eventi', category: 'Concerti & Club', method: 'HTML Calendar + Liveurope', url: 'https://www.santeria.milano.it/eventi/' },
+      { name: 'Pirelli HangarBicocca — Mostre in Corso', category: 'Mostre & Musei', method: 'Structured HTML', url: 'https://pirellihangarbicocca.org/mostra/luciano-fabro/' },
+      { name: 'Fondazione Prada — Calendario & Cinema Godard', category: 'Mostre & Cinema', method: 'Calendar Feed', url: 'https://www.fondazioneprada.org/calendario/?period=current&tmpl=1' },
+      { name: 'MUDEC — Mostre in Corso & Collezione', category: 'Mostre & Musei', method: 'WP REST + HTML', url: 'https://www.mudec.it/mostre-in-corso-2/' },
+      { name: 'Palazzo Morando | Costume Moda Immagine (Comune di Milano)', category: 'Mostre & Musei', method: 'Civic Portal', url: 'https://www.comune.milano.it/web/palazzo-morando' },
+      { name: 'Villa Necchi Campiglio — FAI Eventi', category: 'Aperture Speciali', method: 'JSON-LD Events', url: 'https://fondoambiente.it/luoghi/villa-necchi-campiglio/eventi' },
+      { name: 'Cripta di San Giovanni in Conca — MilanoGuida', category: 'Aperture Speciali', method: 'Calendar Scraper', url: 'https://www.milanoguida.com/visite-guidate/itinerari-milano/la-cripta-di-san-giovanni-in-conca/' },
+      { name: 'Milano Medievale (Piazza Mercanti & Broletto) — MilanoGuida', category: 'Aperture Speciali', method: 'Calendar Scraper', url: 'https://www.milanoguida.com/visite-guidate/itinerari-milano/milano-medievale/' },
+      { name: 'Cineteca Milano Arlecchino', category: 'Cinema & Rassegne', method: 'Calendar Scraper', url: 'https://www.cinetecamilano.it/luogo/cineteca-milano-arlecchino/' },
+      { name: 'SpazioCinema Anteo Palazzo del Cinema', category: 'Cinema & Rassegne', method: 'Showtime Parser', url: 'https://www.spaziocinema.info/milano' },
+      { name: 'Cinema Beltrade — Programmazione MilanoCinema', category: 'Cinema & Rassegne', method: 'Daily Showtime API', url: 'https://milanocinema.com/it/cinema/beltrade' },
+      { name: 'Cinema Mexico — Programmazione MilanoCinema', category: 'Cinema & Rassegne', method: 'Daily Showtime API', url: 'https://milanocinema.com/cinema/mexico' },
+      { name: 'Il Cinemino — Programmazione Sala & Classics', category: 'Cinema & Rassegne', method: 'Schedule Table Parser', url: 'https://www.ilcinemino.it/programmazione/' },
+      { name: 'Piccolo Teatro Strehler', category: 'Teatro', method: 'Calendar API', url: 'https://www.piccoloteatro.org/it/theaters/piccolo-teatro-strehler' },
+      { name: 'Teatro Franco Parenti — Cartellone Spettacoli', category: 'Teatro', method: 'HTML + JSON-LD', url: 'https://teatrofrancoparenti.it/cartellone/spettacoli-teatro-milano/' },
+      { name: 'Teatro Elfo Puccini — Teatro Contemporaneo', category: 'Teatro', method: 'Season Schedule Parser', url: 'https://www.elfo.org/' },
+      { name: 'Teatro Manzoni — Programma Spettacoli', category: 'Teatro', method: 'Structured HTML', url: 'https://www.teatromanzoni.it/programma/' },
+      { name: 'Casa della Cultura Milano (Via Borgogna 3)', category: 'Politica, Attivismo & Sociale', method: 'WP REST + Calendar', url: 'https://www.casadellacultura.it/' },
+      { name: 'Camera del Lavoro / CGIL Milano — Stagione Culturale 2026', category: 'Politica, Attivismo & Sociale', method: 'WP REST + Agenda', url: 'https://www.cgil.milano.it/stagione-culturale-2026/' },
+      { name: 'Casa delle Donne di Milano — Calendario Eventi', category: 'Politica, Attivismo & Sociale', method: 'WP Calendar Parser', url: 'https://www.casadonnemilano.it/calendario-eventi-nella-casa/' },
+      { name: 'Casa dei Diritti — Comune di Milano (Via De Amicis 10)', category: 'Politica, Attivismo & Sociale', method: 'Civic Portal', url: 'https://www.comune.milano.it/argomenti/welfare/casa-dei-diritti' },
+      { name: 'Fondazione Giangiacomo Feltrinelli — Partecipa', category: 'Libri, Talk & Conferenze', method: 'WP REST API', url: 'https://fondazionefeltrinelli.it/partecipa-home/' },
+      { name: 'Libreria Verso — Calendario Appuntamenti', category: 'Libri, Talk & Conferenze', method: 'WP Events Parser', url: 'http://www.libreriaverso.com/appuntamenti/' },
+      { name: 'MEET Digital Culture Center — Tutti gli Eventi', category: 'Libri, Talk & Digital Art', method: 'WP REST API', url: 'https://www.meetcenter.it/it/tutti-gli-eventi/' },
+      { name: 'Triennale Milano — Scheda & Programmazione Zero.eu', category: 'Libri, Talk & Mostre', method: 'Zero.eu Structured Feed', url: 'https://zero.eu/it/luoghi/4032-triennale-di-milano,milano/' },
+      { name: 'BASE Milano — Agenda & Rassegna RUMORE / FAROUT', category: 'Mostre, Talk & Musica', method: 'WP Agenda Parser', url: 'https://base.milano.it/agenda/' },
+      { name: 'Blue Note Milano — Live Jazz Club', category: 'Concerti & Club', method: 'Show Schedule Parser', url: 'https://www.bluenotemilano.com/' },
+      { name: 'ARCI Biko Milano — Programmazione Zero.eu', category: 'Concerti & Club', method: 'Zero.eu Event Feed', url: 'https://zero.eu/it/eventi/383162-jazzmi-momoko-gill-arci-biko,milano/' },
+      { name: 'Circolo Magnolia — Idroscalo', category: 'Concerti & Club', method: 'Calendar Scraper', url: 'https://www.circolomagnolia.it/' },
+      { name: 'Tempio del Futuro Perduto — Scheda Zero.eu', category: 'Concerti & Club', method: 'Zero.eu Venue Feed', url: 'https://zero.eu/it/luoghi/103058-tempio-del-futuro-perduto,milano/' }
     ];
 
     /**
@@ -776,54 +745,54 @@
         scheduledHour: 10,
         scheduledMinute: 0,
         durationMinutes: 120,
-        title: 'Visita a Villa Necchi Campiglio & Giardino d’Inverno di Piero Portaluppi',
-        description: 'Percorso nelle sale storiche degli anni Trenta progettate da Piero Portaluppi e nella collezione d’arte de’ Micheli e Gian Ferrari custodita dal FAI.',
+        title: 'Piero Portaluppi: disegnare la modernità — Visita a Villa Necchi Campiglio',
+        description: 'Una delle dimore più rappresentative della Milano degli anni Trenta progettata da Piero Portaluppi in Via Mozart 14, custode delle collezioni Guido Sforni, de’ Micheli e Gian Ferrari.',
         venueName: 'Villa Necchi Campiglio (FAI)',
         neighborhood: 'Quadrilatero del Silenzio / Palestro',
         address: 'Via Mozart 14',
         isFree: false,
         priceDetails: '€15,00 Intero / Gratis Iscritti FAI',
         category: 'aperture',
-        sourceName: 'fondoambiente.it',
+        sourceName: 'fondoambiente.it/luoghi/villa-necchi-campiglio/eventi',
         instagramUrl: null,
         facebookUrl: null,
-        sourceUrl: 'https://fondoambiente.it/luoghi/villa-necchi-campiglio'
+        sourceUrl: 'https://fondoambiente.it/luoghi/villa-necchi-campiglio/eventi'
       },
       {
         id: 'evt-palazzo-morando-free',
         scheduledHour: 10,
         scheduledMinute: 30,
         durationMinutes: 150,
-        title: 'Collezione Costume Moda Immagine & Pinacoteca Civica del Settecento',
-        description: 'Ingresso gratuito alle sale storiche del palazzo settecentesco che raccontano l’evoluzione urbanistica e sociale di Milano tra ’700 e ’900.',
+        title: 'Palazzo Morando | Costume Moda Immagine — Pinacoteca e Galleria Cinese',
+        description: 'Nel cuore del quadrilatero della moda in Via Sant’Andrea 6, dimora storica donata alla Città di Milano con la Pinacoteca settecentesca e la collezione civica di Costume e Moda (aperto mar-dom 10:00–17:30, ingresso gratuito).',
         venueName: 'Palazzo Morando',
         neighborhood: 'Sant’Andrea / Montenapoleone',
         address: 'Via Sant’Andrea 6',
         isFree: true,
-        priceDetails: 'GRATIS • Ingresso gratuito collezione permanente',
+        priceDetails: 'GRATIS • Ingresso gratuito',
         category: 'mostre',
-        sourceName: 'costumemodaimmagine.mi.it',
+        sourceName: 'comune.milano.it/web/palazzo-morando',
         instagramUrl: null,
         facebookUrl: null,
-        sourceUrl: 'https://www.costumemodaimmagine.mi.it/'
+        sourceUrl: 'https://www.comune.milano.it/web/palazzo-morando'
       },
       {
         id: 'evt-brera-cripta-san-giovanni',
         scheduledHour: 11,
         scheduledMinute: 0,
         durationMinutes: 90,
-        title: 'Apertura Cripta Ipogea di San Giovanni in Conca',
-        description: 'Visita all’unica cripta romanica originale sopravvissuta nel centro di Milano in Piazza Missori, a cura dei volontari del patrimonio civico.',
+        title: 'Visita alla Cripta di San Giovanni in Conca & Milano Viscontea',
+        description: 'Unico esempio di cripta romanica originale esistente nel centro di Milano in Piazza Missori (antica cappella gentilizia di Bernabò Visconti), con percorso storico fino a San Gottardo in Corte.',
         venueName: 'Cripta di San Giovanni in Conca',
         neighborhood: 'Missori / Centro Storico',
-        address: 'Piazza Giuseppe Missori',
-        isFree: true,
-        priceDetails: 'GRATIS • Ingresso gratuito',
+        address: 'Piazza Giuseppe Missori 22',
+        isFree: false,
+        priceDetails: '€14,00 Tariffa intera con guida e microfonaggio',
         category: 'aperture',
-        sourceName: 'cultura.comune.milano.it',
+        sourceName: 'milanoguida.com (Cripta San Giovanni in Conca)',
         instagramUrl: null,
         facebookUrl: null,
-        sourceUrl: 'https://cultura.comune.milano.it/'
+        sourceUrl: 'https://www.milanoguida.com/visite-guidate/itinerari-milano/la-cripta-di-san-giovanni-in-conca/'
       },
       {
         id: 'evt-cineteca-arlecchino',
@@ -831,35 +800,35 @@
         scheduledMinute: 15,
         durationMinutes: 115,
         title: 'PGC 2026 — Piccolo Grande Cinema & Classici Restaurati (v.o. sott. ita)',
-        description: 'Proiezione speciale in lingua originale con sottotitoli in italiano nell’ambito del festival Piccolo Grande Cinema e delle rassegne d’archivio Cineteca Milano.',
+        description: 'Programmazione della Cineteca Milano Arlecchino in Via San Pietro all’Orto 9: rassegne d’autore in versione originale sottotitolata, festival Piccolo Grande Cinema e restauri 4K.',
         venueName: 'Cineteca Milano Arlecchino',
         neighborhood: 'San Babila / Corso Vittorio Emanuele',
         address: 'Via San Pietro all’Orto 9',
         isFree: false,
         priceDetails: '€8,50 Intero / €6,50 Cinetessera',
         category: 'cinema',
-        sourceName: 'cinetecamilano.it',
+        sourceName: 'cinetecamilano.it/luogo/cineteca-milano-arlecchino',
         instagramUrl: null,
         facebookUrl: null,
         sourceUrl: 'https://www.cinetecamilano.it/luogo/cineteca-milano-arlecchino/'
       },
       {
-        id: 'evt-vigna-leonardo-secret',
+        id: 'evt-milano-medievale-mercanti',
         scheduledHour: 12,
         scheduledMinute: 0,
-        durationMinutes: 75,
-        title: 'Visita Guidata a Mostre e Luoghi Storici Milanesi — Calendario MilanoGuida',
-        description: 'Itinerario culturale guidato tra cortili storici, chiostri rinascimentali e collezioni d’arte cittadine con storico dell’arte abilitato.',
-        venueName: 'Corso Magenta / Santa Maria delle Grazie',
-        neighborhood: 'Corso Magenta',
-        address: 'Corso Magenta 65',
+        durationMinutes: 90,
+        title: 'Milano Medievale: Piazza dei Mercanti, Loggia degli Osii e Broletto Nuovo',
+        description: 'Itinerario storico guidato nel cuore della Mediolanum medievale tra Piazza dei Mercanti, la Loggia degli Osii (1316), la Casa dei Panigarola e il Broletto Nuovo.',
+        venueName: 'Piazza dei Mercanti',
+        neighborhood: 'Duomo / Cordusio',
+        address: 'Piazza dei Mercanti 1',
         isFree: false,
-        priceDetails: '€14,00 Visita guidata con microfonaggio',
+        priceDetails: '€14,00 Visita guidata certificata',
         category: 'aperture',
-        sourceName: 'milanoguida.com',
+        sourceName: 'milanoguida.com (Milano Medievale)',
         instagramUrl: null,
         facebookUrl: null,
-        sourceUrl: 'https://www.milanoguida.com/calendario/'
+        sourceUrl: 'https://www.milanoguida.com/visite-guidate/itinerari-milano/milano-medievale/'
       },
 
       // === POMERIGGIO (14:30 – 17:30) ===
@@ -868,15 +837,15 @@
         scheduledHour: 14,
         scheduledMinute: 30,
         durationMinutes: 180,
-        title: 'Progetti Espositivi Podium & Torre + Rassegna Cinema Godard',
-        description: 'Mostre in corso negli spazi di Largo Isarco progettati da OMA/Rem Koolhaas e programmazione cinematografica quotidiana presso il Cinema Godard.',
+        title: 'Fondazione Prada: Esposizioni Podium & Torre + Cinema Godard',
+        description: 'Calendario mostre temporanee, collezione permanente Atlas e rassegna cinematografica quotidiana presso il Cinema Godard negli spazi di Largo Isarco 2.',
         venueName: 'Fondazione Prada',
         neighborhood: 'Scalo Romana / Largo Isarco',
         address: 'Largo Isarco 2',
         isFree: false,
         priceDetails: '€15,00 Intero / €12,00 Ridotto',
         category: 'mostre',
-        sourceName: 'fondazioneprada.org',
+        sourceName: 'fondazioneprada.org/calendario',
         instagramUrl: null,
         facebookUrl: null,
         sourceUrl: 'https://www.fondazioneprada.org/calendario/?period=current&tmpl=1'
@@ -886,36 +855,54 @@
         scheduledHour: 15,
         scheduledMinute: 0,
         durationMinutes: 140,
-        title: 'Collezione Permanente "Milano Globale" nell’Agorà di Chipperfield',
-        description: 'Percorso gratuito nella collezione permanente del Museo delle Culture di Via Tortona, tra reperti etnografici e storia globale delle arti.',
+        title: 'MUDEC: Installazione Chiharu Shiota, Mostra Matisse & Collezione Permanente',
+        description: 'Negli spazi dell’ex Ansaldo in Via Tortona 56: installazione site-specific nell’Agorà, percorso gratuito nella Collezione Permanente e grande mostra dedicata a Henri Matisse.',
         venueName: 'MUDEC — Museo delle Culture',
         neighborhood: 'Tortona / Ansaldo',
         address: 'Via Tortona 56',
         isFree: true,
-        priceDetails: 'GRATIS • Collezione permanente a ingresso libero',
+        priceDetails: 'GRATIS • Collezione permanente e Agorà a ingresso libero',
         category: 'mostre',
-        sourceName: 'mudec.it',
+        sourceName: 'mudec.it/mostre-in-corso-2',
         instagramUrl: null,
         facebookUrl: null,
-        sourceUrl: 'https://www.mudec.it/'
+        sourceUrl: 'https://www.mudec.it/mostre-in-corso-2/'
       },
       {
-        id: 'evt-torre-branca-sunset',
-        scheduledHour: 16,
-        scheduledMinute: 0,
-        durationMinutes: 85,
-        title: 'Salita Panoramica sulla Torre Branca di Giò Ponti (108m)',
-        description: 'Accesso fino al belvedere esagonale progettato da Giò Ponti nel 1933 nel cuore di Parco Sempione con vista a 360° sullo skyline di Milano.',
-        venueName: 'Torre Branca — Parco Sempione',
-        neighborhood: 'Parco Sempione',
-        address: 'Viale Luigi Camoens 2',
+        id: 'evt-meet-digital-culture',
+        scheduledHour: 15,
+        scheduledMinute: 30,
+        durationMinutes: 120,
+        title: 'The Shape of Human Values — Installazione & Digital Art al MEET',
+        description: 'Esposizione e programma di cultura digitale e tecnologia creativa negli spazi del MEET Digital Culture Center e nella Immersive Room di Viale Vittorio Veneto 2 (aperto 14:30 – 19:30).',
+        venueName: 'MEET Digital Culture Center',
+        neighborhood: 'Porta Venezia / Oberdan',
+        address: 'Viale Vittorio Veneto 2',
         isFree: false,
-        priceDetails: '€6,00 Salita Panoramica',
-        category: 'aperture',
-        sourceName: 'yesmilano.it',
+        priceDetails: '€10,00 Intero / €7,00 Ridotto',
+        category: 'mostre',
+        sourceName: 'meetcenter.it/it/tutti-gli-eventi',
         instagramUrl: null,
         facebookUrl: null,
-        sourceUrl: 'https://www.yesmilano.it/eventi/tutti-gli-eventi/questa-settimana-milano'
+        sourceUrl: 'https://www.meetcenter.it/it/tutti-gli-eventi/'
+      },
+      {
+        id: 'evt-casa-diritti-transfem',
+        scheduledHour: 16,
+        scheduledMinute: 0,
+        durationMinutes: 110,
+        title: 'Casa dei Diritti: Spazio Antidiscriminazioni, Rainbow Desk & Incontri Welfare',
+        description: 'Punto di riferimento istituzionale del Comune di Milano in Via De Amicis 10 per i diritti civili, l’orientamento legale, il contrasto alle discriminazioni e le reti sociali cittadine.',
+        venueName: 'Casa dei Diritti — Comune di Milano',
+        neighborhood: 'Sant’Ambrogio / De Amicis',
+        address: 'Via Edmondo De Amicis 10',
+        isFree: true,
+        priceDetails: 'GRATIS • Accesso libero',
+        category: 'politica',
+        sourceName: 'comune.milano.it (Casa dei Diritti)',
+        instagramUrl: null,
+        facebookUrl: null,
+        sourceUrl: 'https://www.comune.milano.it/argomenti/welfare/casa-dei-diritti'
       },
       {
         id: 'evt-hangar-bicocca',
@@ -930,46 +917,28 @@
         isFree: true,
         priceDetails: 'GRATIS • Ingresso gratuito',
         category: 'mostre',
-        sourceName: 'pirellihangarbicocca.org',
+        sourceName: 'pirellihangarbicocca.org/mostra/luciano-fabro',
         instagramUrl: null,
         facebookUrl: null,
         sourceUrl: 'https://pirellihangarbicocca.org/mostra/luciano-fabro/'
       },
       {
-        id: 'evt-casa-diritti-transfem',
-        scheduledHour: 17,
-        scheduledMinute: 0,
-        durationMinutes: 120,
-        title: 'Sportelli Diritti Civili, Welfare di Prossimità & Incontri Pubblici',
-        description: 'Incontro pubblico aperto alla cittadinanza con sportelli sociali, orientamento legale gratuito e reti associative del Comune di Milano.',
-        venueName: 'Casa dei Diritti — Comune di Milano',
-        neighborhood: 'Sant’Ambrogio / De Amicis',
-        address: 'Via Edmondo De Amicis 10',
-        isFree: true,
-        priceDetails: 'GRATIS • Partecipazione libera',
-        category: 'politica',
-        sourceName: 'comune.milano.it',
-        instagramUrl: null,
-        facebookUrl: null,
-        sourceUrl: 'https://www.comune.milano.it/'
-      },
-      {
-        id: 'evt-lafeltrinelli-duomo',
+        id: 'evt-camera-lavoro-diritti',
         scheduledHour: 17,
         scheduledMinute: 30,
-        durationMinutes: 75,
-        title: 'Presentazioni Libri & Incontri con gli Autori in Libreria',
-        description: 'Appuntamento pomeridiano aperto al pubblico con autori, saggisti ed editori presso le librerie laFeltrinelli di Milano.',
-        venueName: 'laFeltrinelli Duomo',
-        neighborhood: 'Piazza del Duomo / Galleria',
-        address: 'Galleria Vittorio Emanuele II 82',
+        durationMinutes: 110,
+        title: 'Stagione Culturale 2026: "Milano, Città del Lavoro" — Dibattiti in Sala Buozzi',
+        description: 'Ciclo di incontri pubblici, presentazioni di rapporti sociali e dibattiti promossi dal Dipartimento Cultura e Ricerca della Camera del Lavoro in Corso di Porta Vittoria 43.',
+        venueName: 'Camera del Lavoro di Milano',
+        neighborhood: 'Porta Vittoria / Cinque Giornate',
+        address: 'Corso di Porta Vittoria 43',
         isFree: true,
-        priceDetails: 'GRATIS • Ingresso libero',
-        category: 'libri',
-        sourceName: 'lafeltrinelli.it/eventi',
+        priceDetails: 'GRATIS • Ingresso aperto al pubblico',
+        category: 'politica',
+        sourceName: 'cgil.milano.it/stagione-culturale-2026',
         instagramUrl: null,
         facebookUrl: null,
-        sourceUrl: 'https://www.lafeltrinelli.it/eventi'
+        sourceUrl: 'https://www.cgil.milano.it/stagione-culturale-2026/'
       },
 
       // === PRESERALE & SERA (18:00 – 20:45) ===
@@ -978,33 +947,33 @@
         scheduledHour: 18,
         scheduledMinute: 0,
         durationMinutes: 90,
-        title: 'Presentazione Editoriale & Dialogo con gli Autori da Verso',
-        description: 'Incontro serale con autori ed editori indipendenti al primo piano della libreria di Corso di Porta Ticinese.',
+        title: 'Appuntamenti da Verso: Presentazioni Editoriali, Libri e Incontri',
+        description: 'Incontri con autori, editori indipendenti e presentazioni letterarie al primo piano della Libreria Verso in Corso di Porta Ticinese 40.',
         venueName: 'Libreria Verso',
         neighborhood: 'Colonne di San Lorenzo / Ticinese',
         address: 'Corso di Porta Ticinese 40',
         isFree: true,
         priceDetails: 'GRATIS • Ingresso libero fino a esaurimento posti',
         category: 'libri',
-        sourceName: 'libreriaverso.com',
+        sourceName: 'libreriaverso.com/appuntamenti',
         instagramUrl: null,
         facebookUrl: null,
-        sourceUrl: 'https://www.libreriaverso.com/'
+        sourceUrl: 'http://www.libreriaverso.com/appuntamenti/'
       },
       {
         id: 'evt-casa-donne-milano',
         scheduledHour: 18,
         scheduledMinute: 15,
         durationMinutes: 100,
-        title: 'Letture, Gruppi di Lavoro & Incontri Pubblici alla Casa delle Donne',
-        description: 'Appuntamento aperto nella sede di Via Marsala: gruppi tematici, biblioteca delle donne, sportello d’ascolto e iniziative culturali femministe.',
+        title: 'Calendario Eventi nella Casa: Letture, Biblioteca e Gruppi Tematici',
+        description: 'Incontri pubblici, presentazioni, gruppi di lavoro e sportello d’ascolto negli spazi della Casa delle Donne di Milano in Via Marsala 8.',
         venueName: 'Casa delle Donne di Milano',
         neighborhood: 'Garibaldi / Moscova',
         address: 'Via Marsala 8',
         isFree: true,
         priceDetails: 'GRATIS • Ingresso libero',
         category: 'politica',
-        sourceName: 'casadonnemilano.it',
+        sourceName: 'casadonnemilano.it/calendario-eventi-nella-casa',
         instagramUrl: null,
         facebookUrl: null,
         sourceUrl: 'https://www.casadonnemilano.it/calendario-eventi-nella-casa/'
@@ -1014,15 +983,15 @@
         scheduledHour: 18,
         scheduledMinute: 30,
         durationMinutes: 105,
-        title: 'Partecipa: Public Talk, Archivi Digitali & Cittadinanza Attiva',
-        description: 'Incontro pubblico e tavola rotonda nella sede di Viale Pasubio progettata da Herzog & de Meuron con ricercatori, docenti e giornalisti.',
+        title: 'Partecipa: Public Talk, Scenari Urbani e Cittadinanza in Viale Pasubio',
+        description: 'Incontri pubblici, dialoghi multidisciplinari e laboratori di cittadinanza attiva nella sede della Fondazione Giangiacomo Feltrinelli in Viale Pasubio 5.',
         venueName: 'Fondazione Giangiacomo Feltrinelli',
         neighborhood: 'Porta Volta',
         address: 'Viale Pasubio 5',
         isFree: true,
         priceDetails: 'GRATIS • Accesso libero con registrazione',
         category: 'libri',
-        sourceName: 'fondazionefeltrinelli.it',
+        sourceName: 'fondazionefeltrinelli.it/partecipa-home',
         instagramUrl: null,
         facebookUrl: null,
         sourceUrl: 'https://fondazionefeltrinelli.it/partecipa-home/'
@@ -1030,89 +999,71 @@
       {
         id: 'evt-triennale-design-talk',
         scheduledHour: 18,
-        scheduledMinute: 30,
+        scheduledMinute: 45,
         durationMinutes: 95,
-        title: 'Triennale Milano: Talk, Esposizioni & Rassegna Salone d’Onore',
-        description: 'Programma serale negli spazi del Palazzo dell’Arte in Viale Alemagna tra design contemporaneo, architettura, arti performative e musica.',
+        title: 'Triennale Milano: Incontri Pubblici, Architettura & Rassegne al Palazzo dell’Arte',
+        description: 'Programmazione culturale, talk ed esposizioni nel Palazzo dell’Arte progettato da Giovanni Muzio in Viale Emilio Alemagna 6.',
         venueName: 'Triennale Milano',
         neighborhood: 'Parco Sempione / Cadorna',
         address: 'Viale Emilio Alemagna 6',
         isFree: true,
         priceDetails: 'GRATIS • Ingresso libero agli incontri pubblici',
         category: 'libri',
-        sourceName: 'zero.eu / Triennale Milano',
+        sourceName: 'zero.eu (Triennale di Milano)',
         instagramUrl: null,
         facebookUrl: null,
         sourceUrl: 'https://zero.eu/it/luoghi/4032-triennale-di-milano,milano/'
-      },
-      {
-        id: 'evt-meet-digital-culture',
-        scheduledHour: 18,
-        scheduledMinute: 45,
-        durationMinutes: 90,
-        title: 'Cultura Digitale, Arti Generative & Installazioni Immersive al MEET',
-        description: 'Appuntamento dedicato alle arti digitali e alla tecnologia creativa nella sede di Porta Venezia con sala immersiva.',
-        venueName: 'MEET Digital Culture Center',
-        neighborhood: 'Porta Venezia / Oberdan',
-        address: 'Viale Vittorio Veneto 2',
-        isFree: true,
-        priceDetails: 'GRATIS • Ingresso gratuito agli incontri su registrazione',
-        category: 'libri',
-        sourceName: 'meetcenter.it',
-        instagramUrl: null,
-        facebookUrl: null,
-        sourceUrl: 'https://www.meetcenter.it/'
       },
       {
         id: 'evt-base-vernissage',
         scheduledHour: 19,
         scheduledMinute: 0,
         durationMinutes: 180,
-        title: 'BASE Milano: Progetti Culturali, Design & Music Room in Ex Ansaldo',
-        description: 'Programmazione serale negli spazi dell’ex Ansaldo in Via Bergognone: mostre temporanee, talk indipendenti e live set nel cortile e nella ground hall.',
+        title: 'RUMORE & FAROUT — Live Showcase, Performance e Progetti a BASE Milano',
+        description: 'Centro culturale ibrido negli spazi ex Ansaldo di Via Bergognone 34: rassegna musicale RUMORE, arti performative FAROUT e incontri aperti alla città.',
         venueName: 'BASE Milano',
         neighborhood: 'Tortona',
         address: 'Via Bergognone 34',
         isFree: true,
         priceDetails: 'GRATIS • Ingresso libero agli spazi comuni',
         category: 'mostre',
-        sourceName: 'base.milano.it',
+        sourceName: 'base.milano.it/agenda',
         instagramUrl: null,
         facebookUrl: null,
-        sourceUrl: 'https://base.milano.it/'
+        sourceUrl: 'https://base.milano.it/agenda/'
       },
       {
-        id: 'evt-camera-lavoro-diritti',
+        id: 'evt-cinemino-essay',
         scheduledHour: 19,
-        scheduledMinute: 15,
-        durationMinutes: 115,
-        title: 'Incontri Sindacali, Diritti del Lavoro & Assemblee Cittadine',
-        description: 'Iniziative pubbliche e tavoli di confronto nel Salone Di Vittorio della Camera del Lavoro di Milano su lavoro, welfare territoriale e diritti.',
-        venueName: 'Camera del Lavoro di Milano',
-        neighborhood: 'Porta Vittoria / Cinque Giornate',
-        address: 'Corso di Porta Vittoria 43',
-        isFree: true,
-        priceDetails: 'GRATIS • Ingresso aperto al pubblico',
-        category: 'politica',
-        sourceName: 'cgil.milano.it',
+        scheduledMinute: 30,
+        durationMinutes: 105,
+        title: 'Je So’ Pazzo & Minnie e Moskowitz (Cinemino Classics v.o. sott. ita)',
+        description: 'Programmazione serale nella sala da 74 posti dell’Associazione Seiseneca in Via Seneca 6: proiezioni in lingua originale sottotitolata e rassegna Cinemino Classics.',
+        venueName: 'Il Cinemino',
+        neighborhood: 'Porta Romana / Crocetta',
+        address: 'Via Seneca 6',
+        isFree: false,
+        priceDetails: '€9,00 Intero / €7,00 Ridotto + Tessera',
+        category: 'cinema',
+        sourceName: 'ilcinemino.it/programmazione',
         instagramUrl: null,
         facebookUrl: null,
-        sourceUrl: 'https://www.cgil.milano.it/'
+        sourceUrl: 'https://www.ilcinemino.it/programmazione/'
       },
       {
         id: 'evt-piccolo-strehler',
         scheduledHour: 19,
         scheduledMinute: 30,
         durationMinutes: 135,
-        title: 'Stagione Piccolo Teatro Strehler — Spettacolo Serale in Largo Greppi',
-        description: 'Programmazione di prosa e regia internazionale sul palcoscenico progettato da Marco Zanuso a due passi da Lanza/Brera.',
+        title: 'Slava’s Snowshow & Stagione Prosa al Piccolo Teatro Strehler',
+        description: 'Spettacolo serale sul palcoscenico del Piccolo Teatro Strehler in Largo Greppi 1 (M2 Lanza), storico Teatro d’Europa fondato da Giorgio Strehler e Paolo Grassi.',
         venueName: 'Piccolo Teatro Strehler',
         neighborhood: 'Lanza / Brera',
         address: 'Largo Greppi 1',
         isFree: false,
-        priceDetails: '€22,00 Platea / €16,00 Balconata',
+        priceDetails: '€25,00 – €40,00',
         category: 'teatro',
-        sourceName: 'piccoloteatro.org',
+        sourceName: 'piccoloteatro.org (Piccolo Teatro Strehler)',
         instagramUrl: null,
         facebookUrl: null,
         sourceUrl: 'https://www.piccoloteatro.org/it/theaters/piccolo-teatro-strehler'
@@ -1122,13 +1073,13 @@
         scheduledHour: 19,
         scheduledMinute: 45,
         durationMinutes: 110,
-        title: 'Stagione Teatro Contemporaneo — Sala Shakespeare, Bausch e Fassbinder',
-        description: 'Spettacoli di drammaturgia contemporanea, rassegna "Nuove Storie / Sconfinamenti" e produzioni Bruni/Frongia al Teatro Elfo Puccini.',
+        title: 'Stagione Teatro Contemporaneo — Sale Shakespeare, Bausch e Fassbinder',
+        description: 'Spettacoli di drammaturgia contemporanea, rassegna "Nuove Storie / Sconfinamenti" e produzioni Bruni/Frongia al Teatro Elfo Puccini in Corso Buenos Aires 33.',
         venueName: 'Teatro Elfo Puccini',
         neighborhood: 'Corso Buenos Aires / Lima',
         address: 'Corso Buenos Aires 33',
         isFree: false,
-        priceDetails: '€19,50 Ridotto Under30 / €29,00 Intero',
+        priceDetails: '€19,50 Ridotto / €29,00 Intero',
         category: 'teatro',
         sourceName: 'elfo.org',
         instagramUrl: null,
@@ -1141,14 +1092,14 @@
         scheduledMinute: 30,
         durationMinutes: 110,
         title: 'Sinfonia di un incontro (con Milena Vukotic) & Cartellone Sala Grande',
-        description: 'In scena al Teatro Franco Parenti di Via Pier Lombardo: "Sinfonia di un incontro" con Milena Vukotic e gli spettacoli del cartellone serale.',
+        description: 'Spettacoli serali al Teatro Franco Parenti in Via Pier Lombardo 14: in cartellone "Sinfonia di un incontro" con Milena Vukotic e "Amleto²" di Filippo Timi.',
         venueName: 'Teatro Franco Parenti',
         neighborhood: 'Porta Romana',
         address: 'Via Pier Lombardo 14',
         isFree: false,
-        priceDetails: '€18,00 - €28,00 (Convenzione Invito a Teatro)',
+        priceDetails: '€18,00 - €28,00',
         category: 'teatro',
-        sourceName: 'teatrofrancoparenti.it',
+        sourceName: 'teatrofrancoparenti.it/cartellone',
         instagramUrl: null,
         facebookUrl: null,
         sourceUrl: 'https://teatrofrancoparenti.it/cartellone/spettacoli-teatro-milano/'
@@ -1158,8 +1109,8 @@
         scheduledHour: 20,
         scheduledMinute: 30,
         durationMinutes: 110,
-        title: 'Dialoghi di Filosofia, Politica e Cultura: "Ricostruire un Corpo Sociale Vivente"',
-        description: 'Ciclo di incontri pubblici, dibattiti su democrazia, urbanistica e pace promossi dalla storica Casa della Cultura in Via Borgogna 3.',
+        title: 'Scuola di Cultura Politica & Dialoghi: "Ricostruire un Corpo Sociale Vivente"',
+        description: 'Ciclo di incontri pubblici, dibattiti su democrazia, urbanistica e filosofia promossi dalla storica Casa della Cultura in Via Borgogna 3.',
         venueName: 'Casa della Cultura',
         neighborhood: 'San Babila / Via Borgogna',
         address: 'Via Borgogna 3',
@@ -1176,33 +1127,33 @@
         scheduledHour: 20,
         scheduledMinute: 45,
         durationMinutes: 120,
-        title: 'Stagione Teatrale di Prosa & Commedia al Teatro Manzoni',
-        description: 'Spettacolo serale sul palcoscenico storico di Via Manzoni 42 con le compagnie protagoniste della stagione teatrale milanese.',
+        title: 'Rassegna Prosa & Spettacolo Serale al Teatro Manzoni',
+        description: 'Programmazione serale di prosa e commedia nello storico Teatro Manzoni in Via Alessandro Manzoni 42.',
         venueName: 'Teatro Manzoni',
         neighborhood: 'Quadrilatero / Montenapoleone',
-        address: 'Via Manzoni 42',
+        address: 'Via Alessandro Manzoni 42',
         isFree: false,
         priceDetails: '€25,00 - €36,00 Poltronissima / Galleria',
         category: 'teatro',
-        sourceName: 'teatromanzoni.it',
+        sourceName: 'teatromanzoni.it/programma',
         instagramUrl: null,
         facebookUrl: null,
-        sourceUrl: 'https://www.teatromanzoni.it/'
+        sourceUrl: 'https://www.teatromanzoni.it/programma/'
       },
       {
         id: 'evt-anteo-anteprima',
         scheduledHour: 20,
         scheduledMinute: 45,
         durationMinutes: 130,
-        title: 'Programmazione Serale in Lingua Originale (v.o. sott. ita) — Sala Excelsior & Rubino',
-        description: 'Proiezioni serali in versione originale sottotitolata e anteprime con ospiti presso Anteo Palazzo del Cinema in Piazza XXV Aprile.',
+        title: 'Programmazione Serale in Lingua Originale (v.o. sott. ita) — Anteo Palazzo del Cinema',
+        description: 'Proiezioni serali nelle sale di Piazza XXV Aprile 8 a cura di SpazioCinema Anteo, con rassegne d’autore e film in versione originale sottotitolata.',
         venueName: 'Anteo Palazzo del Cinema',
         neighborhood: 'Brera / Garibaldi',
         address: 'Piazza Venticinque Aprile 8',
         isFree: false,
-        priceDetails: '€9,50 Intero / €7,00 Amici del Cinema',
+        priceDetails: '€9,50 Intero / €7,00 Ridotto',
         category: 'cinema',
-        sourceName: 'spaziocinema.info',
+        sourceName: 'spaziocinema.info/milano',
         instagramUrl: null,
         facebookUrl: null,
         sourceUrl: 'https://www.spaziocinema.info/milano'
@@ -1214,26 +1165,26 @@
         scheduledHour: 21,
         scheduledMinute: 0,
         durationMinutes: 125,
-        title: 'Cinema d’Essai & Proiezione Serale con Dibattito in Sala',
-        description: 'Programmazione storica d’autore nella sala indipendente di Via Savona 57, punto di riferimento del cinema indipendente a Milano.',
+        title: 'Minotaur & Programmazione Cinema d’Essai — Cinema Mexico',
+        description: 'Proiezioni serali nella storica monosala d’essai di Via Savona 57 a Milano, con programmazione indipendente aggiornata quotidianamente.',
         venueName: 'Cinema Mexico',
         neighborhood: 'Zona Solari / Via Savona',
         address: 'Via Savona 57',
         isFree: false,
         priceDetails: '€7,50 Intero / €6,00 Ridotto',
         category: 'cinema',
-        sourceName: 'cinemamexico.it',
+        sourceName: 'milanocinema.com/cinema/mexico',
         instagramUrl: null,
         facebookUrl: null,
-        sourceUrl: 'https://www.cinemamexico.it/'
+        sourceUrl: 'https://milanocinema.com/cinema/mexico'
       },
       {
         id: 'evt-blue-note-jazz',
         scheduledHour: 21,
         scheduledMinute: 0,
         durationMinutes: 95,
-        title: 'Live Jazz, Soul & Blues — First & Second Set in Via Borsieri',
-        description: 'Doppio set dal vivo nello storico jazz club del quartiere Isola con protagonisti internazionali del jazz, soul e blues contemporaneo.',
+        title: 'Live Jazz, Soul & Blues — First & Second Set al Blue Note Milano',
+        description: 'Doppio set dal vivo nello storico jazz club di Via Pietro Borsieri 37 nel quartiere Isola con protagonisti internazionali del jazz, soul e blues.',
         venueName: 'Blue Note Milano',
         neighborhood: 'Isola',
         address: 'Via Pietro Borsieri 37',
@@ -1251,12 +1202,12 @@
         scheduledMinute: 0,
         durationMinutes: 120,
         title: 'Mauro Ermanno Giovanardi — "E poi scegliere con cura le parole" Live & Spettacoli Teatro',
-        description: 'Live sul palco del Teatro di Santeria Toscana 31 in Viale Toscana: Mauro Ermanno Giovanardi presenta il nuovo album "E poi scegliere con cura le parole" tra racconti e canzoni.',
+        description: 'Live sul palco del Teatro di Santeria Toscana 31 in Viale Toscana 31: Mauro Ermanno Giovanardi presenta il nuovo album "E poi scegliere con cura le parole" tra racconti e canzoni.',
         venueName: 'Santeria Toscana 31',
         neighborhood: 'Viale Toscana / Bocconi',
         address: 'Viale Toscana 31',
         isFree: false,
-        priceDetails: 'Biglietti su santeria.milano.it / Ticketone / DICE',
+        priceDetails: 'Biglietti su santeria.milano.it',
         category: 'concerti',
         sourceName: 'santeria.milano.it/eventi',
         instagramUrl: null,
@@ -1269,14 +1220,14 @@
         scheduledMinute: 30,
         durationMinutes: 115,
         title: 'Fatherland (di Paweł Pawlikowski) & Wild Horse Nine — Proiezione v.o. sott. ita',
-        description: 'Programmazione serale in versione originale sottotitolata al Cinema Beltrade ("Bandhi"): in sala Fatherland di Paweł Pawlikowski, Wild Horse Nine di Martin McDonagh e Minotaur.',
+        description: 'Programmazione serale in versione originale sottotitolata al Cinema Beltrade in Via Nino Oxilia 10 (NoLo): in sala Fatherland di Paweł Pawlikowski e Wild Horse Nine di Martin McDonagh.',
         venueName: 'Cinema Beltrade',
         neighborhood: 'NoLo / Piazza Morbegno',
         address: 'Via Nino Oxilia 10',
         isFree: false,
         priceDetails: '€7,50 Biglietto intero',
         category: 'cinema',
-        sourceName: 'milanocinema.com / Cinema Beltrade',
+        sourceName: 'milanocinema.com/it/cinema/beltrade',
         instagramUrl: null,
         facebookUrl: null,
         sourceUrl: 'https://milanocinema.com/it/cinema/beltrade'
@@ -1304,36 +1255,18 @@
         scheduledHour: 22,
         scheduledMinute: 0,
         durationMinutes: 180,
-        title: 'JAZZMI / Live Showcase & Club Set al Circolo ARCI Biko',
-        description: 'Live concert e selezione musicale black/jazz/electronic sul palco di Via Ettore Ponti 40. Ingresso riservato ai soci ARCI con prevendita su DICE.',
+        title: 'JAZZMI — Momoko Gill Live & Club Set al Circolo ARCI Biko',
+        description: 'Live concert e selezione musicale black/jazz/electronic sul palco del Circolo ARCI Biko in Via Ettore Ponti 40.',
         venueName: 'Biko Milano',
         neighborhood: 'Naviglio Pavese / Barona',
         address: 'Via Ettore Ponti 40',
         isFree: false,
-        priceDetails: 'Biglietti su DICE (+ tessera ARCI)',
+        priceDetails: 'Ingresso con tessera ARCI',
         category: 'concerti',
-        sourceName: 'zero.eu / ARCI Biko',
+        sourceName: 'zero.eu (ARCI Biko)',
         instagramUrl: null,
         facebookUrl: null,
         sourceUrl: 'https://zero.eu/it/eventi/383162-jazzmi-momoko-gill-arci-biko,milano/'
-      },
-      {
-        id: 'evt-cinemino-essay',
-        scheduledHour: 22,
-        scheduledMinute: 15,
-        durationMinutes: 105,
-        title: 'Programmazione Serale d’Essai in Sala & Bar del Circolo',
-        description: 'Proiezione serale in lingua originale nella sala da 74 posti di Via Seneca 6 in Porta Romana (accesso con tessera associativa).',
-        venueName: 'Il Cinemino',
-        neighborhood: 'Porta Romana / Crocetta',
-        address: 'Via Seneca 6',
-        isFree: false,
-        priceDetails: '€7,50 + Tessera Associativa',
-        category: 'cinema',
-        sourceName: 'ilcinemino.it',
-        instagramUrl: null,
-        facebookUrl: null,
-        sourceUrl: 'https://www.ilcinemino.it/'
       },
       {
         id: 'evt-magnolia-clubnight',
@@ -1346,7 +1279,7 @@
         neighborhood: 'Idroscalo / Segrate',
         address: 'Via Circonvallazione Idroscalo 41',
         isFree: false,
-        priceDetails: 'Biglietti su circolomagnolia.it / DICE',
+        priceDetails: 'Biglietti su circolomagnolia.it',
         category: 'concerti',
         sourceName: 'circolomagnolia.it',
         instagramUrl: null,
@@ -1358,18 +1291,18 @@
         scheduledHour: 23,
         scheduledMinute: 30,
         durationMinutes: 210,
-        title: 'Rassegna Notturna Musica Elettronica & Arti Visive a Milano',
-        description: 'Programmazione clubbing ed elettronica selezionata dalla redazione di Zero Milano nei club e spazi indipendenti cittadini.',
+        title: 'Club Night & Arti Multidisciplinari al Tempio del Futuro Perduto',
+        description: 'Centro culturale multidisciplinare indipendente in Via Luigi Nono 9 (zona Monumentale / Cenisio) tra musica elettronica, arti performative e clubbing.',
         venueName: 'Tempio del Futuro Perduto',
         neighborhood: 'Cenisio / Monumentale',
         address: 'Via Luigi Nono 9',
         isFree: false,
         priceDetails: 'Ingresso secondo programmazione serata',
         category: 'concerti',
-        sourceName: 'zero.eu/milano/eventi',
+        sourceName: 'zero.eu (Tempio del Futuro Perduto)',
         instagramUrl: null,
         facebookUrl: null,
-        sourceUrl: 'https://zero.eu/milano/eventi/'
+        sourceUrl: 'https://zero.eu/it/luoghi/103058-tempio-del-futuro-perduto,milano/'
       }
     ];
 
@@ -2055,23 +1988,26 @@
     }
 
     /**
-     * Populate Architecture Modal with the 20+ Milanese sources & live normalized JSON schema
+     * Populate Admin Sources Grid with all active Milanese sources (including direct URL) & live normalized JSON schema
      */
     function populateArchitectureModal() {
       const grid = document.getElementById('sources-grid');
       if (grid) {
-        grid.innerHTML = MILAN_SOURCES_REGISTRY.map(src => `
+        grid.innerHTML = MILAN_SOURCES_REGISTRY.map((src, idx) => `
           <a
             href="${src.url}"
             target="_blank"
             rel="noopener noreferrer"
-            class="p-2.5 rounded-lg bg-[#161920] hover:bg-[#1c2029] border border-[#252a34] transition block"
+            class="p-3 rounded-lg bg-[#161920] hover:bg-[#1c2029] border border-[#252a34] hover:border-emerald-500/40 transition flex flex-col justify-between gap-1.5"
           >
-            <div class="flex items-center justify-between gap-2">
-              <span class="font-bold text-white text-xs">${src.name}</span>
-              <span class="px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-300 text-xs mono-num">ONLINE</span>
+            <div class="flex items-start justify-between gap-2">
+              <span class="font-bold text-white text-xs leading-snug">${idx + 1}. ${src.name}</span>
+              <span class="px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-300 text-[10px] font-bold mono-num shrink-0">ATTIVA</span>
             </div>
-            <div class="text-zinc-400 text-xs mt-1">${src.category} • <span class="text-zinc-300">${src.method}</span></div>
+            <div class="text-zinc-400 text-[11px]">${src.category} • <span class="text-zinc-300">${src.method}</span></div>
+            <div class="text-[11px] text-orange-400 mono-num truncate pt-1 border-t border-[#222731]">
+              🔗 ${src.url}
+            </div>
           </a>
         `).join('');
       }
@@ -2785,32 +2721,24 @@
     }
 
     /**
-     * Hidden Admin Page Router (`/#admin`) & Session State
+     * Hidden Admin Page Router (`?admin=1` or `/#admin`) — Passwordless Direct Access
      */
-    let isAdminAuthenticated = false;
+    function isDirectAdminUrl() {
+      const params = new URLSearchParams(window.location.search);
+      return window.location.hash === '#admin' || params.has('admin');
+    }
 
     function syncAdminRouteVisibility() {
-      const hash = window.location.hash;
       const publicView = document.getElementById('public-app-view');
       const adminPage = document.getElementById('hidden-admin-page');
-      const loginGate = document.getElementById('admin-login-gate');
       const consoleContent = document.getElementById('admin-console-content');
-      const logoutBtn = document.getElementById('admin-logout-btn');
 
-      if (hash === '#admin') {
+      if (isDirectAdminUrl()) {
         publicView?.classList.add('hidden');
         adminPage?.classList.remove('hidden');
-        if (isAdminAuthenticated) {
-          loginGate?.classList.add('hidden');
-          consoleContent?.classList.remove('hidden');
-          logoutBtn?.classList.remove('hidden');
-          renderStudioAdminAndLearnedUI();
-          populateArchitectureModal();
-        } else {
-          loginGate?.classList.remove('hidden');
-          consoleContent?.classList.add('hidden');
-          logoutBtn?.classList.add('hidden');
-        }
+        consoleContent?.classList.remove('hidden');
+        renderStudioAdminAndLearnedUI();
+        populateArchitectureModal();
         window.scrollTo({ top: 0, behavior: 'smooth' });
       } else {
         adminPage?.classList.add('hidden');
@@ -2874,59 +2802,57 @@
       renderStudioAdminAndLearnedUI();
       syncAdminRouteVisibility();
 
-      // Listen for URL hash changes (#admin <-> public)
+      // Listen for URL hash or popstate changes (?admin=1 / #admin <-> public)
       window.addEventListener('hashchange', syncAdminRouteVisibility);
+      window.addEventListener('popstate', syncAdminRouteVisibility);
 
       // Secret keyboard shortcut Ctrl+Shift+A to open Hidden Admin Page (#admin)
       window.addEventListener('keydown', (e) => {
         if (e.ctrlKey && e.shiftKey && (e.key === 'A' || e.key === 'a')) {
           e.preventDefault();
-          window.location.hash = window.location.hash === '#admin' ? '' : '#admin';
+          if (isDirectAdminUrl()) {
+            history.pushState('', document.title, window.location.pathname);
+          } else {
+            window.location.hash = '#admin';
+          }
+          syncAdminRouteVisibility();
         }
       });
 
       // Back to Public View button inside Hidden Admin Page
       document.getElementById('back-to-public-view-btn')?.addEventListener('click', () => {
-        if (window.location.hash === '#admin') {
-          history.pushState('', document.title, window.location.pathname + window.location.search);
-        }
+        history.pushState('', document.title, window.location.pathname);
         syncAdminRouteVisibility();
       });
 
-      // Admin Login Form handler
-      document.getElementById('admin-login-form')?.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const pwd = document.getElementById('admin-password-input')?.value.trim();
-        const errBox = document.getElementById('admin-login-error');
-        if (pwd === 'milano-admin-24h' || pwd === 'admin') {
-          isAdminAuthenticated = true;
-          errBox?.classList.add('hidden');
-          syncAdminRouteVisibility();
-        } else {
-          errBox?.classList.remove('hidden');
-        }
-      });
+      const updateCommunityRadarToggleLabel = () => {
+        const body = document.getElementById('studio-collapsible-body');
+        const btn = document.getElementById('toggle-studio-collapse-btn');
+        if (!body || !btn) return;
+        const isClosed = body.classList.contains('hidden');
+        btn.textContent = isClosed ? '+ Apri Community Radar' : '✕ Chiudi Community Radar';
+        btn.setAttribute('aria-expanded', isClosed ? 'false' : 'true');
+      };
 
-      // Admin Logout button
-      document.getElementById('admin-logout-btn')?.addEventListener('click', () => {
-        isAdminAuthenticated = false;
-        syncAdminRouteVisibility();
-      });
+      // Ensure label matches initial closed state on page load
+      updateCommunityRadarToggleLabel();
 
       // Top bar quick jump to Community Radar
       document.getElementById('open-submit-panel-btn')?.addEventListener('click', () => {
-        if (window.location.hash === '#admin') {
-          history.pushState('', document.title, window.location.pathname + window.location.search);
+        if (isDirectAdminUrl()) {
+          history.pushState('', document.title, window.location.pathname);
           syncAdminRouteVisibility();
         }
         const body = document.getElementById('studio-collapsible-body');
         body?.classList.remove('hidden');
+        updateCommunityRadarToggleLabel();
         document.getElementById('community-ingestion-section')?.scrollIntoView({ behavior: 'smooth' });
         document.getElementById('input-link-url')?.focus();
       });
 
       document.getElementById('toggle-studio-collapse-btn')?.addEventListener('click', () => {
         document.getElementById('studio-collapsible-body')?.classList.toggle('hidden');
+        updateCommunityRadarToggleLabel();
       });
 
       // FUNZIONE 1: Submit Link Form (Automatic Backend Extraction)

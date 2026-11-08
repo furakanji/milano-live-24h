@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 import {
   CATEGORIES,
+  MILAN_SOURCES_SUMMARY,
   buildMapsUrl,
   generateRolling24hFeed,
   buildFull24HourlySlots,
@@ -30,6 +31,12 @@ import {
   getTimeBlockLabel
 } from './data/milanEventsGenerator';
 
+function checkIsDirectAdminUrl() {
+  if (typeof window === 'undefined') return false;
+  const params = new URLSearchParams(window.location.search);
+  return window.location.hash === '#admin' || params.has('admin');
+}
+
 export default function App() {
   const [nowMs, setNowMs] = useState(() => Date.now());
   const [priceFilter, setPriceFilter] = useState('all'); // 'all' | 'free' | 'paid'
@@ -38,7 +45,8 @@ export default function App() {
   const [onlyLiveNow, setOnlyLiveNow] = useState(false);
   const [expandedIds, setExpandedIds] = useState(() => new Set(['evt-mexico-qa', 'evt-base-vernissage']));
 
-  // Public Community Radar State (Only 2 functions: Link or Flyer Photo)
+  // Public Community Radar State (Closed on page load; only 2 functions: Link or Flyer Photo)
+  const [isCommunityRadarOpen, setIsCommunityRadarOpen] = useState(false);
   const [userAddedEvents, setUserAddedEvents] = useState([]);
   const [linkUrl, setLinkUrl] = useState('');
   const [selectedFlyerName, setSelectedFlyerName] = useState('');
@@ -51,14 +59,11 @@ export default function App() {
   const fileChooseInputRef = useRef(null);
   const fileCameraInputRef = useRef(null);
 
-  // Hidden Admin Route (`/#admin`) & Auth State (Never exposed in public UI)
-  const [isAdminRoute, setIsAdminRoute] = useState(() => window.location.hash === '#admin');
-  const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(false);
-  const [adminPassword, setAdminPassword] = useState('milano-admin-24h');
-  const [adminLoginError, setAdminLoginError] = useState(false);
+  // Hidden Admin Route (`?admin=1` or `/#admin`) — Direct Passwordless Access
+  const [isAdminRoute, setIsAdminRoute] = useState(() => checkIsDirectAdminUrl());
   const [adminFeedbackBanner, setAdminFeedbackBanner] = useState(null);
 
-  // Backend Source Learning & Safeguard Quarantine State (Visible ONLY in #admin)
+  // Backend Source Learning & Safeguard Quarantine State (Visible ONLY in Admin page)
   const [learnedSources, setLearnedSources] = useState([
     {
       id: 'src-arcibellezza',
@@ -104,17 +109,25 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    const onHashChange = () => setIsAdminRoute(window.location.hash === '#admin');
+    const onUrlChange = () => setIsAdminRoute(checkIsDirectAdminUrl());
     const onKeyDown = (e) => {
       if (e.ctrlKey && e.shiftKey && (e.key === 'A' || e.key === 'a')) {
         e.preventDefault();
-        window.location.hash = window.location.hash === '#admin' ? '' : '#admin';
+        if (checkIsDirectAdminUrl()) {
+          window.history.pushState('', document.title, window.location.pathname);
+          setIsAdminRoute(false);
+        } else {
+          window.location.hash = '#admin';
+          setIsAdminRoute(true);
+        }
       }
     };
-    window.addEventListener('hashchange', onHashChange);
+    window.addEventListener('hashchange', onUrlChange);
+    window.addEventListener('popstate', onUrlChange);
     window.addEventListener('keydown', onKeyDown);
     return () => {
-      window.removeEventListener('hashchange', onHashChange);
+      window.removeEventListener('hashchange', onUrlChange);
+      window.removeEventListener('popstate', onUrlChange);
       window.removeEventListener('keydown', onKeyDown);
     };
   }, []);
@@ -418,7 +431,7 @@ export default function App() {
   const happeningNowCount = events.filter((e) => e.isHappeningNow).length;
 
   // ============================================================================
-  // HIDDEN ADMIN PAGE (`/#admin`) — NOT EXPOSED IN PUBLIC VIEW
+  // HIDDEN ADMIN PAGE (`?admin=1` or `/#admin`) — DIRECT PASSWORDLESS ACCESS
   // ============================================================================
   if (isAdminRoute) {
     return (
@@ -427,146 +440,135 @@ export default function App() {
           <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-zinc-800">
             <div className="flex items-center gap-2">
               <span className="px-2.5 py-1 rounded bg-red-500/20 text-red-400 border border-red-500/40 font-extrabold text-xs uppercase font-mono">
-                🔒 BACKEND ADMIN ROUTE • /#admin
+                🔒 BACKEND ADMIN CONSOLE • ?admin=1 / #admin
               </span>
               <span className="text-xs text-zinc-400 font-mono">
-                Safeguard &amp; Source Learning Engine (Non esposto al pubblico)
+                Accesso Diretto Senza Password • Elenco Fonti Attive &amp; Safeguard
               </span>
             </div>
             <div className="flex items-center gap-2">
-              {isAdminAuthenticated && (
-                <button
-                  type="button"
-                  onClick={() => setIsAdminAuthenticated(false)}
-                  className="px-3 py-1.5 rounded-lg bg-zinc-900 text-zinc-300 border border-zinc-700 text-xs font-semibold"
-                >
-                  Blocca Sessione Admin
-                </button>
-              )}
               <button
                 type="button"
                 onClick={() => {
-                  window.location.hash = '';
+                  window.history.pushState('', document.title, window.location.pathname);
                   setIsAdminRoute(false);
                 }}
-                className="px-3.5 py-1.5 rounded-lg bg-zinc-100 hover:bg-white text-black font-bold text-xs"
+                className="px-3.5 py-1.5 rounded-lg bg-zinc-100 hover:bg-white text-black font-bold text-xs cursor-pointer"
               >
                 ← Torna alla Vista Pubblica
               </button>
             </div>
           </div>
 
-          {!isAdminAuthenticated ? (
-            <div className="max-w-md mx-auto my-12 p-6 rounded-2xl bg-[#111318] border border-zinc-800 space-y-4">
-              <div className="flex items-center gap-2.5">
-                <ShieldAlert className="w-6 h-6 text-red-400" />
-                <div>
-                  <div className="text-xs font-bold uppercase text-red-400 font-mono">ACCESSO RISERVATO ADMIN</div>
-                  <h2 className="text-lg font-black text-white">Console Backend Safeguard</h2>
-                </div>
+          <div className="space-y-6 text-xs">
+            {adminFeedbackBanner && (
+              <div className="p-3.5 rounded-lg bg-emerald-500/15 border border-emerald-500/40 text-emerald-200">
+                {adminFeedbackBanner.message}
               </div>
-              <p className="text-xs text-zinc-400">
-                Le funzioni di verifica delle fonti sospette e il database delle fonti apprese lavorano lato backend e sono visibili solo in questa pagina riservata.
-              </p>
-              <form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  if (adminPassword === 'milano-admin-24h' || adminPassword === 'admin') {
-                    setIsAdminAuthenticated(true);
-                    setAdminLoginError(false);
-                  } else {
-                    setAdminLoginError(true);
-                  }
-                }}
-                className="space-y-3 text-xs"
-              >
-                <input
-                  type="password"
-                  value={adminPassword}
-                  onChange={(e) => setAdminPassword(e.target.value)}
-                  placeholder="Chiave Admin..."
-                  className="w-full px-3 py-2 rounded-lg bg-zinc-950 border border-zinc-800 text-white font-mono"
-                />
-                {adminLoginError && (
-                  <div className="text-red-400 text-xs">Chiave non valida (usa milano-admin-24h)</div>
-                )}
-                <button
-                  type="submit"
-                  className="w-full py-2.5 rounded-lg bg-orange-500 hover:bg-orange-400 text-black font-extrabold uppercase"
-                >
-                  Accedi alla Console Admin →
-                </button>
-              </form>
-            </div>
-          ) : (
-            <div className="space-y-6 text-xs">
-              {adminFeedbackBanner && (
-                <div className="p-3.5 rounded-lg bg-emerald-500/15 border border-emerald-500/40 text-emerald-200">
-                  {adminFeedbackBanner.message}
-                </div>
-              )}
+            )}
 
-              <div className="p-5 rounded-xl bg-[#111318] border border-zinc-800 space-y-3">
-                <h3 className="text-sm font-bold text-red-400 uppercase flex items-center gap-2">
-                  <ShieldAlert className="w-4 h-4" />
-                  1. Coda Quarantena Safeguard Backend ({quarantineQueue.length})
-                </h3>
-                {quarantineQueue.map((q) => (
+            {/* 1. ELENCO COMPLETO DELLE FONTI CUI ATTINGE IL SERVIZIO */}
+            <div className="p-5 rounded-xl bg-[#111318] border border-zinc-800 space-y-3">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <div>
+                  <h3 className="text-sm font-bold text-white uppercase flex items-center gap-2">
+                    <Database className="w-4 h-4 text-orange-400" />
+                    1. Elenco delle Fonti Milanesi cui Attinge il Servizio ({MILAN_SOURCES_SUMMARY.length})
+                  </h3>
+                  <p className="text-zinc-400 mt-1">
+                    Ciascun evento utilizza direttamente l&apos;URL verificato della pagina fonte dove è stata letta la descrizione dell&apos;evento.
+                  </p>
+                </div>
+                <span className="px-2.5 py-1 rounded-full bg-orange-500/15 text-orange-300 border border-orange-500/30 font-mono font-bold">
+                  {MILAN_SOURCES_SUMMARY.length} Fonti Verificate
+                </span>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 pt-2">
+                {MILAN_SOURCES_SUMMARY.map((src, idx) => (
                   <div
-                    key={q.qId}
-                    className="p-3.5 rounded-lg bg-zinc-950 border border-red-500/40 flex flex-wrap items-center justify-between gap-3"
+                    key={idx}
+                    className="p-3 rounded-lg bg-zinc-950 border border-zinc-800 flex flex-col justify-between gap-1.5"
                   >
                     <div>
-                      <div className="font-bold text-red-300">
-                        RISCHIO {q.riskLevel} (Trust {q.trustScore}/100) — {q.eventCandidate.title}
-                      </div>
-                      <div className="text-zinc-400 font-mono mt-0.5">
-                        Fonte sospetta: {q.rawSource} ({q.inferredType})
-                      </div>
-                      <ul className="list-disc list-inside text-zinc-300 mt-1">
-                        {q.redFlags.map((f, i) => (
-                          <li key={i}>{f}</li>
-                        ))}
-                      </ul>
+                      <div className="font-bold text-white">{src.name}</div>
+                      <div className="text-[11px] text-zinc-400 font-mono">{src.type}</div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <button
-                        type="button"
-                        onClick={() => setQuarantineQueue((prev) => prev.filter((x) => x.qId !== q.qId))}
-                        className="px-3 py-1.5 rounded bg-zinc-800 text-red-300 font-bold flex items-center gap-1"
-                      >
-                        <Ban className="w-3.5 h-3.5" /> Rifiuta &amp; Blocca
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => approveQuarantineItem(q.qId)}
-                        className="px-3 py-1.5 rounded bg-emerald-500 text-black font-extrabold flex items-center gap-1"
-                      >
-                        <CheckCircle2 className="w-3.5 h-3.5" /> Approva &amp; Insegna al DB
-                      </button>
+                    <a
+                      href={src.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-[11px] text-orange-400 hover:text-orange-300 font-mono truncate underline"
+                    >
+                      {src.url} ↗
+                    </a>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* 2. CODA QUARANTENA SAFEGUARD */}
+            <div className="p-5 rounded-xl bg-[#111318] border border-zinc-800 space-y-3">
+              <h3 className="text-sm font-bold text-red-400 uppercase flex items-center gap-2">
+                <ShieldAlert className="w-4 h-4" />
+                2. Coda Quarantena Safeguard Backend ({quarantineQueue.length})
+              </h3>
+              {quarantineQueue.map((q) => (
+                <div
+                  key={q.qId}
+                  className="p-3.5 rounded-lg bg-zinc-950 border border-red-500/40 flex flex-wrap items-center justify-between gap-3"
+                >
+                  <div>
+                    <div className="font-bold text-red-300">
+                      RISCHIO {q.riskLevel} (Trust {q.trustScore}/100) — {q.eventCandidate.title}
+                    </div>
+                    <div className="text-zinc-400 font-mono mt-0.5">
+                      Fonte sospetta: {q.rawSource} ({q.inferredType})
+                    </div>
+                    <ul className="list-disc list-inside text-zinc-300 mt-1">
+                      {q.redFlags.map((f, i) => (
+                        <li key={i}>{f}</li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setQuarantineQueue((prev) => prev.filter((x) => x.qId !== q.qId))}
+                      className="px-3 py-1.5 rounded bg-zinc-800 text-red-300 font-bold flex items-center gap-1 cursor-pointer"
+                    >
+                      <Ban className="w-3.5 h-3.5" /> Rifiuta &amp; Blocca
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => approveQuarantineItem(q.qId)}
+                      className="px-3 py-1.5 rounded bg-emerald-500 text-black font-extrabold flex items-center gap-1 cursor-pointer"
+                    >
+                      <CheckCircle2 className="w-3.5 h-3.5" /> Approva &amp; Insegna al DB
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* 3. DATABASE FONTI APPRESE DAL COMMUNITY RADAR */}
+            <div className="p-5 rounded-xl bg-[#111318] border border-zinc-800 space-y-3">
+              <h3 className="text-sm font-bold text-white flex items-center gap-2">
+                <Database className="w-4 h-4 text-emerald-400" />
+                3. Database Fonti Apprese dal Community Radar ({learnedSources.length})
+              </h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {learnedSources.map((src) => (
+                  <div key={src.id} className="p-3 rounded-lg bg-zinc-950 border border-zinc-800">
+                    <div className="font-bold text-white">{src.name}</div>
+                    <div className="text-zinc-400 font-mono mt-0.5">
+                      {src.domain} • {src.inferredType} ({src.status})
                     </div>
                   </div>
                 ))}
               </div>
-
-              <div className="p-5 rounded-xl bg-[#111318] border border-zinc-800 space-y-3">
-                <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                  <Database className="w-4 h-4 text-emerald-400" />
-                  2. Database Fonti Apprese dal Backend ({learnedSources.length})
-                </h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {learnedSources.map((src) => (
-                    <div key={src.id} className="p-3 rounded-lg bg-zinc-950 border border-zinc-800">
-                      <div className="font-bold text-white">{src.name}</div>
-                      <div className="text-zinc-400 font-mono mt-0.5">
-                        {src.domain} • {src.inferredType} ({src.status})
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
             </div>
-          )}
+          </div>
         </div>
       </div>
     );
@@ -742,12 +744,12 @@ export default function App() {
       {/* Main 24-Hour Rolling Timeline */}
       <main className="max-w-5xl mx-auto px-4 py-6 space-y-8">
         {/* =================================================================== */}
-        {/* REDESIGNED COMMUNITY RADAR — ONLY 2 FUNCTIONS:                      */}
+        {/* REDESIGNED COMMUNITY RADAR — CLOSED BY DEFAULT ON PAGE LOAD         */}
         {/* 1. Invia Link  |  2. Invia Locandina (Scegli Foto o Scatta Foto)    */}
         {/* All details extracted automatically in backend by the service.      */}
         {/* =================================================================== */}
         <section className="rounded-xl bg-[#111318] border border-zinc-800 p-4 sm:p-5 space-y-4 shadow-xl">
-          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-zinc-800 pb-3">
+          <div className="flex flex-wrap items-center justify-between gap-2">
             <div className="flex items-center gap-2.5">
               <span className="px-2 py-0.5 rounded bg-orange-500/20 text-orange-400 border border-orange-500/40 text-xs font-extrabold uppercase font-mono">
                 COMMUNITY RADAR
@@ -761,6 +763,15 @@ export default function App() {
                 </p>
               </div>
             </div>
+
+            <button
+              type="button"
+              onClick={() => setIsCommunityRadarOpen((prev) => !prev)}
+              aria-expanded={isCommunityRadarOpen}
+              className="px-3 py-1.5 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-zinc-200 border border-zinc-700 text-xs font-semibold transition cursor-pointer"
+            >
+              {isCommunityRadarOpen ? '✕ Chiudi Community Radar' : '+ Apri Community Radar'}
+            </button>
           </div>
 
           {publicFeedbackBanner && (
@@ -775,121 +786,123 @@ export default function App() {
             </div>
           )}
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-            {/* FUNCTION 1: INVIA LINK */}
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                if (!linkUrl.trim()) return;
-                handleAutomaticCommunitySubmission({
-                  submittedVia: 'LINK_URL',
-                  rawSource: linkUrl.trim()
-                });
-                setLinkUrl('');
-              }}
-              className="p-4 rounded-xl bg-[#0b0c0e] border border-zinc-800 flex flex-col justify-between gap-3"
-            >
-              <div className="space-y-1.5">
-                <div className="font-bold text-white text-sm flex items-center gap-2">
-                  <Link2 className="w-4 h-4 text-orange-400" />
-                  <span>1. Invia Link Evento</span>
+          {isCommunityRadarOpen && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs pt-3 border-t border-zinc-800">
+              {/* FUNCTION 1: INVIA LINK */}
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  if (!linkUrl.trim()) return;
+                  handleAutomaticCommunitySubmission({
+                    submittedVia: 'LINK_URL',
+                    rawSource: linkUrl.trim()
+                  });
+                  setLinkUrl('');
+                }}
+                className="p-4 rounded-xl bg-[#0b0c0e] border border-zinc-800 flex flex-col justify-between gap-3"
+              >
+                <div className="space-y-1.5">
+                  <div className="font-bold text-white text-sm flex items-center gap-2">
+                    <Link2 className="w-4 h-4 text-orange-400" />
+                    <span>1. Invia Link Evento</span>
+                  </div>
+                  <p className="text-zinc-400">
+                    Incolla l&apos;URL dell&apos;evento (sito web, post Instagram/Facebook, Eventbrite, DICE...). Il backend estrarrà tutti i dettagli automaticamente.
+                  </p>
                 </div>
-                <p className="text-zinc-400">
-                  Incolla l&apos;URL dell&apos;evento (sito web, post Instagram/Facebook, Eventbrite, DICE...). Il backend estrarrà tutti i dettagli automaticamente.
-                </p>
-              </div>
 
-              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 pt-1">
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 pt-1">
+                  <input
+                    type="url"
+                    required
+                    value={linkUrl}
+                    onChange={(e) => setLinkUrl(e.target.value)}
+                    placeholder="https://www.casadellacultura.it/eventi/..."
+                    className="flex-1 px-3 py-2.5 rounded-lg bg-[#131519] border border-zinc-700 text-white placeholder-zinc-500 focus:border-orange-500 outline-none"
+                  />
+                  <button
+                    type="submit"
+                    className="px-4 py-2.5 rounded-lg bg-orange-500 hover:bg-orange-400 text-black font-extrabold uppercase tracking-wider shrink-0 transition cursor-pointer"
+                  >
+                    Invia Link →
+                  </button>
+                </div>
+              </form>
+
+              {/* FUNCTION 2: INVIA LOCANDINA (SCEGLI FOTO O SCATTA FOTO) */}
+              <div className="p-4 rounded-xl bg-[#0b0c0e] border border-zinc-800 flex flex-col justify-between gap-3">
+                <div className="space-y-1.5">
+                  <div className="font-bold text-white text-sm flex items-center gap-2">
+                    <Camera className="w-4 h-4 text-orange-400" />
+                    <span>2. Invia Locandina (Scegli Foto o Scatta Foto)</span>
+                  </div>
+                  <p className="text-zinc-400">
+                    Carica un&apos;immagine dalla galleria o scatta una foto a un manifesto in città: il servizio Vision OCR in backend compilerà automaticamente l&apos;evento.
+                  </p>
+                </div>
+
+                {/* Hidden file inputs for Scegli Foto & Scatta Foto */}
                 <input
-                  type="url"
-                  required
-                  value={linkUrl}
-                  onChange={(e) => setLinkUrl(e.target.value)}
-                  placeholder="https://www.casadellacultura.it/eventi/..."
-                  className="flex-1 px-3 py-2.5 rounded-lg bg-[#131519] border border-zinc-700 text-white placeholder-zinc-500 focus:border-orange-500 outline-none"
+                  ref={fileChooseInputRef}
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (!file) return;
+                    setSelectedFlyerName(file.name);
+                    handleAutomaticCommunitySubmission({
+                      submittedVia: 'FLYER_PHOTO_OCR',
+                      imageFileName: file.name
+                    });
+                    e.target.value = '';
+                  }}
                 />
-                <button
-                  type="submit"
-                  className="px-4 py-2.5 rounded-lg bg-orange-500 hover:bg-orange-400 text-black font-extrabold uppercase tracking-wider shrink-0 transition cursor-pointer"
-                >
-                  Invia Link →
-                </button>
-              </div>
-            </form>
+                <input
+                  ref={fileCameraInputRef}
+                  type="file"
+                  accept="image/*"
+                  capture="environment"
+                  className="hidden"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (!file) return;
+                    setSelectedFlyerName(file.name);
+                    handleAutomaticCommunitySubmission({
+                      submittedVia: 'FLYER_PHOTO_OCR',
+                      imageFileName: file.name
+                    });
+                    e.target.value = '';
+                  }}
+                />
 
-            {/* FUNCTION 2: INVIA LOCANDINA (SCEGLI FOTO O SCATTA FOTO) */}
-            <div className="p-4 rounded-xl bg-[#0b0c0e] border border-zinc-800 flex flex-col justify-between gap-3">
-              <div className="space-y-1.5">
-                <div className="font-bold text-white text-sm flex items-center gap-2">
-                  <Camera className="w-4 h-4 text-orange-400" />
-                  <span>2. Invia Locandina (Scegli Foto o Scatta Foto)</span>
+                <div className="grid grid-cols-2 gap-2.5 pt-1">
+                  <button
+                    type="button"
+                    onClick={() => fileChooseInputRef.current?.click()}
+                    className="px-3.5 py-2.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-white border border-zinc-700 font-bold flex items-center justify-center gap-2 transition cursor-pointer"
+                  >
+                    <ImageIcon className="w-4 h-4 text-orange-400" />
+                    <span>Scegli Foto</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleOpenCameraCapture}
+                    className="px-3.5 py-2.5 rounded-lg bg-orange-500 hover:bg-orange-400 text-black font-extrabold flex items-center justify-center gap-2 transition cursor-pointer"
+                  >
+                    <Camera className="w-4 h-4" />
+                    <span>Scatta Foto</span>
+                  </button>
                 </div>
-                <p className="text-zinc-400">
-                  Carica un&apos;immagine dalla galleria o scatta una foto a un manifesto in città: il servizio Vision OCR in backend compilerà automaticamente l&apos;evento.
-                </p>
+
+                {selectedFlyerName && (
+                  <div className="text-[11px] text-emerald-400 font-mono truncate">
+                    ✓ Ultima locandina elaborata dal backend: {selectedFlyerName}
+                  </div>
+                )}
               </div>
-
-              {/* Hidden file inputs for Scegli Foto & Scatta Foto */}
-              <input
-                ref={fileChooseInputRef}
-                type="file"
-                accept="image/*"
-                className="hidden"
-                onChange={(e) => {
-                  const file = e.target.files?.[0];
-                  if (!file) return;
-                  setSelectedFlyerName(file.name);
-                  handleAutomaticCommunitySubmission({
-                    submittedVia: 'FLYER_PHOTO_OCR',
-                    imageFileName: file.name
-                  });
-                  e.target.value = '';
-                }}
-              />
-              <input
-                ref={fileCameraInputRef}
-                type="file"
-                accept="image/*"
-                capture="environment"
-                className="hidden"
-                onChange={(e) => {
-                  const file = e.target.files?.[0];
-                  if (!file) return;
-                  setSelectedFlyerName(file.name);
-                  handleAutomaticCommunitySubmission({
-                    submittedVia: 'FLYER_PHOTO_OCR',
-                    imageFileName: file.name
-                  });
-                  e.target.value = '';
-                }}
-              />
-
-              <div className="grid grid-cols-2 gap-2.5 pt-1">
-                <button
-                  type="button"
-                  onClick={() => fileChooseInputRef.current?.click()}
-                  className="px-3.5 py-2.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-white border border-zinc-700 font-bold flex items-center justify-center gap-2 transition cursor-pointer"
-                >
-                  <ImageIcon className="w-4 h-4 text-orange-400" />
-                  <span>Scegli Foto</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={handleOpenCameraCapture}
-                  className="px-3.5 py-2.5 rounded-lg bg-orange-500 hover:bg-orange-400 text-black font-extrabold flex items-center justify-center gap-2 transition cursor-pointer"
-                >
-                  <Camera className="w-4 h-4" />
-                  <span>Scatta Foto</span>
-                </button>
-              </div>
-
-              {selectedFlyerName && (
-                <div className="text-[11px] text-emerald-400 font-mono truncate">
-                  ✓ Ultima locandina elaborata dal backend: {selectedFlyerName}
-                </div>
-              )}
             </div>
-          </div>
+          )}
         </section>
 
         {/* Camera Modal for Desktop "Scatta Foto" */}

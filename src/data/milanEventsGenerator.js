@@ -23,6 +23,50 @@ export function buildMapsUrl(venueName, address) {
   return `https://www.google.com/maps/search/?api=1&query=${query}+Milano`;
 }
 
+export const MILAN_SOURCES_SUMMARY = [
+  // Istituzionali, Musei, FAI & Visite Guidate
+  { name: 'Villa Necchi Campiglio (FAI)', type: 'JSON-LD / Calendario FAI', category: 'aperture', url: 'https://fondoambiente.it/luoghi/villa-necchi-campiglio/eventi' },
+  { name: 'Palazzo Morando — Comune di Milano', type: 'Portale Musei Civici', category: 'mostre', url: 'https://www.comune.milano.it/web/palazzo-morando' },
+  { name: 'MilanoGuida — Cripta San Giovanni in Conca', type: 'Scheda Visita Guidata', category: 'aperture', url: 'https://www.milanoguida.com/visite-guidate/itinerari-milano/la-cripta-di-san-giovanni-in-conca/' },
+  { name: 'MilanoGuida — Itinerario Milano Medievale', type: 'Scheda Visita Guidata', category: 'aperture', url: 'https://www.milanoguida.com/visite-guidate/itinerari-milano/milano-medievale/' },
+  { name: 'Fondazione Prada Milano', type: 'Calendario Esposizioni', category: 'mostre', url: 'https://www.fondazioneprada.org/calendario/?period=current&tmpl=1' },
+  { name: 'MUDEC — Museo delle Culture', type: 'Mostre in Corso', category: 'mostre', url: 'https://www.mudec.it/mostre-in-corso-2/' },
+  { name: 'Pirelli HangarBicocca', type: 'Scheda Mostra in Corso', category: 'mostre', url: 'https://pirellihangarbicocca.org/mostra/luciano-fabro/' },
+  { name: 'Triennale Milano (Scheda Zero Milano)', type: 'Programmazione & Mostre', category: 'mostre', url: 'https://zero.eu/it/luoghi/4032-triennale-di-milano,milano/' },
+  { name: 'BASE Milano (Ex Ansaldo)', type: 'Agenda Eventi', category: 'mostre', url: 'https://base.milano.it/agenda/' },
+
+  // Politica, Diritti, Attivismo & Sociale
+  { name: 'Casa della Cultura Milano', type: 'Programma Incontri Settimanali', category: 'politica', url: 'https://www.casadellacultura.it/' },
+  { name: 'Casa dei Diritti — Comune di Milano', type: 'Portale Welfare & Diritti', category: 'politica', url: 'https://www.comune.milano.it/argomenti/welfare/casa-dei-diritti' },
+  { name: 'Casa delle Donne di Milano', type: 'Calendario Eventi nella Casa', category: 'politica', url: 'https://www.casadonnemilano.it/calendario-eventi-nella-casa/' },
+  { name: 'Camera del Lavoro (CGIL Milano)', type: 'Stagione Culturale 2026', category: 'politica', url: 'https://www.cgil.milano.it/stagione-culturale-2026/' },
+
+  // Libri, Talk, Scienza & Cultura Digitale
+  { name: 'Fondazione Giangiacomo Feltrinelli', type: 'Partecipa — Calendario Talk', category: 'libri', url: 'https://fondazionefeltrinelli.it/partecipa-home/' },
+  { name: 'Libreria Verso (Porta Ticinese)', type: 'Calendario Appuntamenti', category: 'libri', url: 'http://www.libreriaverso.com/appuntamenti/' },
+  { name: 'MEET Digital Culture Center', type: 'Tutti gli Eventi', category: 'libri', url: 'https://www.meetcenter.it/it/tutti-gli-eventi/' },
+
+  // Cinema d'Essai & Cineteca
+  { name: 'Cineteca Milano Arlecchino', type: 'Programmazione Sala', category: 'cinema', url: 'https://www.cinetecamilano.it/luogo/cineteca-milano-arlecchino/' },
+  { name: 'Anteo Palazzo del Cinema (SpazioCinema)', type: 'Programmazione Sale Milano', category: 'cinema', url: 'https://www.spaziocinema.info/milano' },
+  { name: 'Cinema Beltrade (MilanoCinema)', type: 'Orari e Film in Sala', category: 'cinema', url: 'https://milanocinema.com/it/cinema/beltrade' },
+  { name: 'Cinema Mexico (MilanoCinema)', type: 'Orari e Film in Sala', category: 'cinema', url: 'https://milanocinema.com/cinema/mexico' },
+  { name: 'Il Cinemino (Via Seneca)', type: 'Programmazione Settimanale', category: 'cinema', url: 'https://www.ilcinemino.it/programmazione/' },
+
+  // Teatro
+  { name: 'Piccolo Teatro Strehler', type: 'Scheda Teatro & Cartellone', category: 'teatro', url: 'https://www.piccoloteatro.org/it/theaters/piccolo-teatro-strehler' },
+  { name: 'Teatro Franco Parenti', type: 'Cartellone Spettacoli', category: 'teatro', url: 'https://teatrofrancoparenti.it/cartellone/spettacoli-teatro-milano/' },
+  { name: 'Teatro Elfo Puccini', type: 'Cartellone Sale', category: 'teatro', url: 'https://www.elfo.org/' },
+  { name: 'Teatro Manzoni Milano', type: 'Programma Spettacoli', category: 'teatro', url: 'https://www.teatromanzoni.it/programma/' },
+
+  // Concerti, Jazz & Club
+  { name: 'Santeria Toscana 31', type: 'Calendario Eventi Ufficiale', category: 'concerti', url: 'https://www.santeria.milano.it/eventi/' },
+  { name: 'Blue Note Milano', type: 'Calendario Live Set', category: 'concerti', url: 'https://www.bluenotemilano.com/' },
+  { name: 'ARCI Biko Milano (Zero Milano)', type: 'Scheda Evento Live', category: 'concerti', url: 'https://zero.eu/it/eventi/383162-jazzmi-momoko-gill-arci-biko,milano/' },
+  { name: 'Circolo Magnolia (Idroscalo)', type: 'Programmazione Concerti', category: 'concerti', url: 'https://www.circolomagnolia.it/' },
+  { name: 'Tempio del Futuro Perduto (Zero Milano)', type: 'Scheda Luogo & Programmazione', category: 'concerti', url: 'https://zero.eu/it/luoghi/103058-tempio-del-futuro-perduto,milano/' }
+];
+
 export const MILAN_EVENT_TEMPLATES = [
   // === MATTINA (10:00 – 12:30) ===
   {
@@ -38,10 +82,10 @@ export const MILAN_EVENT_TEMPLATES = [
     isFree: false,
     priceDetails: '€15,00 Intero / Gratis Iscritti FAI',
     category: 'aperture',
-    sourceName: 'fondoambiente.it',
+    sourceName: 'fondoambiente.it — Eventi Villa Necchi',
     instagramUrl: null,
     facebookUrl: null,
-    sourceUrl: 'https://fondoambiente.it/luoghi/villa-necchi-campiglio'
+    sourceUrl: 'https://fondoambiente.it/luoghi/villa-necchi-campiglio/eventi'
   },
   {
     id: 'evt-palazzo-morando-free',
@@ -49,35 +93,35 @@ export const MILAN_EVENT_TEMPLATES = [
     scheduledMinute: 30,
     durationMinutes: 150,
     title: 'Collezione Costume Moda Immagine & Pinacoteca Civica del Settecento',
-    description: 'Ingresso gratuito alle sale storiche del palazzo settecentesco che raccontano l’evoluzione urbanistica e sociale di Milano tra ’700 e ’900.',
+    description: 'Ingresso gratuito alle sale storiche del palazzo settecentesco di Via Sant’Andrea che raccontano l’evoluzione urbanistica, il costume e la vita sociale di Milano tra ’700 e ’900.',
     venueName: 'Palazzo Morando',
     neighborhood: 'Sant’Andrea / Montenapoleone',
     address: 'Via Sant’Andrea 6',
     isFree: true,
     priceDetails: 'GRATIS • Ingresso gratuito collezione permanente',
     category: 'mostre',
-    sourceName: 'costumemodaimmagine.mi.it',
+    sourceName: 'comune.milano.it — Palazzo Morando',
     instagramUrl: null,
     facebookUrl: null,
-    sourceUrl: 'https://www.costumemodaimmagine.mi.it/'
+    sourceUrl: 'https://www.comune.milano.it/web/palazzo-morando'
   },
   {
     id: 'evt-brera-cripta-san-giovanni',
     scheduledHour: 11,
     scheduledMinute: 0,
     durationMinutes: 90,
-    title: 'Apertura Cripta Ipogea di San Giovanni in Conca',
-    description: 'Visita all’unica cripta romanica originale sopravvissuta nel centro di Milano in Piazza Missori, a cura dei volontari del patrimonio civico.',
+    title: 'Visita alla Cripta Ipogea di San Giovanni in Conca',
+    description: 'Visita all’unica cripta romanica originale sopravvissuta nel centro di Milano in Piazza Missori e ai resti archeologici della basilica paleocristiana.',
     venueName: 'Cripta di San Giovanni in Conca',
     neighborhood: 'Missori / Centro Storico',
     address: 'Piazza Giuseppe Missori',
-    isFree: true,
-    priceDetails: 'GRATIS • Ingresso gratuito',
+    isFree: false,
+    priceDetails: 'Visita guidata su prenotazione',
     category: 'aperture',
-    sourceName: 'cultura.comune.milano.it',
+    sourceName: 'milanoguida.com — Cripta San Giovanni in Conca',
     instagramUrl: null,
     facebookUrl: null,
-    sourceUrl: 'https://cultura.comune.milano.it/'
+    sourceUrl: 'https://www.milanoguida.com/visite-guidate/itinerari-milano/la-cripta-di-san-giovanni-in-conca/'
   },
   {
     id: 'evt-cineteca-arlecchino',
@@ -92,7 +136,7 @@ export const MILAN_EVENT_TEMPLATES = [
     isFree: false,
     priceDetails: '€8,50 Intero / €6,50 Cinetessera',
     category: 'cinema',
-    sourceName: 'cinetecamilano.it',
+    sourceName: 'cinetecamilano.it — Sala Arlecchino',
     instagramUrl: null,
     facebookUrl: null,
     sourceUrl: 'https://www.cinetecamilano.it/luogo/cineteca-milano-arlecchino/'
@@ -101,19 +145,19 @@ export const MILAN_EVENT_TEMPLATES = [
     id: 'evt-vigna-leonardo-secret',
     scheduledHour: 12,
     scheduledMinute: 0,
-    durationMinutes: 75,
-    title: 'Visita Guidata a Mostre e Luoghi Storici Milanesi — Calendario MilanoGuida',
-    description: 'Itinerario culturale guidato tra cortili storici, chiostri rinascimentali e collezioni d’arte cittadine con storico dell’arte abilitato.',
-    venueName: 'Corso Magenta / Santa Maria delle Grazie',
-    neighborhood: 'Corso Magenta',
-    address: 'Corso Magenta 65',
+    durationMinutes: 90,
+    title: 'Itinerario Guidato "Milano Medievale": Piazza dei Mercanti & Broletto',
+    description: 'Percorso storico-artistico nel cuore medievale di Milano tra la Loggia degli Osii, il Palazzo della Ragione, i rilievi scultorei e le corti civiche.',
+    venueName: 'Piazza dei Mercanti',
+    neighborhood: 'Duomo / Cordusio',
+    address: 'Piazza dei Mercanti',
     isFree: false,
     priceDetails: '€14,00 Visita guidata con microfonaggio',
     category: 'aperture',
-    sourceName: 'milanoguida.com',
+    sourceName: 'milanoguida.com — Milano Medievale',
     instagramUrl: null,
     facebookUrl: null,
-    sourceUrl: 'https://www.milanoguida.com/calendario/'
+    sourceUrl: 'https://www.milanoguida.com/visite-guidate/itinerari-milano/milano-medievale/'
   },
 
   // === POMERIGGIO (14:30 – 17:30) ===
@@ -130,7 +174,7 @@ export const MILAN_EVENT_TEMPLATES = [
     isFree: false,
     priceDetails: '€15,00 Intero / €12,00 Ridotto',
     category: 'mostre',
-    sourceName: 'fondazioneprada.org',
+    sourceName: 'fondazioneprada.org — Calendario',
     instagramUrl: null,
     facebookUrl: null,
     sourceUrl: 'https://www.fondazioneprada.org/calendario/?period=current&tmpl=1'
@@ -140,36 +184,36 @@ export const MILAN_EVENT_TEMPLATES = [
     scheduledHour: 15,
     scheduledMinute: 0,
     durationMinutes: 140,
-    title: 'Collezione Permanente "Milano Globale" nell’Agorà di Chipperfield',
-    description: 'Percorso gratuito nella collezione permanente del Museo delle Culture di Via Tortona, tra reperti etnografici e storia globale delle arti.',
+    title: 'Mostre in Corso & Collezione Permanente "Milano Globale" al MUDEC',
+    description: 'Esposizioni temporanee e percorso gratuito nella collezione permanente del Museo delle Culture di Via Tortona progettato da David Chipperfield.',
     venueName: 'MUDEC — Museo delle Culture',
     neighborhood: 'Tortona / Ansaldo',
     address: 'Via Tortona 56',
     isFree: true,
     priceDetails: 'GRATIS • Collezione permanente a ingresso libero',
     category: 'mostre',
-    sourceName: 'mudec.it',
+    sourceName: 'mudec.it — Mostre in Corso',
     instagramUrl: null,
     facebookUrl: null,
-    sourceUrl: 'https://www.mudec.it/'
+    sourceUrl: 'https://www.mudec.it/mostre-in-corso-2/'
   },
   {
     id: 'evt-torre-branca-sunset',
     scheduledHour: 16,
     scheduledMinute: 0,
-    durationMinutes: 85,
-    title: 'Salita Panoramica sulla Torre Branca di Giò Ponti (108m)',
-    description: 'Accesso fino al belvedere esagonale progettato da Giò Ponti nel 1933 nel cuore di Parco Sempione con vista a 360° sullo skyline di Milano.',
-    venueName: 'Torre Branca — Parco Sempione',
-    neighborhood: 'Parco Sempione',
-    address: 'Viale Luigi Camoens 2',
-    isFree: false,
-    priceDetails: '€6,00 Salita Panoramica',
-    category: 'aperture',
-    sourceName: 'yesmilano.it',
+    durationMinutes: 90,
+    title: 'Rassegna Eventi, Talk & Installazioni Immersive al MEET',
+    description: 'Appuntamento pomeridiano dedicato alla cultura digitale, alle arti generative e alle installazioni immersive nella sede MEET di Porta Venezia.',
+    venueName: 'MEET Digital Culture Center',
+    neighborhood: 'Porta Venezia / Oberdan',
+    address: 'Viale Vittorio Veneto 2',
+    isFree: true,
+    priceDetails: 'GRATIS • Ingresso gratuito agli incontri su registrazione',
+    category: 'libri',
+    sourceName: 'meetcenter.it — Tutti gli Eventi',
     instagramUrl: null,
     facebookUrl: null,
-    sourceUrl: 'https://www.yesmilano.it/eventi/tutti-gli-eventi/questa-settimana-milano'
+    sourceUrl: 'https://www.meetcenter.it/it/tutti-gli-eventi/'
   },
   {
     id: 'evt-hangar-bicocca',
@@ -184,7 +228,7 @@ export const MILAN_EVENT_TEMPLATES = [
     isFree: true,
     priceDetails: 'GRATIS • Ingresso gratuito',
     category: 'mostre',
-    sourceName: 'pirellihangarbicocca.org',
+    sourceName: 'pirellihangarbicocca.org — Mostra Luciano Fabro',
     instagramUrl: null,
     facebookUrl: null,
     sourceUrl: 'https://pirellihangarbicocca.org/mostra/luciano-fabro/'
@@ -195,35 +239,35 @@ export const MILAN_EVENT_TEMPLATES = [
     scheduledMinute: 0,
     durationMinutes: 120,
     title: 'Sportelli Diritti Civili, Welfare di Prossimità & Incontri Pubblici',
-    description: 'Incontro pubblico aperto alla cittadinanza con sportelli sociali, orientamento legale gratuito e reti associative del Comune di Milano.',
+    description: 'Incontro pubblico aperto alla cittadinanza con sportelli antidiscriminazione, orientamento legale gratuito e reti associative del Comune di Milano.',
     venueName: 'Casa dei Diritti — Comune di Milano',
     neighborhood: 'Sant’Ambrogio / De Amicis',
     address: 'Via Edmondo De Amicis 10',
     isFree: true,
     priceDetails: 'GRATIS • Partecipazione libera',
     category: 'politica',
-    sourceName: 'comune.milano.it',
+    sourceName: 'comune.milano.it — Casa dei Diritti',
     instagramUrl: null,
     facebookUrl: null,
-    sourceUrl: 'https://www.comune.milano.it/'
+    sourceUrl: 'https://www.comune.milano.it/argomenti/welfare/casa-dei-diritti'
   },
   {
     id: 'evt-lafeltrinelli-duomo',
     scheduledHour: 17,
     scheduledMinute: 30,
-    durationMinutes: 75,
-    title: 'Presentazioni Libri & Incontri con gli Autori in Libreria',
-    description: 'Appuntamento pomeridiano aperto al pubblico con autori, saggisti ed editori presso le librerie laFeltrinelli di Milano.',
-    venueName: 'laFeltrinelli Duomo',
-    neighborhood: 'Piazza del Duomo / Galleria',
-    address: 'Galleria Vittorio Emanuele II 82',
+    durationMinutes: 90,
+    title: 'Stagione Culturale 2026 alla Camera del Lavoro: Libri, Lavoro & Diritti',
+    description: 'Rassegna di presentazioni editoriali, concerti, mostre e tavole rotonde promossa dalla Camera del Lavoro Metropolitana di Milano in Corso di Porta Vittoria.',
+    venueName: 'Camera del Lavoro di Milano',
+    neighborhood: 'Porta Vittoria / Cinque Giornate',
+    address: 'Corso di Porta Vittoria 43',
     isFree: true,
     priceDetails: 'GRATIS • Ingresso libero',
-    category: 'libri',
-    sourceName: 'lafeltrinelli.it/eventi',
+    category: 'politica',
+    sourceName: 'cgil.milano.it — Stagione Culturale 2026',
     instagramUrl: null,
     facebookUrl: null,
-    sourceUrl: 'https://www.lafeltrinelli.it/eventi'
+    sourceUrl: 'https://www.cgil.milano.it/stagione-culturale-2026/'
   },
 
   // === PRESERALE & SERA (18:00 – 20:45) ===
@@ -232,18 +276,18 @@ export const MILAN_EVENT_TEMPLATES = [
     scheduledHour: 18,
     scheduledMinute: 0,
     durationMinutes: 90,
-    title: 'Presentazione Editoriale & Dialogo con gli Autori da Verso',
-    description: 'Incontro serale con autori ed editori indipendenti al primo piano della libreria di Corso di Porta Ticinese.',
+    title: 'Appuntamenti in Libreria: Presentazione Editoriale & Dialogo con gli Autori',
+    description: 'Incontro serale con autori, traduttori ed editori indipendenti al primo piano della Libreria Verso in Corso di Porta Ticinese.',
     venueName: 'Libreria Verso',
     neighborhood: 'Colonne di San Lorenzo / Ticinese',
     address: 'Corso di Porta Ticinese 40',
     isFree: true,
     priceDetails: 'GRATIS • Ingresso libero fino a esaurimento posti',
     category: 'libri',
-    sourceName: 'libreriaverso.com',
+    sourceName: 'libreriaverso.com — Appuntamenti',
     instagramUrl: null,
     facebookUrl: null,
-    sourceUrl: 'https://www.libreriaverso.com/'
+    sourceUrl: 'http://www.libreriaverso.com/appuntamenti/'
   },
   {
     id: 'evt-casa-donne-milano',
@@ -258,7 +302,7 @@ export const MILAN_EVENT_TEMPLATES = [
     isFree: true,
     priceDetails: 'GRATIS • Ingresso libero',
     category: 'politica',
-    sourceName: 'casadonnemilano.it',
+    sourceName: 'casadonnemilano.it — Calendario Eventi',
     instagramUrl: null,
     facebookUrl: null,
     sourceUrl: 'https://www.casadonnemilano.it/calendario-eventi-nella-casa/'
@@ -276,7 +320,7 @@ export const MILAN_EVENT_TEMPLATES = [
     isFree: true,
     priceDetails: 'GRATIS • Accesso libero con registrazione',
     category: 'libri',
-    sourceName: 'fondazionefeltrinelli.it',
+    sourceName: 'fondazionefeltrinelli.it — Partecipa',
     instagramUrl: null,
     facebookUrl: null,
     sourceUrl: 'https://fondazionefeltrinelli.it/partecipa-home/'
@@ -294,35 +338,17 @@ export const MILAN_EVENT_TEMPLATES = [
     isFree: true,
     priceDetails: 'GRATIS • Ingresso libero agli incontri pubblici',
     category: 'libri',
-    sourceName: 'zero.eu / Triennale Milano',
+    sourceName: 'zero.eu — Triennale di Milano',
     instagramUrl: null,
     facebookUrl: null,
     sourceUrl: 'https://zero.eu/it/luoghi/4032-triennale-di-milano,milano/'
-  },
-  {
-    id: 'evt-meet-digital-culture',
-    scheduledHour: 18,
-    scheduledMinute: 45,
-    durationMinutes: 90,
-    title: 'Cultura Digitale, Arti Generative & Installazioni Immersive al MEET',
-    description: 'Appuntamento dedicato alle arti digitali e alla tecnologia creativa nella sede di Porta Venezia con sala immersiva.',
-    venueName: 'MEET Digital Culture Center',
-    neighborhood: 'Porta Venezia / Oberdan',
-    address: 'Viale Vittorio Veneto 2',
-    isFree: true,
-    priceDetails: 'GRATIS • Ingresso gratuito agli incontri su registrazione',
-    category: 'libri',
-    sourceName: 'meetcenter.it',
-    instagramUrl: null,
-    facebookUrl: null,
-    sourceUrl: 'https://www.meetcenter.it/'
   },
   {
     id: 'evt-base-vernissage',
     scheduledHour: 19,
     scheduledMinute: 0,
     durationMinutes: 180,
-    title: 'BASE Milano: Progetti Culturali, Design & Music Room in Ex Ansaldo',
+    title: 'Agenda BASE Milano: Progetti Culturali, Design & Music Room in Ex Ansaldo',
     description: 'Programmazione serale negli spazi dell’ex Ansaldo in Via Bergognone: mostre temporanee, talk indipendenti e live set nel cortile e nella ground hall.',
     venueName: 'BASE Milano',
     neighborhood: 'Tortona',
@@ -330,28 +356,28 @@ export const MILAN_EVENT_TEMPLATES = [
     isFree: true,
     priceDetails: 'GRATIS • Ingresso libero agli spazi comuni',
     category: 'mostre',
-    sourceName: 'base.milano.it',
+    sourceName: 'base.milano.it — Agenda',
     instagramUrl: null,
     facebookUrl: null,
-    sourceUrl: 'https://base.milano.it/'
+    sourceUrl: 'https://base.milano.it/agenda/'
   },
   {
-    id: 'evt-camera-lavoro-diritti',
+    id: 'evt-cinemino-essay-early',
     scheduledHour: 19,
     scheduledMinute: 15,
-    durationMinutes: 115,
-    title: 'Incontri Sindacali, Diritti del Lavoro & Assemblee Cittadine',
-    description: 'Iniziative pubbliche e tavoli di confronto nel Salone Di Vittorio della Camera del Lavoro di Milano su lavoro, welfare territoriale e diritti.',
-    venueName: 'Camera del Lavoro di Milano',
-    neighborhood: 'Porta Vittoria / Cinque Giornate',
-    address: 'Corso di Porta Vittoria 43',
-    isFree: true,
-    priceDetails: 'GRATIS • Ingresso aperto al pubblico',
-    category: 'politica',
-    sourceName: 'cgil.milano.it',
+    durationMinutes: 105,
+    title: 'Proiezione Preserale in Lingua Originale (v.o. sott. ita) da Il Cinemino',
+    description: 'Spettacolo preserale in versione originale sottotitolata nella sala da 74 posti di Via Seneca 6 in Porta Romana.',
+    venueName: 'Il Cinemino',
+    neighborhood: 'Porta Romana / Crocetta',
+    address: 'Via Seneca 6',
+    isFree: false,
+    priceDetails: '€7,50 + Tessera Associativa',
+    category: 'cinema',
+    sourceName: 'ilcinemino.it — Programmazione',
     instagramUrl: null,
     facebookUrl: null,
-    sourceUrl: 'https://www.cgil.milano.it/'
+    sourceUrl: 'https://www.ilcinemino.it/programmazione/'
   },
   {
     id: 'evt-piccolo-strehler',
@@ -366,7 +392,7 @@ export const MILAN_EVENT_TEMPLATES = [
     isFree: false,
     priceDetails: '€22,00 Platea / €16,00 Balconata',
     category: 'teatro',
-    sourceName: 'piccoloteatro.org',
+    sourceName: 'piccoloteatro.org — Teatro Strehler',
     instagramUrl: null,
     facebookUrl: null,
     sourceUrl: 'https://www.piccoloteatro.org/it/theaters/piccolo-teatro-strehler'
@@ -384,7 +410,7 @@ export const MILAN_EVENT_TEMPLATES = [
     isFree: false,
     priceDetails: '€19,50 Ridotto Under30 / €29,00 Intero',
     category: 'teatro',
-    sourceName: 'elfo.org',
+    sourceName: 'elfo.org — Cartellone',
     instagramUrl: null,
     facebookUrl: null,
     sourceUrl: 'https://www.elfo.org/'
@@ -402,7 +428,7 @@ export const MILAN_EVENT_TEMPLATES = [
     isFree: false,
     priceDetails: '€18,00 - €28,00 (Convenzione Invito a Teatro)',
     category: 'teatro',
-    sourceName: 'teatrofrancoparenti.it',
+    sourceName: 'teatrofrancoparenti.it — Cartellone',
     instagramUrl: null,
     facebookUrl: null,
     sourceUrl: 'https://teatrofrancoparenti.it/cartellone/spettacoli-teatro-milano/'
@@ -420,7 +446,7 @@ export const MILAN_EVENT_TEMPLATES = [
     isFree: true,
     priceDetails: 'GRATIS • Accesso libero alla cittadinanza',
     category: 'politica',
-    sourceName: 'casadellacultura.it',
+    sourceName: 'casadellacultura.it — Programma',
     instagramUrl: null,
     facebookUrl: null,
     sourceUrl: 'https://www.casadellacultura.it/'
@@ -430,18 +456,18 @@ export const MILAN_EVENT_TEMPLATES = [
     scheduledHour: 20,
     scheduledMinute: 45,
     durationMinutes: 120,
-    title: 'Stagione Teatrale di Prosa & Commedia al Teatro Manzoni',
-    description: 'Spettacolo serale sul palcoscenico storico di Via Manzoni 42 con le compagnie protagoniste della stagione teatrale milanese.',
+    title: 'Programma Stagione Teatrale di Prosa & Commedia al Teatro Manzoni',
+    description: 'Spettacolo serale sul palcoscenico storico di Via Manzoni 42 con le compagnie protagoniste del cartellone di prosa.',
     venueName: 'Teatro Manzoni',
     neighborhood: 'Quadrilatero / Montenapoleone',
     address: 'Via Manzoni 42',
     isFree: false,
     priceDetails: '€25,00 - €36,00 Poltronissima / Galleria',
     category: 'teatro',
-    sourceName: 'teatromanzoni.it',
+    sourceName: 'teatromanzoni.it — Programma',
     instagramUrl: null,
     facebookUrl: null,
-    sourceUrl: 'https://www.teatromanzoni.it/'
+    sourceUrl: 'https://www.teatromanzoni.it/programma/'
   },
   {
     id: 'evt-anteo-anteprima',
@@ -456,7 +482,7 @@ export const MILAN_EVENT_TEMPLATES = [
     isFree: false,
     priceDetails: '€9,50 Intero / €7,00 Amici del Cinema',
     category: 'cinema',
-    sourceName: 'spaziocinema.info',
+    sourceName: 'spaziocinema.info — Anteo Milano',
     instagramUrl: null,
     facebookUrl: null,
     sourceUrl: 'https://www.spaziocinema.info/milano'
@@ -468,18 +494,18 @@ export const MILAN_EVENT_TEMPLATES = [
     scheduledHour: 21,
     scheduledMinute: 0,
     durationMinutes: 125,
-    title: 'Cinema d’Essai & Proiezione Serale con Dibattito in Sala',
-    description: 'Programmazione storica d’autore nella sala indipendente di Via Savona 57, punto di riferimento del cinema indipendente a Milano.',
+    title: 'Cinema d’Essai & Proiezione Serale in Sala al Cinema Mexico',
+    description: 'Programmazione storica d’autore nella sala monoschermo indipendente di Via Savona 57, punto di riferimento del cinema indipendente a Milano.',
     venueName: 'Cinema Mexico',
     neighborhood: 'Zona Solari / Via Savona',
     address: 'Via Savona 57',
     isFree: false,
     priceDetails: '€7,50 Intero / €6,00 Ridotto',
     category: 'cinema',
-    sourceName: 'cinemamexico.it',
+    sourceName: 'milanocinema.com — Cinema Mexico',
     instagramUrl: null,
     facebookUrl: null,
-    sourceUrl: 'https://www.cinemamexico.it/'
+    sourceUrl: 'https://milanocinema.com/cinema/mexico'
   },
   {
     id: 'evt-blue-note-jazz',
@@ -494,7 +520,7 @@ export const MILAN_EVENT_TEMPLATES = [
     isFree: false,
     priceDetails: '€30,00 Door / €25,00 Advance',
     category: 'concerti',
-    sourceName: 'bluenotemilano.com',
+    sourceName: 'bluenotemilano.com — Programmazione',
     instagramUrl: null,
     facebookUrl: null,
     sourceUrl: 'https://www.bluenotemilano.com/'
@@ -512,7 +538,7 @@ export const MILAN_EVENT_TEMPLATES = [
     isFree: false,
     priceDetails: 'Biglietti su santeria.milano.it / Ticketone / DICE',
     category: 'concerti',
-    sourceName: 'santeria.milano.it/eventi',
+    sourceName: 'santeria.milano.it — Eventi',
     instagramUrl: null,
     facebookUrl: null,
     sourceUrl: 'https://www.santeria.milano.it/eventi/'
@@ -530,7 +556,7 @@ export const MILAN_EVENT_TEMPLATES = [
     isFree: false,
     priceDetails: '€7,50 Biglietto intero',
     category: 'cinema',
-    sourceName: 'milanocinema.com / Cinema Beltrade',
+    sourceName: 'milanocinema.com — Cinema Beltrade',
     instagramUrl: null,
     facebookUrl: null,
     sourceUrl: 'https://milanocinema.com/it/cinema/beltrade'
@@ -548,7 +574,7 @@ export const MILAN_EVENT_TEMPLATES = [
     isFree: true,
     priceDetails: 'GRATIS • Free Entry',
     category: 'concerti',
-    sourceName: 'santeria.milano.it/eventi',
+    sourceName: 'santeria.milano.it — Eventi',
     instagramUrl: null,
     facebookUrl: null,
     sourceUrl: 'https://www.santeria.milano.it/eventi/'
@@ -566,7 +592,7 @@ export const MILAN_EVENT_TEMPLATES = [
     isFree: false,
     priceDetails: 'Biglietti su DICE (+ tessera ARCI)',
     category: 'concerti',
-    sourceName: 'zero.eu / ARCI Biko',
+    sourceName: 'zero.eu — ARCI Biko Milano',
     instagramUrl: null,
     facebookUrl: null,
     sourceUrl: 'https://zero.eu/it/eventi/383162-jazzmi-momoko-gill-arci-biko,milano/'
@@ -584,10 +610,10 @@ export const MILAN_EVENT_TEMPLATES = [
     isFree: false,
     priceDetails: '€7,50 + Tessera Associativa',
     category: 'cinema',
-    sourceName: 'ilcinemino.it',
+    sourceName: 'ilcinemino.it — Programmazione',
     instagramUrl: null,
     facebookUrl: null,
-    sourceUrl: 'https://www.ilcinemino.it/'
+    sourceUrl: 'https://www.ilcinemino.it/programmazione/'
   },
   {
     id: 'evt-magnolia-clubnight',
@@ -602,7 +628,7 @@ export const MILAN_EVENT_TEMPLATES = [
     isFree: false,
     priceDetails: 'Biglietti su circolomagnolia.it / DICE',
     category: 'concerti',
-    sourceName: 'circolomagnolia.it',
+    sourceName: 'circolomagnolia.it — Programma',
     instagramUrl: null,
     facebookUrl: null,
     sourceUrl: 'https://www.circolomagnolia.it/'
@@ -612,18 +638,18 @@ export const MILAN_EVENT_TEMPLATES = [
     scheduledHour: 23,
     scheduledMinute: 30,
     durationMinutes: 210,
-    title: 'Rassegna Notturna Musica Elettronica & Arti Visive a Milano',
-    description: 'Programmazione clubbing ed elettronica selezionata dalla redazione di Zero Milano nei club e spazi indipendenti cittadini.',
+    title: 'Rassegna Notturna Musica Elettronica & Arti Performative al Tempio del Futuro Perduto',
+    description: 'Programmazione notturna tra clubbing, arti performative e mostre indipendenti negli spazi della Fabbrica del Vapore / Via Luigi Nono 9 recensita da Zero Milano.',
     venueName: 'Tempio del Futuro Perduto',
     neighborhood: 'Cenisio / Monumentale',
     address: 'Via Luigi Nono 9',
     isFree: false,
     priceDetails: 'Ingresso secondo programmazione serata',
     category: 'concerti',
-    sourceName: 'zero.eu/milano/eventi',
+    sourceName: 'zero.eu — Tempio del Futuro Perduto',
     instagramUrl: null,
     facebookUrl: null,
-    sourceUrl: 'https://zero.eu/milano/eventi/'
+    sourceUrl: 'https://zero.eu/it/luoghi/103058-tempio-del-futuro-perduto,milano/'
   }
 ];
 
