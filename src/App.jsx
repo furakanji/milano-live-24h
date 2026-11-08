@@ -210,9 +210,9 @@ export default function App() {
       priceDetails: priceDetails || (isFree ? 'GRATIS • Ingresso libero' : '€€ / Biglietto'),
       category,
       mapsUrl: buildMapsUrl(venueName, address),
-      instagramUrl: instagramUrl || 'https://instagram.com/yesmilano',
-      facebookUrl: facebookUrl || 'https://facebook.com/visitmilanoofficial',
-      sourceUrl: sourceUrl || 'https://www.casadellacultura.it',
+      instagramUrl: instagramUrl || null,
+      facebookUrl: facebookUrl || null,
+      sourceUrl: sourceUrl || 'https://www.casadellacultura.it/',
       sourceName,
       startHM: startRome.hm,
       endHM: endRome.hm,
@@ -1053,24 +1053,28 @@ export default function App() {
                               <MapPin className="w-3.5 h-3.5 text-orange-600" />
                               Google Maps
                             </a>
-                            <a
-                              href={ev.instagramUrl}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-zinc-200 border border-zinc-700 font-semibold text-xs transition"
-                            >
-                              <Instagram className="w-3.5 h-3.5 text-pink-400" />
-                              IG
-                            </a>
-                            <a
-                              href={ev.facebookUrl}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-zinc-200 border border-zinc-700 font-semibold text-xs transition"
-                            >
-                              <Facebook className="w-3.5 h-3.5 text-sky-400" />
-                              FB
-                            </a>
+                            {ev.instagramUrl && (
+                              <a
+                                href={ev.instagramUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-zinc-200 border border-zinc-700 font-semibold text-xs transition"
+                              >
+                                <Instagram className="w-3.5 h-3.5 text-pink-400" />
+                                IG
+                              </a>
+                            )}
+                            {ev.facebookUrl && (
+                              <a
+                                href={ev.facebookUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-zinc-200 border border-zinc-700 font-semibold text-xs transition"
+                              >
+                                <Facebook className="w-3.5 h-3.5 text-sky-400" />
+                                FB
+                              </a>
+                            )}
                           </div>
 
                           <a

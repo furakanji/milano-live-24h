@@ -513,8 +513,8 @@ export function normalizeEventRecord(raw) {
     priceDetails: raw.priceDetails || (isFree ? 'GRATIS • Ingresso libero' : '€€ / Biglietto'),
     category: raw.category || 'mostre',
     mapsUrl: raw.mapsUrl || buildGoogleMapsDeepLink(venueName, address),
-    instagramUrl: raw.instagramUrl || 'https://instagram.com/yesmilano',
-    facebookUrl: raw.facebookUrl || 'https://facebook.com/visitmilanoofficial',
+    instagramUrl: raw.instagramUrl || null,
+    facebookUrl: raw.facebookUrl || null,
     sourceUrl: raw.sourceUrl || 'https://www.yesmilano.it'
   };
 }
@@ -631,7 +631,7 @@ export function evaluateSourceSafeguardAndLearn({
   } else if (/eventbrite\.|dice\.fm|ra\.co/i.test(lower)) {
     inferredStrategy = 'TICKETING_JSON_LD_AND_API';
     trustScore += 12;
-  } else if (/casadellacultura|cgil|anpi|comune\.milano|arcibellezza|fondazionefeltrinelli|base\.milano/i.test(lower)) {
+  } else if (/casadellacultura|cgil|anpi|comune\.milano|arcibellezza|fondazionefeltrinelli|base\.milano|santeria\.milano/i.test(lower)) {
     inferredStrategy = 'VERIFIED_CIVIC_WP_REST_API';
     trustScore = 95;
   }
@@ -685,10 +685,9 @@ export const MILAN_VENUE_KNOWLEDGE_GRAPH = [
     isFree: true,
     priceDetails: 'GRATIS • Ingresso libero',
     defaultHour: 18,
-    defaultMinute: 30,
-    instagramUrl: 'https://instagram.com/casadellaculturamilano',
-    facebookUrl: 'https://facebook.com/casadellaculturamilano',
-    defaultTitle: 'Incontro Pubblico & Dibattito Cittadino alla Casa della Cultura'
+    defaultMinute: 0,
+    defaultSourceUrl: 'https://www.casadellacultura.it/',
+    defaultTitle: 'Scuola di Cultura Politica & Incontro Pubblico in Via Borgogna'
   },
   {
     match: /arcibellezza|bellezza/i,
@@ -700,8 +699,7 @@ export const MILAN_VENUE_KNOWLEDGE_GRAPH = [
     priceDetails: 'GRATIS • Ingresso con tessera ARCI',
     defaultHour: 21,
     defaultMinute: 0,
-    instagramUrl: 'https://instagram.com/arcibellezza',
-    facebookUrl: 'https://facebook.com/arcibellezza',
+    defaultSourceUrl: 'https://www.arcibellezza.it/',
     defaultTitle: 'Assemblea & Serata Culturale in Palestra Visconti'
   },
   {
@@ -714,8 +712,7 @@ export const MILAN_VENUE_KNOWLEDGE_GRAPH = [
     priceDetails: 'GRATIS • Ingresso libero con registrazione',
     defaultHour: 18,
     defaultMinute: 30,
-    instagramUrl: 'https://instagram.com/fondazionefeltrinelli',
-    facebookUrl: 'https://facebook.com/FondazioneFeltrinelli',
+    defaultSourceUrl: 'https://fondazionefeltrinelli.it/partecipa-home/',
     defaultTitle: 'Public Talk & Tavola Rotonda in Viale Pasubio'
   },
   {
@@ -728,8 +725,7 @@ export const MILAN_VENUE_KNOWLEDGE_GRAPH = [
     priceDetails: 'GRATIS • Ingresso libero',
     defaultHour: 19,
     defaultMinute: 0,
-    instagramUrl: 'https://instagram.com/base_milano',
-    facebookUrl: 'https://facebook.com/basemilano',
+    defaultSourceUrl: 'https://base.milano.it/',
     defaultTitle: 'Talk, Vernissage & Live Showcase negli spazi ex Ansaldo'
   },
   {
@@ -740,10 +736,9 @@ export const MILAN_VENUE_KNOWLEDGE_GRAPH = [
     category: 'politica',
     isFree: true,
     priceDetails: 'GRATIS • Accesso libero alla cittadinanza',
-    defaultHour: 18,
-    defaultMinute: 0,
-    instagramUrl: 'https://instagram.com/cgilmilano',
-    facebookUrl: 'https://facebook.com/cgilmilano',
+    defaultHour: 17,
+    defaultMinute: 30,
+    defaultSourceUrl: 'https://www.cgil.milano.it/',
     defaultTitle: 'Assemblea Pubblica & Forum Diritti del Lavoro'
   },
   {
@@ -755,38 +750,35 @@ export const MILAN_VENUE_KNOWLEDGE_GRAPH = [
     isFree: false,
     priceDetails: '€9,50 Intero / €7,00 Ridotto',
     defaultHour: 20,
-    defaultMinute: 45,
-    instagramUrl: 'https://instagram.com/anteospaziocinema',
-    facebookUrl: 'https://facebook.com/AnteoPalazzoDelCinema',
-    defaultTitle: 'Proiezione Speciale in Lingua Originale + Incontro in Sala'
+    defaultMinute: 30,
+    defaultSourceUrl: 'https://www.spaziocinema.info/milano',
+    defaultTitle: 'Proiezione Serale V.O.S. + Incontro in Sala'
   },
   {
-    match: /cinemamexico|mexico/i,
-    venueName: 'Cinema Mexico',
-    address: 'Via Savona 57',
-    neighborhood: 'Zona Solari / Via Savona',
+    match: /cinetecamilano|arlecchino/i,
+    venueName: 'Cineteca Milano Arlecchino',
+    address: 'Via San Pietro all’Orto 9',
+    neighborhood: 'San Babila / Duomo',
     category: 'cinema',
     isFree: false,
-    priceDetails: '€7,50 Intero / €6,00 Ridotto',
+    priceDetails: '€8,50 Intero / €6,50 Cinetessera',
     defaultHour: 21,
     defaultMinute: 0,
-    instagramUrl: 'https://instagram.com/cinemamexicomilano',
-    facebookUrl: 'https://facebook.com/cinemamexicomilano',
-    defaultTitle: 'Proiezione d’Autore + Dibattito con Regista e Ospiti'
+    defaultSourceUrl: 'https://www.cinetecamilano.it/luogo/cineteca-milano-arlecchino/',
+    defaultTitle: 'Piccolo Grande Cinema Festival & Proiezione Restaurata 4K'
   },
   {
-    match: /beltrade|bandiere-interrotte/i,
+    match: /beltrade|milanocinema/i,
     venueName: 'Cinema Beltrade',
     address: 'Via Nino Oxilia 10',
     neighborhood: 'NoLo / Piazza Morbegno',
     category: 'cinema',
     isFree: false,
-    priceDetails: '€7,50 Biglietto unico',
+    priceDetails: '€8,00 Intero / €6,00 Ridotto',
     defaultHour: 21,
-    defaultMinute: 30,
-    instagramUrl: 'https://instagram.com/cinemabeltrade',
-    facebookUrl: 'https://facebook.com/cinemabeltrade',
-    defaultTitle: 'Rassegna Cinema Indipendente con Q&A in Sala'
+    defaultMinute: 15,
+    defaultSourceUrl: 'https://milanocinema.com/it/cinema/beltrade',
+    defaultTitle: 'Wild Horse Nine (V.O.S.) — Rassegna Cinema Indipendente'
   },
   {
     match: /piccoloteatro/i,
@@ -795,12 +787,11 @@ export const MILAN_VENUE_KNOWLEDGE_GRAPH = [
     neighborhood: 'Lanza / Brera',
     category: 'teatro',
     isFree: false,
-    priceDetails: '€22,00 Platea / €16,00 Balconata',
+    priceDetails: '€25,00 – €40,00',
     defaultHour: 19,
     defaultMinute: 30,
-    instagramUrl: 'https://instagram.com/piccoloteatromilano',
-    facebookUrl: 'https://facebook.com/PiccoloTeatroMilano',
-    defaultTitle: 'Spettacolo Serale & Incontro nel Chiostro Nina Vinchi'
+    defaultSourceUrl: 'https://www.piccoloteatro.org/it/theaters/piccolo-teatro-strehler',
+    defaultTitle: 'Slava’s Snowshow — Spettacolo al Piccolo Teatro Strehler'
   },
   {
     match: /teatrofrancoparenti|parenti/i,
@@ -809,12 +800,11 @@ export const MILAN_VENUE_KNOWLEDGE_GRAPH = [
     neighborhood: 'Porta Romana',
     category: 'teatro',
     isFree: false,
-    priceDetails: '€18,00 - €28,00',
+    priceDetails: '€18,00 – €32,00',
     defaultHour: 20,
-    defaultMinute: 30,
-    instagramUrl: 'https://instagram.com/teatrofrancoparenti',
-    facebookUrl: 'https://facebook.com/teatrofrancoparenti',
-    defaultTitle: 'Drammaturgia Contemporanea & Talk ai Bagni Misteriosi'
+    defaultMinute: 0,
+    defaultSourceUrl: 'https://teatrofrancoparenti.it/cartellone/spettacoli-teatro-milano/',
+    defaultTitle: 'Amleto² di Filippo Timi — Cartellone Sala Grande'
   },
   {
     match: /dice\.fm|ra\.co|magnolia|biko|santeria|alcatraz/i,
@@ -823,12 +813,11 @@ export const MILAN_VENUE_KNOWLEDGE_GRAPH = [
     neighborhood: 'Viale Toscana / Bocconi',
     category: 'concerti',
     isFree: false,
-    priceDetails: '€15,00 Biglietto / Prevendita DICE',
+    priceDetails: '€23,00 Biglietto teatro / concerto',
     defaultHour: 21,
-    defaultMinute: 30,
-    instagramUrl: 'https://instagram.com/santeriamilano',
-    facebookUrl: 'https://facebook.com/santeriamilano',
-    defaultTitle: 'Live Showcase & Electronic Set a Milano'
+    defaultMinute: 0,
+    defaultSourceUrl: 'https://www.santeria.milano.it/eventi/',
+    defaultTitle: 'Mauro Ermanno Giovanardi — "E poi scegliere con cura le parole" Live'
   }
 ];
 
@@ -902,7 +891,9 @@ export function autoExtractEventDetailsInBackend({
   const sourceUrl =
     rawSourceInput && rawSourceInput.startsWith('http')
       ? rawSourceInput
-      : 'https://www.casadellacultura.it';
+      : matchedProfile.defaultSourceUrl;
+  const isIgLink = /instagram\.com/i.test(rawSourceInput);
+  const isFbLink = /facebook\.com|fb\.me/i.test(rawSourceInput);
 
   return {
     title: extractedTitle,
@@ -918,8 +909,8 @@ export function autoExtractEventDetailsInBackend({
     isFree: matchedProfile.isFree,
     priceDetails: matchedProfile.priceDetails,
     category: matchedProfile.category,
-    instagramUrl: matchedProfile.instagramUrl,
-    facebookUrl: matchedProfile.facebookUrl,
+    instagramUrl: isIgLink ? rawSourceInput : null,
+    facebookUrl: isFbLink ? rawSourceInput : null,
     sourceUrl
   };
 }
