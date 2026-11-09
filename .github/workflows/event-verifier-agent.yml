@@ -1,0 +1,44 @@
+name: EventVerifierAgent — Ricerca & Verifica Eventi 24h
+
+on:
+  schedule:
+    # Esegue l'Agente di Ricerca e Verifica ogni 6 ore per validare la natura degli eventi,
+    # scartare tour ricorrenti/non prenotabili e aggiornare i badge SOLD OUT
+    - cron: '0 */6 * * *'
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - 'backend/eventVerifierAgent.js'
+      - 'src/data/milanEventsGenerator.js'
+
+permissions:
+  contents: write
+
+jobs:
+  verify-and-update-feed:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Run EventVerifierAgent Pipeline
+        run: node backend/eventVerifierAgent.js
+
+      - name: Commit updated verified-events-24h.json if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add public/verified-events-24h.json
+          if ! git diff --staged --quiet; then
+            git commit -m "chore(agent): update verified 24h events feed via EventVerifierAgent [skip ci]"
+            git push
+          else
+            echo "Nessuna modifica al feed verificato."
+          fi

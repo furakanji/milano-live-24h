@@ -544,12 +544,19 @@
     <div id="admin-console-content" class="space-y-8 text-xs">
 
       <!-- Admin KPI Summary Row -->
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+      <div class="grid grid-cols-1 sm:grid-cols-4 gap-3">
         <div class="p-4 rounded-xl bg-[#131519] border border-emerald-500/40">
-          <div class="text-zinc-400 uppercase font-semibold">Fonti Attive cui Attinge il Servizio</div>
+          <div class="text-zinc-400 uppercase font-semibold">Fonti Attive Verificate</div>
           <div class="mt-1 flex items-baseline justify-between">
-            <span id="sources-count-btn-label" class="text-2xl font-black text-emerald-400 mono-num">30</span>
+            <span id="sources-count-btn-label" class="text-2xl font-black text-emerald-400 mono-num">29</span>
             <span class="text-emerald-300 mono-num">URL diretti verificati</span>
+          </div>
+        </div>
+        <div class="p-4 rounded-xl bg-[#131519] border border-sky-500/40">
+          <div class="text-zinc-400 uppercase font-semibold">Scartati dall'Agente Verifica</div>
+          <div class="mt-1 flex items-baseline justify-between">
+            <span id="rejected-agent-count-pill" class="text-2xl font-black text-sky-400 mono-num">4</span>
+            <span class="text-sky-300 mono-num">Tour ricorrenti / No date</span>
           </div>
         </div>
         <div class="p-4 rounded-xl bg-[#131519] border border-orange-500/30">
@@ -575,12 +582,12 @@
       <div class="p-5 rounded-xl bg-[#111318] border border-emerald-500/30 space-y-4">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#23272f] pb-3">
           <div>
-            <span class="text-xs font-bold uppercase tracking-widest text-emerald-400 mono-num">ELENCO UFFICIALE FONTI DI INGESTIONE (`scraperService.js`)</span>
+            <span class="text-xs font-bold uppercase tracking-widest text-emerald-400 mono-num">ELENCO UFFICIALE FONTI DI INGESTIONE (`scraperService.js` + `eventVerifierAgent.js`)</span>
             <h3 class="text-sm sm:text-base font-bold text-white mt-0.5">
               📚 1. Elenco delle Fonti Milanesi cui Attinge il Servizio (Con Link Diretto Verificato)
             </h3>
             <p class="text-zinc-400 mt-0.5">
-              Tutte le pagine web ufficiali, i calendari teatrali/cinematografici e i portali culturali milanesi da cui il servizio legge direttamente le descrizioni e gli orari degli eventi.
+              Tutte le pagine web ufficiali, le mostre temporanee, i calendari teatrali/cinematografici e i portali culturali milanesi verificati dall'Agente (esclusi tour promozionali ricorrenti e pagine senza date prenotabili).
             </p>
           </div>
           <span class="px-2.5 py-1 rounded bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 font-bold mono-num shrink-0">
@@ -593,15 +600,90 @@
         </div>
       </div>
 
-      <!-- 2. Quarantined Suspicious Sources List (Backend Safeguard Queue) -->
+      <!-- 2. AGENTE DI RICERCA E VERIFICA NATURA DELLE OCCASIONI (`EventVerifierAgent`) -->
+      <div class="p-5 rounded-xl bg-[#111318] border border-sky-500/40 space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#23272f] pb-3">
+          <div>
+            <span class="text-xs font-bold uppercase tracking-widest text-sky-400 mono-num">AGENTE AUTOMATICO (`backend/eventVerifierAgent.js` • GitHub Actions ogni 6h)</span>
+            <h3 class="text-sm sm:text-base font-bold text-white mt-0.5">
+              🔍 2. Agente di Ricerca &amp; Verifica Natura Occasioni (Anti-Tour Ricorrenti &amp; Controllo Prenotabilità)
+            </h3>
+            <p class="text-zinc-400 mt-0.5">
+              L'agente verifica ogni occasione su 3 livelli: <strong>(Gate 1)</strong> scarta pagine promozionali di tour a catalogo, collezioni permanenti ordinarie e sportelli ricorrenti; <strong>(Gate 2)</strong> scarta pagine prive di date prenotabili (es. <em>"In programmazione — Vuoi essere avvisato..."</em>); <strong>(Gate 3)</strong> mantiene mostre temporanee, cinema, teatro, talk e concerti reali applicando il badge <span class="text-rose-400 font-bold">SOLD OUT • POSTI ESAURITI</span> quando i biglietti sono esauriti.
+            </p>
+          </div>
+          <span class="px-2.5 py-1 rounded bg-sky-500/15 text-sky-300 border border-sky-500/30 font-bold mono-num shrink-0">
+            CRON 6H ATTIVO
+          </span>
+        </div>
+
+        <!-- Live Interactive Verifier Tester -->
+        <div class="p-4 rounded-xl bg-[#0b0c0e] border border-[#23272f] space-y-3">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div class="font-bold text-white">Testa in Tempo Reale l'Agente di Verifica su un URL o Testo Pagina:</div>
+            <div class="flex flex-wrap items-center gap-1.5">
+              <button
+                type="button"
+                data-agent-preset="milanoguida"
+                class="px-2.5 py-1 rounded bg-red-500/15 hover:bg-red-500/25 text-red-300 border border-red-500/30 font-semibold mono-num cursor-pointer transition"
+              >
+                Test Caso Tour MilanoGuida (Non Prenotabile)
+              </button>
+              <button
+                type="button"
+                data-agent-preset="soldout"
+                class="px-2.5 py-1 rounded bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 border border-amber-500/30 font-semibold mono-num cursor-pointer transition"
+              >
+                Test Caso Evento Sold Out (Badge)
+              </button>
+              <button
+                type="button"
+                data-agent-preset="valid"
+                class="px-2.5 py-1 rounded bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-300 border border-emerald-500/30 font-semibold mono-num cursor-pointer transition"
+              >
+                Test Caso Mostra Temporanea / Cinema Valido
+              </button>
+            </div>
+          </div>
+
+          <form id="agent-verifier-test-form" class="flex flex-col sm:flex-row gap-2">
+            <input
+              id="agent-test-input"
+              type="text"
+              placeholder="Incolla URL o testo della pagina (es. https://www.milanoguida.com/visite-guidate/itinerari-milano/milano-medievale/ — In programmazione)..."
+              class="flex-1 px-3 py-2 rounded-lg bg-[#131519] border border-[#2c313c] text-white placeholder-zinc-500 focus:outline-none focus:border-sky-500 mono-num"
+            />
+            <button
+              type="submit"
+              class="px-4 py-2 rounded-lg bg-sky-500 hover:bg-sky-400 text-black font-extrabold uppercase tracking-wider cursor-pointer transition shrink-0"
+            >
+              Verifica con l'Agente →
+            </button>
+          </form>
+
+          <div id="agent-test-result-box" class="hidden p-3.5 rounded-lg border text-xs space-y-1.5"></div>
+        </div>
+
+        <!-- Rejected Occasions Log -->
+        <div class="space-y-2.5">
+          <div class="font-bold text-sky-300 uppercase tracking-wider">
+            🚫 Occasioni Escluse dall'Agente di Verifica (Tour a Catalogo Ricorrenti / Non Disponibili né Prenotabili):
+          </div>
+          <div id="rejected-by-agent-container" class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <!-- Populated dynamically by JS -->
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. Quarantined Suspicious Sources List (Backend Safeguard Queue) -->
       <div class="p-5 rounded-xl bg-[#111318] border border-[#282d39] space-y-4">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#23272f] pb-3">
           <div>
             <div class="font-bold text-red-400 uppercase tracking-wider flex items-center gap-1.5">
-              <span>🛡️ 2. Coda Backend Fonti Sospette Intercettate dal Safeguard</span>
+              <span>🛡️ 3. Coda Backend Fonti Sospette o Ricorrenti Intercettate dal Safeguard</span>
             </div>
             <p class="text-zinc-400 mt-0.5">
-              Le segnalazioni inviate dagli utenti con URL shortener (<code class="text-red-300">bit.ly</code>), domini ad alto rischio (<code class="text-red-300">.xyz</code>), bot Telegram non censiti o indirizzo civico assente vengono bloccate silenziosamente lato backend e mostrate solo qui.
+              Le segnalazioni inviate dagli utenti con URL shortener (<code class="text-red-300">bit.ly</code>), domini ad alto rischio (<code class="text-red-300">.xyz</code>), tour promozionali ricorrenti o indirizzo civico assente vengono bloccate silenziosamente lato backend e mostrate solo qui.
             </p>
           </div>
         </div>
@@ -611,11 +693,11 @@
         </div>
       </div>
 
-      <!-- 3. Learned Sources Database Table -->
+      <!-- 4. Learned Sources Database Table -->
       <div class="p-5 rounded-xl bg-[#111318] border border-[#282d39] space-y-4">
         <div class="flex items-center justify-between border-b border-[#23272f] pb-3">
           <div>
-            <h3 class="text-sm font-bold text-white">🧠 3. Database Fonti Apprese Automaticamente da Link e Locandine</h3>
+            <h3 class="text-sm font-bold text-white">🧠 4. Database Fonti Apprese Automaticamente da Link e Locandine</h3>
             <p class="text-zinc-400 mt-0.5">
               Nuove fonti milanesi imparate dal backend leggendo i link e le locandine inviate dagli utenti o approvate dall'Admin.
             </p>
@@ -627,11 +709,11 @@
         </div>
       </div>
 
-      <!-- 4. Normalized JSON Schema Preview -->
+      <!-- 5. Normalized JSON Schema Preview -->
       <div class="p-5 rounded-xl bg-[#111318] border border-[#282d39] space-y-3">
         <div class="flex items-center justify-between">
-          <h4 class="text-xs font-bold uppercase tracking-wider text-zinc-300">4. Schema JSON Evento Normalizzato (Backend Output)</h4>
-          <span class="text-emerald-400 mono-num">Unified Schema v1.0</span>
+          <h4 class="text-xs font-bold uppercase tracking-wider text-zinc-300">5. Schema JSON Evento Normalizzato (Backend Output)</h4>
+          <span class="text-emerald-400 mono-num">Unified Schema v2.0 (EventVerifierAgent)</span>
         </div>
         <pre id="live-json-preview" class="p-3.5 rounded-lg bg-[#090a0d] border border-[#23272f] text-zinc-300 overflow-x-auto mono-num text-xs"></pre>
       </div>
@@ -698,13 +780,14 @@
 
     const MILAN_SOURCES_REGISTRY = [
       { name: 'Santeria Toscana 31 — Calendario Eventi', category: 'Concerti & Club', method: 'HTML Calendar + Liveurope', url: 'https://www.santeria.milano.it/eventi/' },
-      { name: 'Pirelli HangarBicocca — Mostre in Corso', category: 'Mostre & Musei', method: 'Structured HTML', url: 'https://pirellihangarbicocca.org/mostra/luciano-fabro/' },
+      { name: 'Pirelli HangarBicocca — Mostra Temporanea Luciano Fabro', category: 'Mostre & Musei', method: 'Structured HTML', url: 'https://pirellihangarbicocca.org/mostra/luciano-fabro/' },
+      { name: 'Gallerie d’Italia Piazza Scala — Mostra "LIBERE! 1946-2026"', category: 'Mostre & Musei', method: 'Temporary Exhibition Feed', url: 'https://gallerieditalia.com/it/milano/mostre-e-iniziative/mostre/2026/09/24/mostra-libere-1946-2026-le-conquiste-delle-donne-milano/' },
+      { name: 'Palazzo Reale Milano — Mostra Temporanea "Dalí e la Moda"', category: 'Mostre & Musei', method: 'Civic Exhibition Portal', url: 'https://www.palazzorealemilano.it/-/dali-e-la-moda' },
+      { name: 'GAM Galleria d’Arte Moderna — Mostra Pellizza da Volpedo', category: 'Mostre & Musei', method: 'Civic Exhibition Portal', url: 'https://www.gam-milano.com/mostre/200/pellizza-da-volpedo-i-capolavori' },
+      { name: 'Palazzo Reale Milano — Mostra Temporanea "I Brueghel"', category: 'Mostre & Musei', method: 'Civic Exhibition Portal', url: 'https://www.palazzorealemilano.it/-/brueghel' },
       { name: 'Fondazione Prada — Calendario & Cinema Godard', category: 'Mostre & Cinema', method: 'Calendar Feed', url: 'https://www.fondazioneprada.org/calendario/?period=current&tmpl=1' },
-      { name: 'MUDEC — Mostre in Corso & Collezione', category: 'Mostre & Musei', method: 'WP REST + HTML', url: 'https://www.mudec.it/mostre-in-corso-2/' },
-      { name: 'Palazzo Morando | Costume Moda Immagine (Comune di Milano)', category: 'Mostre & Musei', method: 'Civic Portal', url: 'https://www.comune.milano.it/web/palazzo-morando' },
-      { name: 'Villa Necchi Campiglio — FAI Eventi', category: 'Aperture Speciali', method: 'JSON-LD Events', url: 'https://fondoambiente.it/luoghi/villa-necchi-campiglio/eventi' },
-      { name: 'Cripta di San Giovanni in Conca — MilanoGuida', category: 'Aperture Speciali', method: 'Calendar Scraper', url: 'https://www.milanoguida.com/visite-guidate/itinerari-milano/la-cripta-di-san-giovanni-in-conca/' },
-      { name: 'Milano Medievale (Piazza Mercanti & Broletto) — MilanoGuida', category: 'Aperture Speciali', method: 'Calendar Scraper', url: 'https://www.milanoguida.com/visite-guidate/itinerari-milano/milano-medievale/' },
+      { name: 'MUDEC — Mostre Temporanee in Corso', category: 'Mostre & Musei', method: 'WP REST + HTML', url: 'https://www.mudec.it/mostre-in-corso-2/' },
+      { name: 'Villa Necchi Campiglio — FAI Eventi Speciali', category: 'Aperture Speciali', method: 'JSON-LD Events', url: 'https://fondoambiente.it/luoghi/villa-necchi-campiglio/eventi' },
       { name: 'Cineteca Milano Arlecchino', category: 'Cinema & Rassegne', method: 'Calendar Scraper', url: 'https://www.cinetecamilano.it/luogo/cineteca-milano-arlecchino/' },
       { name: 'SpazioCinema Anteo Palazzo del Cinema', category: 'Cinema & Rassegne', method: 'Showtime Parser', url: 'https://www.spaziocinema.info/milano' },
       { name: 'Cinema Beltrade — Programmazione MilanoCinema', category: 'Cinema & Rassegne', method: 'Daily Showtime API', url: 'https://milanocinema.com/it/cinema/beltrade' },
@@ -717,7 +800,6 @@
       { name: 'Casa della Cultura Milano (Via Borgogna 3)', category: 'Politica, Attivismo & Sociale', method: 'WP REST + Calendar', url: 'https://www.casadellacultura.it/' },
       { name: 'Camera del Lavoro / CGIL Milano — Stagione Culturale 2026', category: 'Politica, Attivismo & Sociale', method: 'WP REST + Agenda', url: 'https://www.cgil.milano.it/stagione-culturale-2026/' },
       { name: 'Casa delle Donne di Milano — Calendario Eventi', category: 'Politica, Attivismo & Sociale', method: 'WP Calendar Parser', url: 'https://www.casadonnemilano.it/calendario-eventi-nella-casa/' },
-      { name: 'Casa dei Diritti — Comune di Milano (Via De Amicis 10)', category: 'Politica, Attivismo & Sociale', method: 'Civic Portal', url: 'https://www.comune.milano.it/argomenti/welfare/casa-dei-diritti' },
       { name: 'Fondazione Giangiacomo Feltrinelli — Partecipa', category: 'Libri, Talk & Conferenze', method: 'WP REST API', url: 'https://fondazionefeltrinelli.it/partecipa-home/' },
       { name: 'Libreria Verso — Calendario Appuntamenti', category: 'Libri, Talk & Conferenze', method: 'WP Events Parser', url: 'http://www.libreriaverso.com/appuntamenti/' },
       { name: 'MEET Digital Culture Center — Tutti gli Eventi', category: 'Libri, Talk & Digital Art', method: 'WP REST API', url: 'https://www.meetcenter.it/it/tutti-gli-eventi/' },
@@ -728,6 +810,103 @@
       { name: 'Circolo Magnolia — Idroscalo', category: 'Concerti & Club', method: 'Calendar Scraper', url: 'https://www.circolomagnolia.it/' },
       { name: 'Tempio del Futuro Perduto — Scheda Zero.eu', category: 'Concerti & Club', method: 'Zero.eu Venue Feed', url: 'https://zero.eu/it/luoghi/103058-tempio-del-futuro-perduto,milano/' }
     ];
+
+    /**
+     * Occasioni analizzate e SCARTATE dall'Agente di Verifica (`EventVerifierAgent`)
+     * in quanto tour promozionali a catalogo, attività ricorrenti o pagine prive di date prenotabili.
+     */
+    const REJECTED_BY_VERIFIER_AGENT = [
+      {
+        id: 'rej-milanoguida-medievale',
+        title: 'Milano Medievale: Piazza dei Mercanti, Loggia degli Osii e Broletto Nuovo',
+        venueName: 'Piazza dei Mercanti',
+        sourceUrl: 'https://www.milanoguida.com/visite-guidate/itinerari-milano/milano-medievale/',
+        verdict: 'SCARTATO DALL’AGENTE',
+        reasons: [
+          'Gate 1 (Natura Occasione): Pagina promozionale a catalogo di tour guidato ricorrente (/visite-guidate/itinerari-milano/), non è un evento o appuntamento speciale.',
+          'Gate 2 (Disponibilità & Prenotabilità): La pagina riporta "In programmazione — Vuoi essere avvisato quando saranno online nuove date?" (non disponibile né prenotabile).'
+        ]
+      },
+      {
+        id: 'rej-milanoguida-cripta',
+        title: 'La Cripta di San Giovanni in Conca — Visita Guidata',
+        venueName: 'Cripta di San Giovanni in Conca',
+        sourceUrl: 'https://www.milanoguida.com/visite-guidate/itinerari-milano/la-cripta-di-san-giovanni-in-conca/',
+        verdict: 'SCARTATO DALL’AGENTE',
+        reasons: [
+          'Gate 1 (Natura Occasione): Scheda promozionale a catalogo di visita guidata su richiesta (/visite-guidate/itinerari-milano/).',
+          'Gate 2 (Disponibilità & Prenotabilità): Nessun evento speciale confermato e prenotabile per le prossime 24h.'
+        ]
+      },
+      {
+        id: 'rej-palazzo-morando-perm',
+        title: 'Collezione Permanente Costume Moda Immagine & Pinacoteca del Settecento',
+        venueName: 'Palazzo Morando',
+        sourceUrl: 'https://www.comune.milano.it/web/palazzo-morando',
+        verdict: 'SCARTATO DALL’AGENTE',
+        reasons: [
+          'Gate 1 (Natura Occasione): Semplice orario di apertura ordinaria della collezione civica permanente, privo di mostra temporanea o evento speciale.'
+        ]
+      },
+      {
+        id: 'rej-casa-diritti-sportelli',
+        title: 'Sportelli Diritti Civili & Orientamento Legale Settimanale',
+        venueName: 'Casa dei Diritti — Comune di Milano',
+        sourceUrl: 'https://www.comune.milano.it/argomenti/welfare/casa-dei-diritti',
+        verdict: 'SCARTATO DALL’AGENTE',
+        reasons: [
+          'Gate 1 (Natura Occasione): Servizio comunale di sportello ricorrente; non costituisce un evento, talk o assemblea pubblica speciale.'
+        ]
+      }
+    ];
+
+    /**
+     * Motore dell'Agente di Verifica (`verifyEventCandidateWithAgent`):
+     * - Gate 1: Esclude pagine promozionali di tour a catalogo (`/visite-guidate/`, tour su richiesta),
+     *   collezioni permanenti ordinarie e sportelli ricorrenti.
+     * - Gate 2: Esclude pagine non disponibili/non prenotabili ("In programmazione", "Nessuna data disponibile").
+     * - Gate 3: Mantiene mostre temporanee, cinema, teatro, talk e concerti reali; se Sold Out, applica il badge `SOLD OUT • POSTI ESAURITI`.
+     */
+    function verifyEventCandidateWithAgent(candidate = {}) {
+      const text = `${candidate.title || ''} ${candidate.description || ''} ${candidate.sourceUrl || ''} ${candidate.rawText || ''}`;
+      const reasons = [];
+
+      if (/milanoguida\.com\/visite-guidate\/|tour\s+su\s+richiesta|prenota\s+un\s+tour\s+privato|itinerario\s+a\s+catalogo|walking\s+tour/i.test(text)) {
+        reasons.push('Gate 1 (Natura Occasione): Pagina promozionale di tour/visita guidata a catalogo ricorrente (non è un singolo evento o appuntamento speciale).');
+      }
+      if (/collezione\s+permanente\s+a\s+ingresso\s+libero\s+senza\s+mostra|solo\s+collezione\s+permanente|orari\s+sportello\s+al\s+pubblico|sportelli\s+diritti\s+civili/i.test(text)) {
+        reasons.push('Gate 1 (Natura Occasione): Attività ordinaria ricorrente (collezione permanente o sportello), non costituisce un evento speciale.');
+      }
+      if (/in\s+programmazione\s*[-—:]?\s*vuoi\s+essere\s+avvisato|vuoi\s+essere\s+avvisato\s+quando\s+saranno\s+online|nessuna\s+data\s+disponibile|attualmente\s+non\s+prenotabile/i.test(text)) {
+        reasons.push('Gate 2 (Disponibilità & Prenotabilità): L’attività non ha date attive e non è né disponibile né prenotabile.');
+      }
+
+      const isSoldOut =
+        Boolean(candidate.isSoldOut) ||
+        /sold\s*out|tutto\s+esaurito|posti\s+esauriti|biglietti\s+esauriti/i.test(text);
+
+      if (reasons.length > 0) {
+        return {
+          isValidEvent: false,
+          verdict: 'SCARTATO DALL’AGENTE',
+          isSoldOut: false,
+          availabilityBadge: 'NON DISPONIBILE / SCARTATO',
+          reasons
+        };
+      }
+
+      return {
+        isValidEvent: true,
+        verdict: isSoldOut ? 'APPROVATO CON BADGE SOLD OUT' : 'APPROVATO E PRENOTABILE / ATTIVO',
+        isSoldOut,
+        availabilityBadge: isSoldOut
+          ? 'SOLD OUT • POSTI ESAURITI'
+          : candidate.isFree
+            ? 'INGRESSO LIBERO • DISPONIBILE'
+            : 'PRENOTABILE • POSTI DISPONIBILI',
+        reasons: []
+      };
+    }
 
     /**
      * Helper to build Google Maps Search URL as required by specification:
@@ -745,8 +924,10 @@
         scheduledHour: 10,
         scheduledMinute: 0,
         durationMinutes: 120,
-        title: 'Piero Portaluppi: disegnare la modernità — Visita a Villa Necchi Campiglio',
-        description: 'Una delle dimore più rappresentative della Milano degli anni Trenta progettata da Piero Portaluppi in Via Mozart 14, custode delle collezioni Guido Sforni, de’ Micheli e Gian Ferrari.',
+        eventType: 'SPECIAL_EVENT',
+        isSoldOut: false,
+        title: 'Eventi e Aperture Speciali FAI a Villa Necchi Campiglio & Giardino d’Inverno',
+        description: 'Calendario di appuntamenti speciali, mostre e visite nelle sale storiche degli anni Trenta progettate da Piero Portaluppi in Via Mozart 14, custodite dal FAI.',
         venueName: 'Villa Necchi Campiglio (FAI)',
         neighborhood: 'Quadrilatero del Silenzio / Palestro',
         address: 'Via Mozart 14',
@@ -759,46 +940,52 @@
         sourceUrl: 'https://fondoambiente.it/luoghi/villa-necchi-campiglio/eventi'
       },
       {
-        id: 'evt-palazzo-morando-free',
+        id: 'evt-gallerie-italia-libere',
         scheduledHour: 10,
         scheduledMinute: 30,
         durationMinutes: 150,
-        title: 'Palazzo Morando | Costume Moda Immagine — Pinacoteca e Galleria Cinese',
-        description: 'Nel cuore del quadrilatero della moda in Via Sant’Andrea 6, dimora storica donata alla Città di Milano con la Pinacoteca settecentesca e la collezione civica di Costume e Moda (aperto mar-dom 10:00–17:30, ingresso gratuito).',
-        venueName: 'Palazzo Morando',
-        neighborhood: 'Sant’Andrea / Montenapoleone',
-        address: 'Via Sant’Andrea 6',
-        isFree: true,
-        priceDetails: 'GRATIS • Ingresso gratuito',
+        eventType: 'TEMPORARY_EXHIBITION',
+        isSoldOut: false,
+        title: 'Mostra Temporanea "LIBERE! 1946-2026. Le conquiste delle donne" alle Gallerie d’Italia',
+        description: 'Esposizione temporanea (24 settembre 2026 – 7 febbraio 2027) alle Gallerie d’Italia di Piazza della Scala 6 dedicata agli ottant’anni dal primo voto femminile in Italia.',
+        venueName: 'Gallerie d’Italia — Milano',
+        neighborhood: 'Piazza della Scala / Duomo',
+        address: 'Piazza della Scala 6',
+        isFree: false,
+        priceDetails: '€10,00 Intero / €8,00 Ridotto',
         category: 'mostre',
-        sourceName: 'comune.milano.it/web/palazzo-morando',
+        sourceName: 'gallerieditalia.com (Mostra LIBERE!)',
         instagramUrl: null,
         facebookUrl: null,
-        sourceUrl: 'https://www.comune.milano.it/web/palazzo-morando'
+        sourceUrl: 'https://gallerieditalia.com/it/milano/mostre-e-iniziative/mostre/2026/09/24/mostra-libere-1946-2026-le-conquiste-delle-donne-milano/'
       },
       {
-        id: 'evt-brera-cripta-san-giovanni',
+        id: 'evt-palazzo-reale-dali',
         scheduledHour: 11,
         scheduledMinute: 0,
-        durationMinutes: 90,
-        title: 'Visita alla Cripta di San Giovanni in Conca & Milano Viscontea',
-        description: 'Unico esempio di cripta romanica originale esistente nel centro di Milano in Piazza Missori (antica cappella gentilizia di Bernabò Visconti), con percorso storico fino a San Gottardo in Corte.',
-        venueName: 'Cripta di San Giovanni in Conca',
-        neighborhood: 'Missori / Centro Storico',
-        address: 'Piazza Giuseppe Missori 22',
+        durationMinutes: 120,
+        eventType: 'TEMPORARY_EXHIBITION',
+        isSoldOut: false,
+        title: 'Mostra Temporanea "Dalí e la Moda" a Palazzo Reale',
+        description: 'In corso a Palazzo Reale (24 settembre 2026 – 31 gennaio 2027): un viaggio inedito nell’universo di Salvador Dalí attraverso il linguaggio della moda e del surrealismo.',
+        venueName: 'Palazzo Reale Milano',
+        neighborhood: 'Piazza del Duomo',
+        address: 'Piazza del Duomo 12',
         isFree: false,
-        priceDetails: '€14,00 Tariffa intera con guida e microfonaggio',
-        category: 'aperture',
-        sourceName: 'milanoguida.com (Cripta San Giovanni in Conca)',
+        priceDetails: '€15,00 Intero / €13,00 Ridotto',
+        category: 'mostre',
+        sourceName: 'palazzorealemilano.it/-/dali-e-la-moda',
         instagramUrl: null,
         facebookUrl: null,
-        sourceUrl: 'https://www.milanoguida.com/visite-guidate/itinerari-milano/la-cripta-di-san-giovanni-in-conca/'
+        sourceUrl: 'https://www.palazzorealemilano.it/-/dali-e-la-moda'
       },
       {
         id: 'evt-cineteca-arlecchino',
         scheduledHour: 11,
         scheduledMinute: 15,
         durationMinutes: 115,
+        eventType: 'CINEMA_SCREENING',
+        isSoldOut: false,
         title: 'PGC 2026 — Piccolo Grande Cinema & Classici Restaurati (v.o. sott. ita)',
         description: 'Programmazione della Cineteca Milano Arlecchino in Via San Pietro all’Orto 9: rassegne d’autore in versione originale sottotitolata, festival Piccolo Grande Cinema e restauri 4K.',
         venueName: 'Cineteca Milano Arlecchino',
@@ -813,22 +1000,24 @@
         sourceUrl: 'https://www.cinetecamilano.it/luogo/cineteca-milano-arlecchino/'
       },
       {
-        id: 'evt-milano-medievale-mercanti',
+        id: 'evt-gam-pellizza-volpedo',
         scheduledHour: 12,
         scheduledMinute: 0,
-        durationMinutes: 90,
-        title: 'Milano Medievale: Piazza dei Mercanti, Loggia degli Osii e Broletto Nuovo',
-        description: 'Itinerario storico guidato nel cuore della Mediolanum medievale tra Piazza dei Mercanti, la Loggia degli Osii (1316), la Casa dei Panigarola e il Broletto Nuovo.',
-        venueName: 'Piazza dei Mercanti',
-        neighborhood: 'Duomo / Cordusio',
-        address: 'Piazza dei Mercanti 1',
+        durationMinutes: 110,
+        eventType: 'TEMPORARY_EXHIBITION',
+        isSoldOut: false,
+        title: 'Mostra Temporanea "Pellizza da Volpedo (1868-1907). I capolavori" alla GAM',
+        description: 'Esposizione temporanea curata da Aurora Scotti e Paola Zatti nelle sale della Galleria d’Arte Moderna di Villa Reale in Via Palestro 16, attorno al Quarto Stato.',
+        venueName: 'GAM — Galleria d’Arte Moderna',
+        neighborhood: 'Palestro / Villa Reale',
+        address: 'Via Palestro 16',
         isFree: false,
-        priceDetails: '€14,00 Visita guidata certificata',
-        category: 'aperture',
-        sourceName: 'milanoguida.com (Milano Medievale)',
+        priceDetails: '€10,00 Mostra + Museo',
+        category: 'mostre',
+        sourceName: 'gam-milano.com (Pellizza da Volpedo)',
         instagramUrl: null,
         facebookUrl: null,
-        sourceUrl: 'https://www.milanoguida.com/visite-guidate/itinerari-milano/milano-medievale/'
+        sourceUrl: 'https://www.gam-milano.com/mostre/200/pellizza-da-volpedo-i-capolavori'
       },
 
       // === POMERIGGIO (14:30 – 17:30) ===
@@ -837,8 +1026,10 @@
         scheduledHour: 14,
         scheduledMinute: 30,
         durationMinutes: 180,
-        title: 'Fondazione Prada: Esposizioni Podium & Torre + Cinema Godard',
-        description: 'Calendario mostre temporanee, collezione permanente Atlas e rassegna cinematografica quotidiana presso il Cinema Godard negli spazi di Largo Isarco 2.',
+        eventType: 'TEMPORARY_EXHIBITION',
+        isSoldOut: false,
+        title: 'Fondazione Prada: Esposizioni Temporanee Podium & Torre + Cinema Godard',
+        description: 'Calendario mostre temporanee, progetti espositivi e rassegna cinematografica quotidiana presso il Cinema Godard negli spazi di Largo Isarco 2.',
         venueName: 'Fondazione Prada',
         neighborhood: 'Scalo Romana / Largo Isarco',
         address: 'Largo Isarco 2',
@@ -855,13 +1046,15 @@
         scheduledHour: 15,
         scheduledMinute: 0,
         durationMinutes: 140,
-        title: 'MUDEC: Installazione Chiharu Shiota, Mostra Matisse & Collezione Permanente',
-        description: 'Negli spazi dell’ex Ansaldo in Via Tortona 56: installazione site-specific nell’Agorà, percorso gratuito nella Collezione Permanente e grande mostra dedicata a Henri Matisse.',
+        eventType: 'TEMPORARY_EXHIBITION',
+        isSoldOut: false,
+        title: 'MUDEC: Installazione Site-Specific Chiharu Shiota & Mostra Temporanea Matisse',
+        description: 'Negli spazi del Museo delle Culture di Via Tortona 56: installazione site-specific nell’Agorà di Chipperfield e grandi mostre temporanee in corso.',
         venueName: 'MUDEC — Museo delle Culture',
         neighborhood: 'Tortona / Ansaldo',
         address: 'Via Tortona 56',
-        isFree: true,
-        priceDetails: 'GRATIS • Collezione permanente e Agorà a ingresso libero',
+        isFree: false,
+        priceDetails: '€16,00 Intero / €14,00 Ridotto Mostre Temporanee',
         category: 'mostre',
         sourceName: 'mudec.it/mostre-in-corso-2',
         instagramUrl: null,
@@ -873,8 +1066,10 @@
         scheduledHour: 15,
         scheduledMinute: 30,
         durationMinutes: 120,
+        eventType: 'TEMPORARY_EXHIBITION',
+        isSoldOut: false,
         title: 'The Shape of Human Values — Installazione & Digital Art al MEET',
-        description: 'Esposizione e programma di cultura digitale e tecnologia creativa negli spazi del MEET Digital Culture Center e nella Immersive Room di Viale Vittorio Veneto 2 (aperto 14:30 – 19:30).',
+        description: 'Esposizione temporanea e programma di cultura digitale e tecnologia creativa negli spazi del MEET Digital Culture Center e nella Immersive Room di Viale Vittorio Veneto 2.',
         venueName: 'MEET Digital Culture Center',
         neighborhood: 'Porta Venezia / Oberdan',
         address: 'Viale Vittorio Veneto 2',
@@ -887,30 +1082,34 @@
         sourceUrl: 'https://www.meetcenter.it/it/tutti-gli-eventi/'
       },
       {
-        id: 'evt-casa-diritti-transfem',
+        id: 'evt-palazzo-reale-brueghel',
         scheduledHour: 16,
         scheduledMinute: 0,
-        durationMinutes: 110,
-        title: 'Casa dei Diritti: Spazio Antidiscriminazioni, Rainbow Desk & Incontri Welfare',
-        description: 'Punto di riferimento istituzionale del Comune di Milano in Via De Amicis 10 per i diritti civili, l’orientamento legale, il contrasto alle discriminazioni e le reti sociali cittadine.',
-        venueName: 'Casa dei Diritti — Comune di Milano',
-        neighborhood: 'Sant’Ambrogio / De Amicis',
-        address: 'Via Edmondo De Amicis 10',
-        isFree: true,
-        priceDetails: 'GRATIS • Accesso libero',
-        category: 'politica',
-        sourceName: 'comune.milano.it (Casa dei Diritti)',
+        durationMinutes: 120,
+        eventType: 'TEMPORARY_EXHIBITION',
+        isSoldOut: false,
+        title: 'Mostra Temporanea "I Brueghel. Le dinastie del talento" a Palazzo Reale',
+        description: 'Grande esposizione temporanea a Palazzo Reale (fino al 31 gennaio 2027) dedicata ai capolavori della celebre dinastia di pittori fiamminghi tra Cinque e Seicento.',
+        venueName: 'Palazzo Reale Milano',
+        neighborhood: 'Piazza del Duomo',
+        address: 'Piazza del Duomo 12',
+        isFree: false,
+        priceDetails: '€15,00 Intero / €13,00 Ridotto',
+        category: 'mostre',
+        sourceName: 'palazzorealemilano.it/-/brueghel',
         instagramUrl: null,
         facebookUrl: null,
-        sourceUrl: 'https://www.comune.milano.it/argomenti/welfare/casa-dei-diritti'
+        sourceUrl: 'https://www.palazzorealemilano.it/-/brueghel'
       },
       {
         id: 'evt-hangar-bicocca',
         scheduledHour: 16,
         scheduledMinute: 30,
         durationMinutes: 150,
-        title: 'Luciano Fabro "Abitare lo spazio", Aki Sasamoto "XYZ" & I Sette Palazzi Celesti',
-        description: 'Ingresso gratuito alle mostre temporanee di Luciano Fabro e Aki Sasamoto e all’installazione permanente di Anselm Kiefer nelle Navate di Pirelli HangarBicocca.',
+        eventType: 'TEMPORARY_EXHIBITION',
+        isSoldOut: false,
+        title: 'Mostre Temporanee: Luciano Fabro "Abitare lo spazio" & Aki Sasamoto "XYZ"',
+        description: 'Ingresso gratuito alle mostre temporanee di Luciano Fabro e Aki Sasamoto negli spazi di Pirelli HangarBicocca in Via Chiese 2.',
         venueName: 'Pirelli HangarBicocca',
         neighborhood: 'Bicocca',
         address: 'Via Chiese 2',
@@ -927,6 +1126,8 @@
         scheduledHour: 17,
         scheduledMinute: 30,
         durationMinutes: 110,
+        eventType: 'PUBLIC_TALK',
+        isSoldOut: false,
         title: 'Stagione Culturale 2026: "Milano, Città del Lavoro" — Dibattiti in Sala Buozzi',
         description: 'Ciclo di incontri pubblici, presentazioni di rapporti sociali e dibattiti promossi dal Dipartimento Cultura e Ricerca della Camera del Lavoro in Corso di Porta Vittoria 43.',
         venueName: 'Camera del Lavoro di Milano',
@@ -1184,12 +1385,13 @@
         scheduledMinute: 0,
         durationMinutes: 95,
         title: 'Live Jazz, Soul & Blues — First & Second Set al Blue Note Milano',
-        description: 'Doppio set dal vivo nello storico jazz club di Via Pietro Borsieri 37 nel quartiere Isola con protagonisti internazionali del jazz, soul e blues.',
+        description: 'Doppio set dal vivo nello storico jazz club di Via Pietro Borsieri 37 nel quartiere Isola con protagonisti internazionali del jazz, soul e blues (1° set ore 21:00 SOLD OUT; 2° set ore 23:00 ultimi posti).',
         venueName: 'Blue Note Milano',
         neighborhood: 'Isola',
         address: 'Via Pietro Borsieri 37',
         isFree: false,
-        priceDetails: '€30,00 Door / €25,00 Advance',
+        isSoldOut: true,
+        priceDetails: '€30,00 Door / €25,00 Advance (Set 21:00 Sold Out)',
         category: 'concerti',
         sourceName: 'bluenotemilano.com',
         instagramUrl: null,
@@ -1409,12 +1611,15 @@
     /**
      * Generate normalized events mapped to their authentic Milanese clock schedule
      * within the rolling 24-hour window `[Next Hour, Next Hour + 24h)`.
+     * Filtered through `verifyEventCandidateWithAgent` so recurring tour catalogs or
+     * unbookable "In programmazione" pages are automatically excluded.
      */
     function generateDynamic24hEvents(nowMs) {
       const startOfNextHourMs = getNextHourStartMs(nowMs);
       const nowRome = getRomeParts(new Date(nowMs));
 
-      return EVENT_BLUEPRINTS.map(bp => {
+      return EVENT_BLUEPRINTS.filter(bp => verifyEventCandidateWithAgent(bp).isValidEvent).map(bp => {
+        const verification = verifyEventCandidateWithAgent(bp);
         const startMs = resolveScheduledTimeInRolling24h(
           bp.scheduledHour !== undefined ? bp.scheduledHour : 18,
           bp.scheduledMinute !== undefined ? bp.scheduledMinute : 30,
@@ -1446,6 +1651,8 @@
           neighborhood: bp.neighborhood,
           address: /milano/i.test(bp.address) ? bp.address : `${bp.address}, Milano`,
           isFree: bp.isFree,
+          isSoldOut: Boolean(bp.isSoldOut || verification.isSoldOut),
+          availabilityBadge: verification.availabilityBadge,
           priceDetails: bp.priceDetails,
           category: bp.category,
           mapsUrl: buildMapsUrl(bp.venueName, bp.address),
@@ -1618,7 +1825,7 @@
     }
 
     /**
-     * Render a single expandable Event Card with mandatory fields & deep links
+     * Render a single expandable Event Card with mandatory fields, SOLD OUT badge & deep links
      */
     function renderEventCard(ev) {
       const catMeta = CATEGORY_META[ev.category] || CATEGORY_META.mostre;
@@ -1637,6 +1844,12 @@
         `;
       }
 
+      const soldOutBadgeHtml = ev.isSoldOut
+        ? `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-xs font-extrabold tracking-wider bg-red-500/20 text-red-300 border border-red-500/50 uppercase mono-num">
+             🔴 SOLD OUT • POSTI ESAURITI
+           </span>`
+        : '';
+
       const priceBadgeHtml = ev.isFree
         ? `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-xs font-extrabold tracking-wider bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 uppercase mono-num">
              GRATIS
@@ -1650,7 +1863,7 @@
           id="card-${ev.id}"
           class="${ev._isHappeningNow ? 'editorial-card-live' : 'editorial-card'} rounded-xl p-4 sm:p-5 transition"
         >
-          <!-- Top Row: Time + Status Badge + Pricing Badge -->
+          <!-- Top Row: Time + Status Badge + Sold Out / Pricing Badge -->
           <div class="flex flex-wrap items-center justify-between gap-2 mb-2.5">
             <div class="flex flex-wrap items-center gap-2">
               <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-[#0b0c0e] border border-[#272b35] text-white font-bold text-xs mono-num">
@@ -1661,6 +1874,7 @@
                 ${ev._startHM} – ${ev._endHM}
               </span>
               ${liveStatusBadgeHtml}
+              ${soldOutBadgeHtml}
             </div>
             <div class="flex items-center gap-2">
               ${priceBadgeHtml}
@@ -1721,8 +1935,8 @@
           <div class="${isExpanded ? 'block' : 'hidden'} mt-3.5 pt-3 border-t border-[#23272f] text-xs text-zinc-400 space-y-2">
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 bg-[#0b0c0e] p-3 rounded-lg border border-[#1f232b]">
               <div>
-                <div class="text-zinc-500 uppercase font-semibold">Modalità d'ingresso</div>
-                <div class="text-zinc-200 font-medium mt-0.5">${ev.priceDetails}</div>
+                <div class="text-zinc-500 uppercase font-semibold">Modalità d'ingresso &amp; Stato</div>
+                <div class="text-zinc-200 font-medium mt-0.5">${ev.priceDetails} • <span class="${ev.isSoldOut ? 'text-red-300 font-bold' : 'text-emerald-300 font-semibold'}">${ev.availabilityBadge || ''}</span></div>
               </div>
               <div>
                 <div class="text-zinc-500 uppercase font-semibold">Indirizzo Verificato</div>
@@ -2465,6 +2679,30 @@
         imageFileName
       });
 
+      const agentVerdict = verifyEventCandidateWithAgent({
+        title: autoDetails.title,
+        description: autoDetails.description,
+        sourceUrl: rawSourceUrl || autoDetails.sourceUrl,
+        rawText: rawSourceUrl
+      });
+      if (!agentVerdict.isValidEvent) {
+        REJECTED_BY_VERIFIER_AGENT.unshift({
+          id: `rej-user-${Date.now()}`,
+          title: autoDetails.title,
+          venueName: autoDetails.venueName,
+          sourceUrl: rawSourceUrl || autoDetails.sourceUrl,
+          verdict: agentVerdict.verdict,
+          reasons: agentVerdict.reasons
+        });
+        renderStudioAdminAndLearnedUI();
+        showPublicSubmissionFeedback(
+          'pending',
+          '🚫 Segnalazione non pubblicata',
+          'L’agente di verifica ha stabilito che la pagina non è un evento o appuntamento speciale prenotabile (es. tour a catalogo ricorrente o attività non disponibile).'
+        );
+        return;
+      }
+
       const analysis = evaluateSourceAndLearnTypology({
         rawUrlOrHandle: rawSourceUrl || autoDetails.sourceUrl,
         venueText: autoDetails.venueName,
@@ -2925,6 +3163,33 @@
           submittedVia: 'FLYER_PHOTO_OCR',
           imageFileName: snapName
         });
+      });
+
+      // Admin: interactive EventVerifierAgent tester
+      const agentPresets = {
+        milanoguida: 'https://www.milanoguida.com/visite-guidate/itinerari-milano/milano-medievale/ In programmazione — Vuoi essere avvisato quando saranno online nuove date?',
+        soldout: 'Live Jazz Blue Note Milano — SOLD OUT posti esauriti',
+        valid: 'Mostra temporanea Dalí e la Moda — Palazzo Reale, biglietti disponibili'
+      };
+      const agentInput = document.getElementById('agent-test-input');
+      const runAgentTest = (text) => {
+        const box = document.getElementById('agent-test-result-box');
+        if (!box) return;
+        const v = verifyEventCandidateWithAgent({ title: text, rawText: text, sourceUrl: text });
+        box.classList.remove('hidden');
+        box.className = `p-3.5 rounded-lg border text-xs space-y-1.5 ${v.isValidEvent ? (v.isSoldOut ? 'bg-red-500/10 border-red-500/40 text-red-200' : 'bg-emerald-500/10 border-emerald-500/40 text-emerald-200') : 'bg-zinc-800 border-zinc-600 text-zinc-200'}`;
+        box.innerHTML = `<div class="font-bold">${v.verdict} — ${v.availabilityBadge}</div>${v.reasons.map(r => `<div>• ${r}</div>`).join('')}`;
+      };
+      document.querySelectorAll('[data-agent-preset]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const t = agentPresets[btn.getAttribute('data-agent-preset')] || '';
+          if (agentInput) agentInput.value = t;
+          runAgentTest(t);
+        });
+      });
+      document.getElementById('agent-verifier-test-form')?.addEventListener('submit', (e) => {
+        e.preventDefault();
+        runAgentTest((agentInput?.value || '').trim());
       });
 
       // Bind Price Filter clicks

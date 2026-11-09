@@ -24,20 +24,20 @@ export function buildMapsUrl(venueName, address) {
 }
 
 export const MILAN_SOURCES_SUMMARY = [
-  // Istituzionali, Musei, FAI & Visite Guidate
-  { name: 'Villa Necchi Campiglio (FAI)', type: 'JSON-LD / Calendario FAI', category: 'aperture', url: 'https://fondoambiente.it/luoghi/villa-necchi-campiglio/eventi' },
-  { name: 'Palazzo Morando — Comune di Milano', type: 'Portale Musei Civici', category: 'mostre', url: 'https://www.comune.milano.it/web/palazzo-morando' },
-  { name: 'MilanoGuida — Cripta San Giovanni in Conca', type: 'Scheda Visita Guidata', category: 'aperture', url: 'https://www.milanoguida.com/visite-guidate/itinerari-milano/la-cripta-di-san-giovanni-in-conca/' },
-  { name: 'MilanoGuida — Itinerario Milano Medievale', type: 'Scheda Visita Guidata', category: 'aperture', url: 'https://www.milanoguida.com/visite-guidate/itinerari-milano/milano-medievale/' },
-  { name: 'Fondazione Prada Milano', type: 'Calendario Esposizioni', category: 'mostre', url: 'https://www.fondazioneprada.org/calendario/?period=current&tmpl=1' },
-  { name: 'MUDEC — Museo delle Culture', type: 'Mostre in Corso', category: 'mostre', url: 'https://www.mudec.it/mostre-in-corso-2/' },
-  { name: 'Pirelli HangarBicocca', type: 'Scheda Mostra in Corso', category: 'mostre', url: 'https://pirellihangarbicocca.org/mostra/luciano-fabro/' },
+  // Istituzionali, Musei, FAI & Mostre Temporanee Verificate
+  { name: 'Villa Necchi Campiglio (FAI)', type: 'JSON-LD / Calendario Eventi FAI', category: 'aperture', url: 'https://fondoambiente.it/luoghi/villa-necchi-campiglio/eventi' },
+  { name: 'Gallerie d’Italia — Piazza Scala', type: 'Mostra Temporanea "LIBERE! 1946-2026"', category: 'mostre', url: 'https://gallerieditalia.com/it/milano/mostre-e-iniziative/mostre/2026/09/24/mostra-libere-1946-2026-le-conquiste-delle-donne-milano/' },
+  { name: 'Palazzo Reale Milano — Dalí e la Moda', type: 'Mostra Temporanea in Corso', category: 'mostre', url: 'https://www.palazzorealemilano.it/-/dali-e-la-moda' },
+  { name: 'GAM — Galleria d’Arte Moderna', type: 'Mostra Temporanea Pellizza da Volpedo', category: 'mostre', url: 'https://www.gam-milano.com/mostre/200/pellizza-da-volpedo-i-capolavori' },
+  { name: 'Palazzo Reale Milano — I Brueghel', type: 'Mostra Temporanea in Corso', category: 'mostre', url: 'https://www.palazzorealemilano.it/-/brueghel' },
+  { name: 'Fondazione Prada Milano', type: 'Calendario Esposizioni & Cinema Godard', category: 'mostre', url: 'https://www.fondazioneprada.org/calendario/?period=current&tmpl=1' },
+  { name: 'MUDEC — Museo delle Culture', type: 'Mostre Temporanee in Corso', category: 'mostre', url: 'https://www.mudec.it/mostre-in-corso-2/' },
+  { name: 'Pirelli HangarBicocca', type: 'Mostra Temporanea Luciano Fabro', category: 'mostre', url: 'https://pirellihangarbicocca.org/mostra/luciano-fabro/' },
   { name: 'Triennale Milano (Scheda Zero Milano)', type: 'Programmazione & Mostre', category: 'mostre', url: 'https://zero.eu/it/luoghi/4032-triennale-di-milano,milano/' },
   { name: 'BASE Milano (Ex Ansaldo)', type: 'Agenda Eventi', category: 'mostre', url: 'https://base.milano.it/agenda/' },
 
   // Politica, Diritti, Attivismo & Sociale
   { name: 'Casa della Cultura Milano', type: 'Programma Incontri Settimanali', category: 'politica', url: 'https://www.casadellacultura.it/' },
-  { name: 'Casa dei Diritti — Comune di Milano', type: 'Portale Welfare & Diritti', category: 'politica', url: 'https://www.comune.milano.it/argomenti/welfare/casa-dei-diritti' },
   { name: 'Casa delle Donne di Milano', type: 'Calendario Eventi nella Casa', category: 'politica', url: 'https://www.casadonnemilano.it/calendario-eventi-nella-casa/' },
   { name: 'Camera del Lavoro (CGIL Milano)', type: 'Stagione Culturale 2026', category: 'politica', url: 'https://www.cgil.milano.it/stagione-culturale-2026/' },
 
@@ -67,6 +67,51 @@ export const MILAN_SOURCES_SUMMARY = [
   { name: 'Tempio del Futuro Perduto (Zero Milano)', type: 'Scheda Luogo & Programmazione', category: 'concerti', url: 'https://zero.eu/it/luoghi/103058-tempio-del-futuro-perduto,milano/' }
 ];
 
+export const REJECTED_BY_VERIFIER_AGENT = [
+  {
+    id: 'rej-milanoguida-medievale',
+    title: 'Milano Medievale: Piazza dei Mercanti, Loggia degli Osii e Broletto Nuovo',
+    venueName: 'Piazza dei Mercanti',
+    sourceUrl: 'https://www.milanoguida.com/visite-guidate/itinerari-milano/milano-medievale/',
+    verdict: 'SCARTATO DALL’AGENTE',
+    reasons: [
+      'Gate 1 (Natura Occasione): Pagina promozionale a catalogo di tour guidato ricorrente (/visite-guidate/itinerari-milano/), non è un evento o appuntamento speciale.',
+      'Gate 2 (Disponibilità & Prenotabilità): La pagina riporta "In programmazione — Vuoi essere avvisato quando saranno online nuove date?" (non disponibile né prenotabile).'
+    ]
+  },
+  {
+    id: 'rej-milanoguida-cripta',
+    title: 'La Cripta di San Giovanni in Conca — Visita Guidata',
+    venueName: 'Cripta di San Giovanni in Conca',
+    sourceUrl: 'https://www.milanoguida.com/visite-guidate/itinerari-milano/la-cripta-di-san-giovanni-in-conca/',
+    verdict: 'SCARTATO DALL’AGENTE',
+    reasons: [
+      'Gate 1 (Natura Occasione): Scheda promozionale a catalogo di visita guidata su richiesta (/visite-guidate/itinerari-milano/).',
+      'Gate 2 (Disponibilità & Prenotabilità): Nessun evento speciale confermato e prenotabile per le prossime 24h.'
+    ]
+  },
+  {
+    id: 'rej-palazzo-morando-perm',
+    title: 'Collezione Permanente Costume Moda Immagine & Pinacoteca del Settecento',
+    venueName: 'Palazzo Morando',
+    sourceUrl: 'https://www.comune.milano.it/web/palazzo-morando',
+    verdict: 'SCARTATO DALL’AGENTE',
+    reasons: [
+      'Gate 1 (Natura Occasione): Semplice orario di apertura ordinaria della collezione civica permanente, privo di mostra temporanea o evento speciale.'
+    ]
+  },
+  {
+    id: 'rej-casa-diritti-sportelli',
+    title: 'Sportelli Diritti Civili & Orientamento Legale Settimanale',
+    venueName: 'Casa dei Diritti — Comune di Milano',
+    sourceUrl: 'https://www.comune.milano.it/argomenti/welfare/casa-dei-diritti',
+    verdict: 'SCARTATO DALL’AGENTE',
+    reasons: [
+      'Gate 1 (Natura Occasione): Servizio comunale di sportello ricorrente; non costituisce un evento, talk o assemblea pubblica speciale.'
+    ]
+  }
+];
+
 export const MILAN_EVENT_TEMPLATES = [
   // === MATTINA (10:00 – 12:30) ===
   {
@@ -74,8 +119,10 @@ export const MILAN_EVENT_TEMPLATES = [
     scheduledHour: 10,
     scheduledMinute: 0,
     durationMinutes: 120,
-    title: 'Visita a Villa Necchi Campiglio & Giardino d’Inverno di Piero Portaluppi',
-    description: 'Percorso nelle sale storiche degli anni Trenta progettate da Piero Portaluppi e nella collezione d’arte de’ Micheli e Gian Ferrari custodita dal FAI.',
+    eventType: 'SPECIAL_EVENT',
+    isSoldOut: false,
+    title: 'Eventi e Aperture Speciali FAI a Villa Necchi Campiglio & Giardino d’Inverno',
+    description: 'Calendario di appuntamenti speciali, mostre e visite nelle sale storiche degli anni Trenta progettate da Piero Portaluppi custodite dal FAI.',
     venueName: 'Villa Necchi Campiglio (FAI)',
     neighborhood: 'Quadrilatero del Silenzio / Palestro',
     address: 'Via Mozart 14',
@@ -88,46 +135,52 @@ export const MILAN_EVENT_TEMPLATES = [
     sourceUrl: 'https://fondoambiente.it/luoghi/villa-necchi-campiglio/eventi'
   },
   {
-    id: 'evt-palazzo-morando-free',
+    id: 'evt-gallerie-italia-libere',
     scheduledHour: 10,
     scheduledMinute: 30,
     durationMinutes: 150,
-    title: 'Collezione Costume Moda Immagine & Pinacoteca Civica del Settecento',
-    description: 'Ingresso gratuito alle sale storiche del palazzo settecentesco di Via Sant’Andrea che raccontano l’evoluzione urbanistica, il costume e la vita sociale di Milano tra ’700 e ’900.',
-    venueName: 'Palazzo Morando',
-    neighborhood: 'Sant’Andrea / Montenapoleone',
-    address: 'Via Sant’Andrea 6',
-    isFree: true,
-    priceDetails: 'GRATIS • Ingresso gratuito collezione permanente',
+    eventType: 'TEMPORARY_EXHIBITION',
+    isSoldOut: false,
+    title: 'Mostra Temporanea "LIBERE! 1946-2026. Le conquiste delle donne" alle Gallerie d’Italia',
+    description: 'Esposizione temporanea (24 settembre 2026 – 7 febbraio 2027) alle Gallerie d’Italia di Piazza Scala dedicata agli ottant’anni dal primo voto femminile in Italia.',
+    venueName: 'Gallerie d’Italia — Milano',
+    neighborhood: 'Piazza della Scala / Duomo',
+    address: 'Piazza della Scala 6',
+    isFree: false,
+    priceDetails: '€10,00 Intero / €8,00 Ridotto',
     category: 'mostre',
-    sourceName: 'comune.milano.it — Palazzo Morando',
+    sourceName: 'gallerieditalia.com — Mostra LIBERE!',
     instagramUrl: null,
     facebookUrl: null,
-    sourceUrl: 'https://www.comune.milano.it/web/palazzo-morando'
+    sourceUrl: 'https://gallerieditalia.com/it/milano/mostre-e-iniziative/mostre/2026/09/24/mostra-libere-1946-2026-le-conquiste-delle-donne-milano/'
   },
   {
-    id: 'evt-brera-cripta-san-giovanni',
+    id: 'evt-palazzo-reale-dali',
     scheduledHour: 11,
     scheduledMinute: 0,
-    durationMinutes: 90,
-    title: 'Visita alla Cripta Ipogea di San Giovanni in Conca',
-    description: 'Visita all’unica cripta romanica originale sopravvissuta nel centro di Milano in Piazza Missori e ai resti archeologici della basilica paleocristiana.',
-    venueName: 'Cripta di San Giovanni in Conca',
-    neighborhood: 'Missori / Centro Storico',
-    address: 'Piazza Giuseppe Missori',
+    durationMinutes: 120,
+    eventType: 'TEMPORARY_EXHIBITION',
+    isSoldOut: false,
+    title: 'Mostra Temporanea "Dalí e la Moda" a Palazzo Reale',
+    description: 'In corso a Palazzo Reale (24 settembre 2026 – 31 gennaio 2027): un viaggio nell’universo di Salvador Dalí attraverso il linguaggio della moda e del surrealismo.',
+    venueName: 'Palazzo Reale Milano',
+    neighborhood: 'Piazza del Duomo',
+    address: 'Piazza del Duomo 12',
     isFree: false,
-    priceDetails: 'Visita guidata su prenotazione',
-    category: 'aperture',
-    sourceName: 'milanoguida.com — Cripta San Giovanni in Conca',
+    priceDetails: '€15,00 Intero / €13,00 Ridotto',
+    category: 'mostre',
+    sourceName: 'palazzorealemilano.it — Dalí e la Moda',
     instagramUrl: null,
     facebookUrl: null,
-    sourceUrl: 'https://www.milanoguida.com/visite-guidate/itinerari-milano/la-cripta-di-san-giovanni-in-conca/'
+    sourceUrl: 'https://www.palazzorealemilano.it/-/dali-e-la-moda'
   },
   {
     id: 'evt-cineteca-arlecchino',
     scheduledHour: 11,
     scheduledMinute: 15,
     durationMinutes: 115,
+    eventType: 'CINEMA_SCREENING',
+    isSoldOut: false,
     title: 'PGC 2026 — Piccolo Grande Cinema & Classici Restaurati (v.o. sott. ita)',
     description: 'Proiezione speciale in lingua originale con sottotitoli in italiano nell’ambito del festival Piccolo Grande Cinema e delle rassegne d’archivio Cineteca Milano.',
     venueName: 'Cineteca Milano Arlecchino',
@@ -142,22 +195,24 @@ export const MILAN_EVENT_TEMPLATES = [
     sourceUrl: 'https://www.cinetecamilano.it/luogo/cineteca-milano-arlecchino/'
   },
   {
-    id: 'evt-vigna-leonardo-secret',
+    id: 'evt-gam-pellizza-volpedo',
     scheduledHour: 12,
     scheduledMinute: 0,
-    durationMinutes: 90,
-    title: 'Itinerario Guidato "Milano Medievale": Piazza dei Mercanti & Broletto',
-    description: 'Percorso storico-artistico nel cuore medievale di Milano tra la Loggia degli Osii, il Palazzo della Ragione, i rilievi scultorei e le corti civiche.',
-    venueName: 'Piazza dei Mercanti',
-    neighborhood: 'Duomo / Cordusio',
-    address: 'Piazza dei Mercanti',
+    durationMinutes: 110,
+    eventType: 'TEMPORARY_EXHIBITION',
+    isSoldOut: false,
+    title: 'Mostra Temporanea "Pellizza da Volpedo (1868-1907). I capolavori" alla GAM',
+    description: 'Esposizione monografica curata da Aurora Scotti e Paola Zatti nelle sale della Galleria d’Arte Moderna di Villa Reale in Via Palestro, attorno al Quarto Stato.',
+    venueName: 'GAM — Galleria d’Arte Moderna',
+    neighborhood: 'Palestro / Villa Reale',
+    address: 'Via Palestro 16',
     isFree: false,
-    priceDetails: '€14,00 Visita guidata con microfonaggio',
-    category: 'aperture',
-    sourceName: 'milanoguida.com — Milano Medievale',
+    priceDetails: '€10,00 Mostra + Museo',
+    category: 'mostre',
+    sourceName: 'gam-milano.com — Pellizza da Volpedo',
     instagramUrl: null,
     facebookUrl: null,
-    sourceUrl: 'https://www.milanoguida.com/visite-guidate/itinerari-milano/milano-medievale/'
+    sourceUrl: 'https://www.gam-milano.com/mostre/200/pellizza-da-volpedo-i-capolavori'
   },
 
   // === POMERIGGIO (14:30 – 17:30) ===
@@ -166,8 +221,10 @@ export const MILAN_EVENT_TEMPLATES = [
     scheduledHour: 14,
     scheduledMinute: 30,
     durationMinutes: 180,
-    title: 'Progetti Espositivi Podium & Torre + Rassegna Cinema Godard',
-    description: 'Mostre in corso negli spazi di Largo Isarco progettati da OMA/Rem Koolhaas e programmazione cinematografica quotidiana presso il Cinema Godard.',
+    eventType: 'TEMPORARY_EXHIBITION',
+    isSoldOut: false,
+    title: 'Progetti Espositivi Temporanei Podium & Torre + Rassegna Cinema Godard',
+    description: 'Mostre temporanee in corso negli spazi di Largo Isarco progettati da OMA/Rem Koolhaas e programmazione cinematografica quotidiana presso il Cinema Godard.',
     venueName: 'Fondazione Prada',
     neighborhood: 'Scalo Romana / Largo Isarco',
     address: 'Largo Isarco 2',
@@ -184,13 +241,15 @@ export const MILAN_EVENT_TEMPLATES = [
     scheduledHour: 15,
     scheduledMinute: 0,
     durationMinutes: 140,
-    title: 'Mostre in Corso & Collezione Permanente "Milano Globale" al MUDEC',
-    description: 'Esposizioni temporanee e percorso gratuito nella collezione permanente del Museo delle Culture di Via Tortona progettato da David Chipperfield.',
+    eventType: 'TEMPORARY_EXHIBITION',
+    isSoldOut: false,
+    title: 'Mostre Temporanee in Corso al MUDEC — Museo delle Culture',
+    description: 'Esposizioni temporanee di fotografia, arte contemporanea e antropologia visiva negli spazi del MUDEC di Via Tortona progettati da David Chipperfield.',
     venueName: 'MUDEC — Museo delle Culture',
     neighborhood: 'Tortona / Ansaldo',
     address: 'Via Tortona 56',
-    isFree: true,
-    priceDetails: 'GRATIS • Collezione permanente a ingresso libero',
+    isFree: false,
+    priceDetails: '€16,00 Intero / €14,00 Ridotto Mostre Temporanee',
     category: 'mostre',
     sourceName: 'mudec.it — Mostre in Corso',
     instagramUrl: null,
@@ -202,6 +261,8 @@ export const MILAN_EVENT_TEMPLATES = [
     scheduledHour: 16,
     scheduledMinute: 0,
     durationMinutes: 90,
+    eventType: 'PUBLIC_TALK',
+    isSoldOut: false,
     title: 'Rassegna Eventi, Talk & Installazioni Immersive al MEET',
     description: 'Appuntamento pomeridiano dedicato alla cultura digitale, alle arti generative e alle installazioni immersive nella sede MEET di Porta Venezia.',
     venueName: 'MEET Digital Culture Center',
@@ -220,13 +281,15 @@ export const MILAN_EVENT_TEMPLATES = [
     scheduledHour: 16,
     scheduledMinute: 30,
     durationMinutes: 150,
-    title: 'Luciano Fabro "Abitare lo spazio", Aki Sasamoto "XYZ" & I Sette Palazzi Celesti',
-    description: 'Ingresso gratuito alle mostre temporanee di Luciano Fabro e Aki Sasamoto e all’installazione permanente di Anselm Kiefer nelle Navate di Pirelli HangarBicocca.',
+    eventType: 'TEMPORARY_EXHIBITION',
+    isSoldOut: false,
+    title: 'Mostre Temporanee: Luciano Fabro "Abitare lo spazio" & Aki Sasamoto "XYZ"',
+    description: 'Ingresso gratuito alle mostre temporanee retrospettive di Luciano Fabro e Aki Sasamoto nelle Navate e nello Shed di Pirelli HangarBicocca.',
     venueName: 'Pirelli HangarBicocca',
     neighborhood: 'Bicocca',
     address: 'Via Chiese 2',
     isFree: true,
-    priceDetails: 'GRATIS • Ingresso gratuito',
+    priceDetails: 'GRATIS • Ingresso gratuito su prenotazione',
     category: 'mostre',
     sourceName: 'pirellihangarbicocca.org — Mostra Luciano Fabro',
     instagramUrl: null,
@@ -234,28 +297,32 @@ export const MILAN_EVENT_TEMPLATES = [
     sourceUrl: 'https://pirellihangarbicocca.org/mostra/luciano-fabro/'
   },
   {
-    id: 'evt-casa-diritti-transfem',
+    id: 'evt-palazzo-reale-brueghel',
     scheduledHour: 17,
     scheduledMinute: 0,
     durationMinutes: 120,
-    title: 'Sportelli Diritti Civili, Welfare di Prossimità & Incontri Pubblici',
-    description: 'Incontro pubblico aperto alla cittadinanza con sportelli antidiscriminazione, orientamento legale gratuito e reti associative del Comune di Milano.',
-    venueName: 'Casa dei Diritti — Comune di Milano',
-    neighborhood: 'Sant’Ambrogio / De Amicis',
-    address: 'Via Edmondo De Amicis 10',
-    isFree: true,
-    priceDetails: 'GRATIS • Partecipazione libera',
-    category: 'politica',
-    sourceName: 'comune.milano.it — Casa dei Diritti',
+    eventType: 'TEMPORARY_EXHIBITION',
+    isSoldOut: false,
+    title: 'Mostra Temporanea "I Brueghel. Le dinastie del talento" a Palazzo Reale',
+    description: 'Grande esposizione temporanea a Palazzo Reale (fino al 31 gennaio 2027) dedicata ai capolavori della celebre dinastia di pittori fiamminghi tra Cinque e Seicento.',
+    venueName: 'Palazzo Reale Milano',
+    neighborhood: 'Piazza del Duomo',
+    address: 'Piazza del Duomo 12',
+    isFree: false,
+    priceDetails: '€15,00 Intero / €13,00 Ridotto',
+    category: 'mostre',
+    sourceName: 'palazzorealemilano.it — Mostra I Brueghel',
     instagramUrl: null,
     facebookUrl: null,
-    sourceUrl: 'https://www.comune.milano.it/argomenti/welfare/casa-dei-diritti'
+    sourceUrl: 'https://www.palazzorealemilano.it/-/brueghel'
   },
   {
     id: 'evt-lafeltrinelli-duomo',
     scheduledHour: 17,
     scheduledMinute: 30,
     durationMinutes: 90,
+    eventType: 'PUBLIC_TALK',
+    isSoldOut: false,
     title: 'Stagione Culturale 2026 alla Camera del Lavoro: Libri, Lavoro & Diritti',
     description: 'Rassegna di presentazioni editoriali, concerti, mostre e tavole rotonde promossa dalla Camera del Lavoro Metropolitana di Milano in Corso di Porta Vittoria.',
     venueName: 'Camera del Lavoro di Milano',
@@ -512,13 +579,15 @@ export const MILAN_EVENT_TEMPLATES = [
     scheduledHour: 21,
     scheduledMinute: 0,
     durationMinutes: 95,
-    title: 'Live Jazz, Soul & Blues — First & Second Set in Via Borsieri',
-    description: 'Doppio set dal vivo nello storico jazz club del quartiere Isola con protagonisti internazionali del jazz, soul e blues contemporaneo.',
+    eventType: 'LIVE_CONCERT',
+    isSoldOut: true,
+    title: 'Live Jazz, Soul & Blues — First Set (Ore 21:00) in Via Borsieri',
+    description: 'Primo set serale dal vivo nello storico jazz club del quartiere Isola con protagonisti internazionali del jazz, soul e blues contemporaneo (1° set Sold Out, 2° set ore 23:00).',
     venueName: 'Blue Note Milano',
     neighborhood: 'Isola',
     address: 'Via Pietro Borsieri 37',
     isFree: false,
-    priceDetails: '€30,00 Door / €25,00 Advance',
+    priceDetails: '€30,00 Door / €25,00 Advance (1° Set Sold Out)',
     category: 'concerti',
     sourceName: 'bluenotemilano.com — Programmazione',
     instagramUrl: null,
@@ -530,6 +599,8 @@ export const MILAN_EVENT_TEMPLATES = [
     scheduledHour: 21,
     scheduledMinute: 0,
     durationMinutes: 120,
+    eventType: 'LIVE_CONCERT',
+    isSoldOut: false,
     title: 'Mauro Ermanno Giovanardi — "E poi scegliere con cura le parole" Live & Spettacoli Teatro',
     description: 'Live sul palco del Teatro di Santeria Toscana 31 in Viale Toscana: Mauro Ermanno Giovanardi presenta il nuovo album "E poi scegliere con cura le parole" tra racconti e canzoni.',
     venueName: 'Santeria Toscana 31',
@@ -548,6 +619,8 @@ export const MILAN_EVENT_TEMPLATES = [
     scheduledHour: 21,
     scheduledMinute: 30,
     durationMinutes: 115,
+    eventType: 'CINEMA_SCREENING',
+    isSoldOut: false,
     title: 'Fatherland (di Paweł Pawlikowski) & Wild Horse Nine — Proiezione v.o. sott. ita',
     description: 'Programmazione serale in versione originale sottotitolata al Cinema Beltrade ("Bandhi"): in sala Fatherland di Paweł Pawlikowski, Wild Horse Nine di Martin McDonagh e Minotaur.',
     venueName: 'Cinema Beltrade',
@@ -566,6 +639,8 @@ export const MILAN_EVENT_TEMPLATES = [
     scheduledHour: 22,
     scheduledMinute: 0,
     durationMinutes: 150,
+    eventType: 'LIVE_CONCERT',
+    isSoldOut: false,
     title: 'Fuori Ovunque | Weekly Release Party & Liveurope Showcase / DJ Set',
     description: 'Appuntamento gratuito nel Bar di Santeria Toscana 31 (circuito europeo Liveurope): interviste agli artisti emergenti, ascolto nuove uscite, live showcase e vinyl/DJ set (locale cashless).',
     venueName: 'Santeria Toscana 31',
@@ -584,6 +659,8 @@ export const MILAN_EVENT_TEMPLATES = [
     scheduledHour: 22,
     scheduledMinute: 0,
     durationMinutes: 180,
+    eventType: 'LIVE_CONCERT',
+    isSoldOut: false,
     title: 'JAZZMI / Live Showcase & Club Set al Circolo ARCI Biko',
     description: 'Live concert e selezione musicale black/jazz/electronic sul palco di Via Ettore Ponti 40. Ingresso riservato ai soci ARCI con prevendita su DICE.',
     venueName: 'Biko Milano',
@@ -602,6 +679,8 @@ export const MILAN_EVENT_TEMPLATES = [
     scheduledHour: 22,
     scheduledMinute: 15,
     durationMinutes: 105,
+    eventType: 'CINEMA_SCREENING',
+    isSoldOut: false,
     title: 'Programmazione Serale d’Essai in Sala & Bar del Circolo',
     description: 'Proiezione serale in lingua originale nella sala da 74 posti di Via Seneca 6 in Porta Romana (accesso con tessera associativa).',
     venueName: 'Il Cinemino',
@@ -620,6 +699,8 @@ export const MILAN_EVENT_TEMPLATES = [
     scheduledHour: 23,
     scheduledMinute: 0,
     durationMinutes: 240,
+    eventType: 'LIVE_CONCERT',
+    isSoldOut: false,
     title: 'Live Tour & Club Night al Circolo Magnolia — Idroscalo',
     description: 'Concerti live indie/elettronica e club night sui palchi del Circolo ARCI Magnolia immerso nel parco dell’Idroscalo.',
     venueName: 'Circolo Magnolia',
@@ -638,6 +719,8 @@ export const MILAN_EVENT_TEMPLATES = [
     scheduledHour: 23,
     scheduledMinute: 30,
     durationMinutes: 210,
+    eventType: 'LIVE_CONCERT',
+    isSoldOut: false,
     title: 'Rassegna Notturna Musica Elettronica & Arti Performative al Tempio del Futuro Perduto',
     description: 'Programmazione notturna tra clubbing, arti performative e mostre indipendenti negli spazi della Fabbrica del Vapore / Via Luigi Nono 9 recensita da Zero Milano.',
     venueName: 'Tempio del Futuro Perduto',
@@ -652,6 +735,54 @@ export const MILAN_EVENT_TEMPLATES = [
     sourceUrl: 'https://zero.eu/it/luoghi/103058-tempio-del-futuro-perduto,milano/'
   }
 ];
+
+/**
+ * Agente di Verifica Natura dell'Occasione & Disponibilità (`verifyEventNatureAndAvailability`)
+ * - Esclude pagine promozionali di tour a catalogo (`/visite-guidate/`, tour su richiesta),
+ *   collezioni permanenti ordinarie e sportelli ricorrenti.
+ * - Esclude attività prive di date disponibili/prenotabili ("In programmazione", "Nessuna data disponibile").
+ * - Mantiene eventi reali che risultano "Sold Out", applicando il badge `SOLD OUT • POSTI ESAURITI`.
+ */
+export function verifyEventNatureAndAvailability(candidate = {}) {
+  const text = `${candidate.title || ''} ${candidate.description || ''} ${candidate.sourceUrl || ''} ${candidate.rawSourceInput || ''}`;
+  const reasons = [];
+
+  if (/milanoguida\.com\/visite-guidate\/|tour\s+su\s+richiesta|prenota\s+un\s+tour\s+privato|itinerario\s+a\s+catalogo|walking\s+tour/i.test(text)) {
+    reasons.push('Gate 1 (Natura Occasione): Pagina promozionale di tour/visita guidata a catalogo ricorrente (non è un singolo evento o appuntamento speciale).');
+  }
+  if (/collezione\s+permanente\s+a\s+ingresso\s+libero\s+senza\s+mostra|solo\s+collezione\s+permanente|orari\s+sportello\s+al\s+pubblico|sportelli\s+diritti\s+civili/i.test(text)) {
+    reasons.push('Gate 1 (Natura Occasione): Attività ordinaria ricorrente (collezione permanente o sportello), non costituisce un evento speciale.');
+  }
+  if (/in\s+programmazione\s*[-—:]?\s*vuoi\s+essere\s+avvisato|vuoi\s+essere\s+avvisato\s+quando\s+saranno\s+online|nessuna\s+data\s+disponibile|attualmente\s+non\s+prenotabile/i.test(text)) {
+    reasons.push('Gate 2 (Disponibilità & Prenotabilità): L’attività non ha date attive e non è né disponibile né prenotabile.');
+  }
+
+  const isSoldOut =
+    Boolean(candidate.isSoldOut) ||
+    /sold\s*out|tutto\s+esaurito|posti\s+esauriti|biglietti\s+esauriti/i.test(text);
+
+  if (reasons.length > 0) {
+    return {
+      isValidEvent: false,
+      verdict: 'SCARTATO DALL’AGENTE',
+      isSoldOut: false,
+      availabilityBadge: 'NON DISPONIBILE / SCARTATO',
+      reasons
+    };
+  }
+
+  return {
+    isValidEvent: true,
+    verdict: isSoldOut ? 'APPROVATO CON BADGE SOLD OUT' : 'APPROVATO E PRENOTABILE / ATTIVO',
+    isSoldOut,
+    availabilityBadge: isSoldOut
+      ? 'SOLD OUT • POSTI ESAURITI'
+      : candidate.isFree
+        ? 'INGRESSO LIBERO • DISPONIBILE'
+        : 'PRENOTABILE • POSTI DISPONIBILI',
+    reasons: []
+  };
+}
 
 /**
  * Returns the exact timestamp (in ms) of the start of the NEXT full hour (`HH+1:00:00`)
@@ -725,51 +856,58 @@ export function generateRolling24hFeed(nowTimestampMs = Date.now()) {
   const nextHourStartMs = getNextHourStartMs(nowTimestampMs);
   const nowRome = getRomeDateParts(new Date(nowTimestampMs));
 
-  return MILAN_EVENT_TEMPLATES.map((tpl) => {
-    const startMs = resolveScheduledTimeInRolling24h(
-      tpl.scheduledHour,
-      tpl.scheduledMinute || 0,
-      nextHourStartMs
-    );
-    const endMs = startMs + tpl.durationMinutes * 60_000;
+  return MILAN_EVENT_TEMPLATES
+    .filter((tpl) => verifyEventNatureAndAvailability(tpl).isValidEvent)
+    .map((tpl) => {
+      const verification = verifyEventNatureAndAvailability(tpl);
+      const startMs = resolveScheduledTimeInRolling24h(
+        tpl.scheduledHour,
+        tpl.scheduledMinute || 0,
+        nextHourStartMs
+      );
+      const endMs = startMs + tpl.durationMinutes * 60_000;
 
-    const startRome = getRomeDateParts(new Date(startMs));
-    const endRome = getRomeDateParts(new Date(endMs));
+      const startRome = getRomeDateParts(new Date(startMs));
+      const endRome = getRomeDateParts(new Date(endMs));
 
-    const diffMinutes = Math.max(1, Math.round((startMs - nowTimestampMs) / 60_000));
-    const isHappeningNow = diffMinutes <= 90;
-    const isTomorrow = startRome.day !== nowRome.day;
+      const diffMinutes = Math.max(1, Math.round((startMs - nowTimestampMs) / 60_000));
+      const isHappeningNow = diffMinutes <= 90;
+      const isTomorrow = startRome.day !== nowRome.day;
 
-    return {
-      id: tpl.id,
-      title: tpl.title,
-      description: tpl.description,
-      startTime: new Date(startMs).toISOString(),
-      endTime: new Date(endMs).toISOString(),
-      venueName: tpl.venueName,
-      neighborhood: tpl.neighborhood,
-      address: `${tpl.address}, Milano`,
-      isFree: tpl.isFree,
-      priceDetails: tpl.priceDetails,
-      category: tpl.category,
-      mapsUrl: buildMapsUrl(tpl.venueName, tpl.address),
-      instagramUrl: tpl.instagramUrl,
-      facebookUrl: tpl.facebookUrl,
-      sourceUrl: tpl.sourceUrl,
-      sourceName: tpl.sourceName,
-      // Computed UI metadata
-      startHM: startRome.hm,
-      endHM: endRome.hm,
-      slotHour: `${startRome.hour}:00`,
-      slotKey: `${startRome.year}-${startRome.month}-${startRome.day}-${startRome.hour}`,
-      diffMinutes,
-      isHappeningNow,
-      isTomorrow,
-      weekday: startRome.weekday,
-      dayMonth: `${startRome.day}/${startRome.month}`,
-      timeBlock: getTimeBlockLabel(startRome.hourNum, isTomorrow)
-    };
-  }).sort((a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime());
+      return {
+        id: tpl.id,
+        title: tpl.title,
+        description: tpl.description,
+        startTime: new Date(startMs).toISOString(),
+        endTime: new Date(endMs).toISOString(),
+        venueName: tpl.venueName,
+        neighborhood: tpl.neighborhood,
+        address: `${tpl.address}, Milano`,
+        isFree: tpl.isFree,
+        isSoldOut: verification.isSoldOut,
+        availabilityBadge: verification.availabilityBadge,
+        eventType: tpl.eventType || 'SPECIAL_EVENT',
+        priceDetails: tpl.priceDetails,
+        category: tpl.category,
+        mapsUrl: buildMapsUrl(tpl.venueName, tpl.address),
+        instagramUrl: tpl.instagramUrl,
+        facebookUrl: tpl.facebookUrl,
+        sourceUrl: tpl.sourceUrl,
+        sourceName: tpl.sourceName,
+        // Computed UI metadata
+        startHM: startRome.hm,
+        endHM: endRome.hm,
+        slotHour: `${startRome.hour}:00`,
+        slotKey: `${startRome.year}-${startRome.month}-${startRome.day}-${startRome.hour}`,
+        diffMinutes,
+        isHappeningNow,
+        isTomorrow,
+        weekday: startRome.weekday,
+        dayMonth: `${startRome.day}/${startRome.month}`,
+        timeBlock: getTimeBlockLabel(startRome.hourNum, isTomorrow)
+      };
+    })
+    .sort((a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime());
 }
 
 /**

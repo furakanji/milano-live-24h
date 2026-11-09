@@ -21,6 +21,8 @@ import {
 import {
   CATEGORIES,
   MILAN_SOURCES_SUMMARY,
+  REJECTED_BY_VERIFIER_AGENT,
+  verifyEventNatureAndAvailability,
   buildMapsUrl,
   generateRolling24hFeed,
   buildFull24HourlySlots,
@@ -247,6 +249,20 @@ export default function App() {
       rawSourceInput: rawSource,
       imageFileName
     });
+
+    const agentVerdict = verifyEventNatureAndAvailability({
+      title: extracted.title,
+      description: extracted.description,
+      sourceUrl: rawSource || extracted.sourceUrl,
+      rawText: rawSource
+    });
+    if (!agentVerdict.isValidEvent) {
+      setPublicFeedbackBanner({
+        type: 'pending',
+        message: '🚫 Segnalazione non pubblicata: l\u2019agente di verifica ha rilevato che non è un evento speciale prenotabile (es. tour a catalogo ricorrente o attività non disponibile).'
+      });
+      return;
+    }
 
     const check = evaluateSourceSafeguard(
       rawSource || extracted.sourceUrl,
@@ -502,6 +518,25 @@ export default function App() {
                     >
                       {src.url} ↗
                     </a>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* EventVerifierAgent: occasioni escluse */}
+            <div className="p-5 rounded-xl bg-[#111318] border border-sky-500/30 space-y-3">
+              <h3 className="text-sm font-bold text-sky-300 uppercase">
+                Agente di Ricerca &amp; Verifica Natura Occasioni (EventVerifierAgent) — Escluse ({REJECTED_BY_VERIFIER_AGENT.length})
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {REJECTED_BY_VERIFIER_AGENT.map((r) => (
+                  <div key={r.id} className="p-3 rounded-lg bg-zinc-950 border border-red-500/30 space-y-1">
+                    <div className="font-bold text-white">{r.title}</div>
+                    <a href={r.sourceUrl} target="_blank" rel="noopener noreferrer" className="text-orange-400 underline break-all font-mono">{r.sourceUrl}</a>
+                    <div className="text-red-300 font-bold">{r.verdict}</div>
+                    <ul className="list-disc list-inside text-zinc-300">
+                      {(r.reasons || []).map((x, i) => <li key={i}>{x}</li>)}
+                    </ul>
                   </div>
                 ))}
               </div>
@@ -998,6 +1033,11 @@ export default function App() {
                               <Clock className="w-3.5 h-3.5 text-orange-400" />
                               {ev.startHM} – {ev.endHM}
                             </span>
+                            {ev.isSoldOut && (
+                              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-xs font-extrabold bg-red-500/20 text-red-300 border border-red-500/50 uppercase font-mono">
+                                🔴 SOLD OUT • POSTI ESAURITI
+                              </span>
+                            )}
                             {ev.isHappeningNow && (
                               <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-orange-500 text-black uppercase font-mono">
                                 IN PARTENZA
@@ -1043,7 +1083,7 @@ export default function App() {
                         {isExpanded && (
                           <div className="mt-3 pt-3 border-t border-zinc-800 text-xs text-zinc-400 space-y-1">
                             <div>
-                              <strong className="text-zinc-200">Ingresso:</strong> {ev.priceDetails}
+                              <strong className="text-zinc-200">Ingresso:</strong> {ev.priceDetails}{ev.availabilityBadge ? ` • ${ev.availabilityBadge}` : ''}
                             </div>
                             <div>
                               <strong className="text-zinc-200">Quartiere:</strong> {ev.neighborhood}
