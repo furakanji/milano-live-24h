@@ -12,7 +12,7 @@ on:
     branches:
       - main
     paths:
-      - 'backend/eventVerifierAgent.js'
+      - 'backend/**'
       - 'src/data/milanEventsGenerator.js'
 
 permissions:
@@ -30,8 +30,11 @@ jobs:
         with:
           node-version: '22'
 
-      - name: Run EventVerifierAgent Pipeline
-        run: node backend/eventVerifierAgent.js
+      - name: Test golden (completezza e natura eventi)
+        run: node --test backend/test/golden.test.js
+
+      - name: Aggiorna feed live (adapter + verifica)
+        run: node backend/liveFeed.js
 
       - name: Commit updated verified-events-24h.json if changed
         run: |

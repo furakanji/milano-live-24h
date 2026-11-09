@@ -669,6 +669,8 @@
           <div class="font-bold text-sky-300 uppercase tracking-wider">
             🚫 Occasioni Escluse dall'Agente di Verifica (Tour a Catalogo Ricorrenti / Non Disponibili né Prenotabili):
           </div>
+ <div class="font-bold text-emerald-300 uppercase tracking-wider">📡 Stato Feed Live per Fonte (aggiornamento 3 volte al giorno):</div>
+          <div id="feed-sources-report" class="grid grid-cols-1 md:grid-cols-2 gap-2"></div>
           <div id="rejected-by-agent-container" class="grid grid-cols-1 md:grid-cols-2 gap-3">
             <!-- Populated dynamically by JS -->
           </div>
@@ -1668,18 +1670,56 @@
      * Filtered through `verifyEventCandidateWithAgent` so recurring tour catalogs or
      * unbookable "In programmazione" pages are automatically excluded.
      */
+    // Feed "live" generato 3 volte al giorno da GitHub Actions (backend/liveFeed.js)
+    let LIVE_FEED = null;
+
+    /**
+     * Sorgente eventi: se il feed live è disponibile usa le date/orari reali del feed
+     * (ritagliati sulla finestra esatta), più le segnalazioni utente/admin. Altrimenti ripiega sui blueprint.
+     */
+    function getActiveBlueprints(startOfNextHourMs) {
+      if (!LIVE_FEED || !Array.isArray(LIVE_FEED.verifiedEvents)) return EVENT_BLUEPRINTS;
+      const endWindowMs = startOfNextHourMs + 24 * 3600000;
+      const seen = new Set();
+      const fromFeed = [];
+      LIVE_FEED.verifiedEvents.forEach(fe => {
+        const s = Date.parse(fe.startTime);
+        const e = Date.parse(fe.endTime);
+        if (!(s >= startOfNextHourMs && s < endWindowMs)) return;
+        if (e <= startOfNextHourMs) return;
+        const key = `${fe.id}|${fe.startTime}`;
+        if (seen.has(key)) return;
+        seen.add(key);
+        fromFeed.push({ ...fe, id: `${fe.id}@${s}`, _fixedStartMs: s, _fixedEndMs: e });
+      });
+      const userAdded = EVENT_BLUEPRINTS.filter(bp => /^evt-(user|quar)-/.test(bp.id));
+      return [...fromFeed, ...userAdded];
+    }
+
+    async function loadLiveFeed() {
+      for (const url of ['verified-events-24h.json', 'public/verified-events-24h.json']) {
+        try {
+          const res = await fetch(`${url}?t=${Date.now()}`, { cache: 'no-store' });
+          if (!res.ok) continue;
+          const data = await res.json();
+          if (data && Array.isArray(data.verifiedEvents)) { LIVE_FEED = data; return true; }
+        } catch { /* prova il percorso successivo */ }
+      }
+      return false;
+    }
+
     function generateDynamic24hEvents(nowMs) {
       const startOfNextHourMs = getNextHourStartMs(nowMs);
       const nowRome = getRomeParts(new Date(nowMs));
 
-      return EVENT_BLUEPRINTS.filter(bp => verifyEventCandidateWithAgent(bp).isValidEvent).map(bp => {
+      return getActiveBlueprints(startOfNextHourMs).filter(bp => verifyEventCandidateWithAgent(bp).isValidEvent).map(bp => {
         const verification = verifyEventCandidateWithAgent(bp);
-        const startMs = resolveScheduledTimeInRolling24h(
+        const startMs = bp._fixedStartMs !== undefined ? bp._fixedStartMs : resolveScheduledTimeInRolling24h(
           bp.scheduledHour !== undefined ? bp.scheduledHour : 18,
           bp.scheduledMinute !== undefined ? bp.scheduledMinute : 30,
           startOfNextHourMs
         );
-        const endMs = startMs + (bp.durationMinutes || 105) * 60 * 1000;
+        const endMs = bp._fixedEndMs !== undefined ? bp._fixedEndMs : startMs + (bp.durationMinutes || 105) * 60 * 1000;
 
         const startDate = new Date(startMs);
         const endDate = new Date(endMs);
@@ -1709,7 +1749,7 @@
           availabilityBadge: verification.availabilityBadge,
           priceDetails: bp.priceDetails,
           category: bp.category,
-          mapsUrl: buildMapsUrl(bp.venueName, bp.address),
+          mapsUrl: bp.mapsUrl || buildMapsUrl(bp.venueName, bp.address),
           instagramUrl: bp.instagramUrl,
           facebookUrl: bp.facebookUrl,
           sourceUrl: bp.sourceUrl,
@@ -1758,6 +1798,20 @@
       const windowEl = document.getElementById('rolling-window-label');
       if (windowEl) {
         windowEl.textContent = `Dalle ${nextHourRome.hm} (prossima ora) → Domani ${plus24.hm} (+24h)`;
+      }
+
+      const windowElForFeed = document.getElementById('rolling-window-label');
+      if (windowElForFeed) {
+        let feedEl = document.getElementById('feed-updated-label');
+        if (!feedEl) {
+          feedEl = document.createElement('div');
+          feedEl.id = 'feed-updated-label';
+          feedEl.className = 'text-xs text-emerald-400 mono-num';
+          windowElForFeed.insertAdjacentElement('afterend', feedEl);
+        }
+        feedEl.textContent = LIVE_FEED
+          ? `Feed live aggiornato alle ${getRomeParts(new Date(LIVE_FEED.generatedAt)).hm} (3 aggiornamenti al giorno)`
+          : 'Feed live non disponibile: dati di riserva';
       }
 
       const exactNowEl = document.getElementById('exact-now-badge');
@@ -2904,7 +2958,21 @@
     /**
      * Render Backend Admin Quarantine Queue & Learned Sources DB (inside Hidden #admin Page)
      */
+    function renderFeedSourcesReport() {
+      const box = document.getElementById('feed-sources-report');
+      if (!box || !LIVE_FEED) return;
+      box.innerHTML = (LIVE_FEED.sources || []).map(s => `
+        <div class="p-2.5 rounded-lg bg-[#161920] border ${s.status === 'error' ? 'border-red-500/50' : 'border-[#252a34]'} text-xs">
+          <span class="font-bold text-white">${s.venueName}</span>
+          <span class="${s.status === 'error' ? 'text-red-300' : 'text-emerald-300'} font-mono"> • ${s.status.toUpperCase()}</span>
+          <span class="text-zinc-400 font-mono"> • ${s.published ?? 0} eventi${s.found !== undefined ? ` (trovati ${s.found})` : ''}</span>
+          ${s.error ? `<div class="text-red-300">${s.error}</div>` : ''}
+          ${s.checkedAt ? `<div class="text-zinc-500 font-mono">Ultimo controllo: ${getRomeParts(new Date(s.checkedAt)).hm}</div>` : ''}
+        </div>`).join('');
+    }
+
     function renderStudioAdminAndLearnedUI() {
+      renderFeedSourcesReport();
       const qCount = pendingQuarantineQueue.length;
       const pillBadge = document.getElementById('quarantine-count-pill');
       const learnedSummary = document.getElementById('learned-sources-summary');
@@ -3093,6 +3161,15 @@
       populateArchitectureModal();
       renderStudioAdminAndLearnedUI();
       syncAdminRouteVisibility();
+
+      // Carica il feed live e ricostruisce la timeline con le date/orari reali
+      loadLiveFeed().then(ok => {
+        if (!ok) return;
+        allNormalizedEvents = generateDynamic24hEvents(pageLoadAnchorMs);
+        renderTimeline();
+        updateHeaderClock();
+        renderFeedSourcesReport();
+      });
 
       // Listen for URL hash or popstate changes (?admin=1 / #admin <-> public)
       window.addEventListener('hashchange', syncAdminRouteVisibility);
