@@ -32,3 +32,12 @@ test('Milanoguida (tour a catalogo / In programmazione) viene scartato', () => {
   const v = verifyEventCandidateWithAgent({ title: 'Milano Medievale', sourceUrl: 'https://www.milanoguida.com/visite-guidate/itinerari-milano/milano-medievale/', pageText: 'In programmazione — Vuoi essere avvisato quando saranno online nuove date?' });
   assert.equal(v.isValidEvent, false);
 });
+
+test('milanocinema: Il Cinemino 9/11 = 4 proiezioni e solo cinema di Milano città', async () => {
+  const { default: mc } = await import('../adapters/milanocinema.js');
+  const rows = JSON.parse(await fs.readFile(path.join(dir, '../fixtures/milanocinema-2026-11-09.json'), 'utf8'));
+  const evs = await runAdapter(mc, rows);
+  const cin = evs.filter((e) => e._cinemaSlug === 'ilcinemino').map(hm);
+  assert.deepEqual(cin, ['9/11 15:00', '9/11 17:00', '9/11 19:30', '9/11 21:30']);
+  assert.ok(!evs.some((e) => e._cinemaSlug === 'uci-lissone'), 'cinema fuori Milano esclusi');
+});

@@ -10,9 +10,10 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import cinemino from './adapters/cinemino.js';
+import milanocinema from './adapters/milanocinema.js';
 import { verifyEventCandidateWithAgent, REJECTED_CANDIDATES_LOG } from './eventVerifierAgent.js';
 
-export const ADAPTERS = [cinemino];
+export const ADAPTERS = [cinemino, milanocinema];
 const HOURS_WINDOW = 36; // margine oltre le 24h: il frontend ritaglia la finestra esatta
 
 export async function runAdapter(adapter, lines) {
@@ -23,30 +24,48 @@ export async function runAdapter(adapter, lines) {
   return adapter.toFeedEvents(parsed.events);
 }
 
-export async function buildFeed({ nowMs = Date.now(), loadLines = (a) => a.fetch() } = {}) {
+export async function buildFeed({ nowMs = Date.now(), loadLines = (a, now) => a.fetch(now) } = {}) {
   const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
   const { generateRolling24hFeed, buildMapsUrl } = await import(path.join(repoRoot, 'src', 'data', 'milanEventsGenerator.js'));
   const to = nowMs + HOURS_WINDOW * 3600000;
   const sources = [];
   const events = [];
   const okVenues = new Set();
+  const okCategories = new Set();
+  const results = {};
   const rejected = [...REJECTED_CANDIDATES_LOG];
 
   for (const ad of ADAPTERS) {
     const rep = { id: ad.id, venueName: ad.venueName, url: ad.url, checkedAt: new Date(nowMs).toISOString() };
     try {
-      const all = await runAdapter(ad, await loadLines(ad));
+      const all = await runAdapter(ad, await loadLines(ad, nowMs));
       const inWin = all.filter((e) => Date.parse(e.endTime) > nowMs && Date.parse(e.startTime) < to);
       rep.status = 'ok'; rep.found = all.length; rep.published = inWin.length;
+      results[ad.id] = inWin;
       for (const e of inWin) {
+        // Il Cinemino è letto direttamente: le righe dell'aggregatore servono solo da controllo incrociato
+        if (ad.id === 'milanocinema' && e._cinemaSlug === 'ilcinemino' && results.cinemino && sources.find((x) => x.id === 'cinemino' && x.status === 'ok')) { rep.crossCheckOnly = (rep.crossCheckOnly || 0) + 1; rep.published -= 1; continue; }
         const v = verifyEventCandidateWithAgent(e);
         if (!v.isValidEvent) { rejected.push({ id: e.id, title: e.title, venueName: e.venueName, sourceUrl: e.sourceUrl, verdict: v.verdict, rejectionReasons: v.rejectionReasons, checkedAt: rep.checkedAt }); rep.published -= 1; continue; }
         events.push({ ...e, mapsUrl: buildMapsUrl(e.venueName, e.address), isSoldOut: v.isSoldOut, availabilityBadge: v.availabilityBadge, origin: 'adapter' });
       }
       okVenues.add(ad.venueName);
+      (ad.replacesCategories || []).forEach((c) => okCategories.add(c));
     } catch (err) {
       rep.status = 'error'; rep.error = String(err.message || err); rep.published = 0;
     }
+    sources.push(rep);
+  }
+
+  // Controllo incrociato indipendente: Cinemino diretto vs aggregatore
+  if (results.cinemino && results.milanocinema) {
+    const direct = new Set(results.cinemino.map((e) => Date.parse(e.startTime)));
+    const agg = new Set(results.milanocinema.filter((e) => e._cinemaSlug === 'ilcinemino').map((e) => Date.parse(e.startTime)));
+    const inWin = (t) => t >= nowMs && t < nowMs + 24 * 3600000;
+    const onlyDirect = [...direct].filter((t) => inWin(t) && !agg.has(t));
+    const onlyAgg = [...agg].filter((t) => inWin(t) && !direct.has(t));
+    const rep = { id: 'audit-cinemino', venueName: 'Controllo incrociato Cinemino (fonte diretta vs milanocinema.com)', status: onlyDirect.length + onlyAgg.length ? 'warning' : 'ok', published: 0, checkedAt: new Date(nowMs).toISOString() };
+    if (rep.status === 'warning') rep.error = `Differenze: solo fonte diretta [${onlyDirect.map((t) => new Date(t).toISOString())}], solo aggregatore [${onlyAgg.map((t) => new Date(t).toISOString())}]`;
     sources.push(rep);
   }
 
@@ -55,7 +74,7 @@ export async function buildFeed({ nowMs = Date.now(), loadLines = (a) => a.fetch
   let curatedCount = 0;
   for (const base of [nowMs, nowMs + 24 * 3600000]) {
     for (const ev of generateRolling24hFeed(base)) {
-      if (okVenues.has(ev.venueName)) continue;
+      if (okVenues.has(ev.venueName) || okCategories.has(ev.category)) continue;
       const key = `${ev.id}|${ev.startTime}`;
       if (seen.has(key)) continue;
       const v = verifyEventCandidateWithAgent(ev);
