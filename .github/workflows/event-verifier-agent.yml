@@ -2,9 +2,11 @@ name: EventVerifierAgent — Ricerca & Verifica Eventi 24h
 
 on:
   schedule:
-    # Esegue l'Agente di Ricerca e Verifica ogni 6 ore per validare la natura degli eventi,
-    # scartare tour ricorrenti/non prenotabili e aggiornare i badge SOLD OUT
-    - cron: '0 */6 * * *'
+    # Aggiornamento "live": 3 volte al giorno (orari UTC; ~06:00, 14:00, 20:00 a Milano in inverno,
+    # ~07:00, 15:00, 21:00 in estate)
+    - cron: '0 5 * * *'
+    - cron: '0 13 * * *'
+    - cron: '0 19 * * *'
   workflow_dispatch:
   push:
     branches:
