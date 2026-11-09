@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-09T14:47:18.359Z",
+  "generatedAt": "2026-11-09T14:47:33.413Z",
   "agentVersion": "3.0.0-live-feed",
   "schedule": "3 volte al giorno (05:00, 13:00, 19:00 UTC)",
   "sources": [
@@ -7,7 +7,7 @@
       "id": "cinemino",
       "venueName": "Il Cinemino",
       "url": "https://www.ilcinemino.it/programmazione/",
-      "checkedAt": "2026-11-09T14:47:18.359Z",
+      "checkedAt": "2026-11-09T14:47:33.413Z",
       "status": "ok",
       "found": 9,
       "published": 7
@@ -16,7 +16,7 @@
       "id": "milanocinema",
       "venueName": "Cinema di Milano (milanocinema.com)",
       "url": "https://milanocinema.com/",
-      "checkedAt": "2026-11-09T14:47:18.359Z",
+      "checkedAt": "2026-11-09T14:47:33.413Z",
       "status": "ok",
       "found": 923,
       "published": 614,
@@ -27,7 +27,7 @@
       "venueName": "Controllo incrociato Cinemino (fonte diretta vs milanocinema.com)",
       "status": "warning",
       "published": 0,
-      "checkedAt": "2026-11-09T14:47:18.359Z",
+      "checkedAt": "2026-11-09T14:47:33.413Z",
       "error": "Differenze: solo fonte diretta [2026-11-10T14:00:00.000Z], solo aggregatore []"
     },
     {
@@ -35,7 +35,7 @@
       "venueName": "Venue senza adapter (dati curati)",
       "status": "curated",
       "published": 52,
-      "checkedAt": "2026-11-09T14:47:18.359Z"
+      "checkedAt": "2026-11-09T14:47:33.413Z"
     }
   ],
   "stats": {
