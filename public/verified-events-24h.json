@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-09T17:50:27.591Z",
+  "generatedAt": "2026-11-09T17:51:30.804Z",
   "agentVersion": "3.0.0-live-feed",
   "schedule": "3 volte al giorno (05:00, 13:00, 19:00 UTC)",
   "sources": [
@@ -7,7 +7,7 @@
       "id": "cinemino",
       "venueName": "Il Cinemino",
       "url": "https://www.ilcinemino.it/programmazione/",
-      "checkedAt": "2026-11-09T17:50:27.591Z",
+      "checkedAt": "2026-11-09T17:51:30.804Z",
       "status": "ok",
       "found": 8,
       "published": 6
@@ -16,7 +16,7 @@
       "id": "milanocinema",
       "venueName": "Cinema di Milano (milanocinema.com)",
       "url": "https://milanocinema.com/",
-      "checkedAt": "2026-11-09T17:50:27.591Z",
+      "checkedAt": "2026-11-09T17:51:30.804Z",
       "status": "ok",
       "found": 794,
       "published": 481,
@@ -26,7 +26,7 @@
       "id": "verso",
       "venueName": "Libreria Verso",
       "url": "http://www.libreriaverso.com/appuntamenti/",
-      "checkedAt": "2026-11-09T17:50:27.591Z",
+      "checkedAt": "2026-11-09T17:51:30.804Z",
       "status": "ok",
       "found": 17,
       "published": 3
@@ -36,7 +36,7 @@
       "venueName": "Controllo incrociato Cinemino (fonte diretta vs milanocinema.com)",
       "status": "warning",
       "published": 0,
-      "checkedAt": "2026-11-09T17:50:27.591Z",
+      "checkedAt": "2026-11-09T17:51:30.804Z",
       "error": "Differenze: solo fonte diretta [2026-11-10T14:00:00.000Z], solo aggregatore []"
     },
     {
@@ -44,7 +44,7 @@
       "venueName": "Venue senza adapter (dati curati)",
       "status": "curated",
       "published": 50,
-      "checkedAt": "2026-11-09T17:50:27.591Z"
+      "checkedAt": "2026-11-09T17:51:30.804Z"
     }
   ],
   "stats": {
