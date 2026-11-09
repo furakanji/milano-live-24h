@@ -41,3 +41,13 @@ test('milanocinema: Il Cinemino 9/11 = 4 proiezioni e solo cinema di Milano citt
   assert.deepEqual(cin, ['9/11 15:00', '9/11 17:00', '9/11 19:30', '9/11 21:30']);
   assert.ok(!evs.some((e) => e._cinemaSlug === 'uci-lissone'), 'cinema fuori Milano esclusi');
 });
+
+test('Verso: estrae l’evento specifico Artiste Ribelli del 9 novembre con URL dedicata', async () => {
+  const { default: verso } = await import('../adapters/verso.js');
+  const html = await fs.readFile('/home/antigravity/verso.html', 'utf8');
+  const { events } = verso.parse(html);
+  const ev = events.find((e) => e.url.includes('artiste-ribelli'));
+  assert.ok(ev, 'Evento Artiste Ribelli trovato');
+  assert.match(ev.title, /Artiste ribelli/i);
+  assert.equal(ev.url, 'http://www.libreriaverso.com/appuntamenti/artiste-ribelli/');
+});

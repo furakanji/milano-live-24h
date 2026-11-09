@@ -11,9 +11,10 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import cinemino from './adapters/cinemino.js';
 import milanocinema from './adapters/milanocinema.js';
+import verso from './adapters/verso.js';
 import { verifyEventCandidateWithAgent, REJECTED_CANDIDATES_LOG } from './eventVerifierAgent.js';
 
-export const ADAPTERS = [cinemino, milanocinema];
+export const ADAPTERS = [cinemino, milanocinema, verso];
 const HOURS_WINDOW = 36; // margine oltre le 24h: il frontend ritaglia la finestra esatta
 
 export async function runAdapter(adapter, lines) {

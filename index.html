@@ -255,6 +255,22 @@
           🏛️ Aperture Speciali &amp; Luoghi Segreti
         </button>
       </div>
+      <!-- Row 2B: Cinema Quick Venue Filter (visible when category is 'cinema' or 'all') -->
+      <div id="cinema-venues-subfilter" class="hidden flex items-center gap-1.5 overflow-x-auto no-scrollbar pt-1.5 border-t border-[#1f232b]">
+        <span class="text-[11px] font-bold text-orange-400 uppercase tracking-wider shrink-0 mr-1 flex items-center gap-1">
+          🎬 Sale Cinema:
+        </span>
+        <button
+          type="button"
+          data-cinema-venue="all"
+          class="cinema-venue-pill shrink-0 px-2.5 py-1 rounded-md text-[11px] font-semibold border transition cursor-pointer bg-white text-black border-white"
+        >
+          Tutte le Sale
+        </button>
+        <!-- Popolato dinamicamente da JS con le sale principali: Anteo, Beltrade, Mexico, Cinemino, Arlecchino, ecc. -->
+        <div id="cinema-venue-buttons" class="flex items-center gap-1.5"></div>
+      </div>
+
 
       <!-- Row 3: Quick Time-Block Jump Navigation -->
       <div class="flex items-center gap-2 overflow-x-auto no-scrollbar pt-1 border-t border-[#1c2027]">
@@ -1567,7 +1583,8 @@
     // State
     let allNormalizedEvents = [];
     let activePriceFilter = 'all'; // 'all' | 'free' | 'paid'
-    let activeCategoryFilter = 'all'; // 'all' | category id
+    let activeCategoryFilter = 'all';
+    let activeCinemaVenueFilter = 'all'; // 'all' | category id
     let activeSearchQuery = '';
     let onlyHappeningNow = false;
     let expandedEventIds = new Set(['evt-mexico-qa', 'evt-base-vernissage']);
@@ -1828,6 +1845,10 @@
         if (activePriceFilter === 'free' && !ev.isFree) return false;
         if (activePriceFilter === 'paid' && ev.isFree) return false;
         if (activeCategoryFilter !== 'all' && ev.category !== activeCategoryFilter) return false;
+        if (activeCinemaVenueFilter !== 'all' && (ev.category === 'cinema' || activeCategoryFilter === 'cinema')) {
+          const vName = (ev.venueName || '').toLowerCase();
+          if (!vName.includes(activeCinemaVenueFilter.toLowerCase())) return false;
+        }
         if (onlyHappeningNow && !ev._isHappeningNow) return false;
 
         if (activeSearchQuery.trim() !== '') {
@@ -2243,7 +2264,76 @@
     /**
      * Update filter UI pills & active filter banner
      */
+    
+    function renderCinemaVenuePills() {
+      const sub = document.getElementById('cinema-venues-subfilter');
+      const box = document.getElementById('cinema-venue-buttons');
+      if (!sub || !box) return;
+
+      // Mostra il sottofiltro se la categoria attiva è 'cinema' o se ci sono eventi cinema
+      const cinemaEvents = allNormalizedEvents.filter(e => e.category === 'cinema');
+      if (activeCategoryFilter === 'cinema' || (activeCategoryFilter === 'all' && cinemaEvents.length > 0)) {
+        sub.classList.remove('hidden');
+      } else {
+        sub.classList.add('hidden');
+        return;
+      }
+
+      // Estrai le sale uniche più frequenti
+      const venueCounts = {};
+      cinemaEvents.forEach(e => {
+        const v = e.venueName || 'Altro';
+        venueCounts[v] = (venueCounts[v] || 0) + 1;
+      });
+      const topVenues = Object.keys(venueCounts)
+        .sort((a, b) => venueCounts[b] - venueCounts[a])
+        .slice(0, 10);
+
+      box.innerHTML = topVenues.map(v => {
+        const isAct = activeCinemaVenueFilter.toLowerCase() === v.toLowerCase();
+        return `
+          <button
+            type="button"
+            data-cinema-venue="${v}"
+            class="cinema-venue-pill shrink-0 px-2.5 py-1 rounded-md text-[11px] font-semibold border transition cursor-pointer ${
+              isAct
+                ? 'bg-orange-500 text-black border-orange-500'
+                : 'bg-[#131519] text-zinc-300 border-[#23272f] hover:border-zinc-500 hover:text-white'
+            }"
+          >
+            ${v} (${venueCounts[v]})
+          </button>
+        `;
+      }).join('');
+
+      // Aggiorna classe del tasto 'Tutte le Sale'
+      const allBtn = sub.querySelector('[data-cinema-venue="all"]');
+      if (allBtn) {
+        if (activeCinemaVenueFilter === 'all') {
+          allBtn.className = 'cinema-venue-pill shrink-0 px-2.5 py-1 rounded-md text-[11px] font-semibold border transition cursor-pointer bg-white text-black border-white';
+        } else {
+          allBtn.className = 'cinema-venue-pill shrink-0 px-2.5 py-1 rounded-md text-[11px] font-semibold border transition cursor-pointer bg-[#131519] text-zinc-300 border-[#23272f] hover:border-zinc-500 hover:text-white';
+        }
+      }
+
+      box.querySelectorAll('.cinema-venue-pill').forEach(btn => {
+        btn.addEventListener('click', () => {
+          activeCinemaVenueFilter = btn.getAttribute('data-cinema-venue');
+          renderCinemaVenuePills();
+          renderTimeline();
+        });
+      });
+      if (allBtn) {
+        allBtn.onclick = () => {
+          activeCinemaVenueFilter = 'all';
+          renderCinemaVenuePills();
+          renderTimeline();
+        };
+      }
+    }
+
     function updateFilterControlsUI() {
+      renderCinemaVenuePills();
       document.querySelectorAll('.price-filter-btn').forEach(btn => {
         const val = btn.getAttribute('data-price-filter');
         if (val === activePriceFilter) {
@@ -3336,6 +3426,7 @@
       document.querySelectorAll('.category-pill').forEach(pill => {
         pill.addEventListener('click', () => {
           activeCategoryFilter = pill.getAttribute('data-category');
+          if (activeCategoryFilter !== 'cinema') { activeCinemaVenueFilter = 'all'; }
           updateFilterControlsUI();
           renderTimeline();
         });
