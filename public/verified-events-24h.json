@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-09T09:08:06.366Z",
+  "generatedAt": "2026-11-09T09:08:19.508Z",
   "agentVersion": "2.0.0-EventVerifierAgent",
   "policies": {
     "includeTemporaryExhibitions": true,
@@ -50,7 +50,7 @@
         "icon": "☀️"
       },
       "natureLabel": "Mostra Temporanea Verificata",
-      "verifiedByAgentAt": "2026-11-09T09:08:06.366Z"
+      "verifiedByAgentAt": "2026-11-09T09:08:19.508Z"
     },
     {
       "id": "evt-cineteca-arlecchino",
@@ -87,7 +87,7 @@
         "icon": "☀️"
       },
       "natureLabel": "Proiezione Cinematografica Programmata",
-      "verifiedByAgentAt": "2026-11-09T09:08:06.366Z"
+      "verifiedByAgentAt": "2026-11-09T09:08:19.508Z"
     },
     {
       "id": "evt-gam-pellizza-volpedo",
@@ -124,7 +124,7 @@
         "icon": "☀️"
       },
       "natureLabel": "Mostra Temporanea Verificata",
-      "verifiedByAgentAt": "2026-11-09T09:08:06.366Z"
+      "verifiedByAgentAt": "2026-11-09T09:08:19.508Z"
     },
     {
       "id": "evt-fondazione-prada-torre",
@@ -161,7 +161,7 @@
         "icon": "🌤️"
       },
       "natureLabel": "Mostra Temporanea Verificata",
-      "verifiedByAgentAt": "2026-11-09T09:08:06.366Z"
+      "verifiedByAgentAt": "2026-11-09T09:08:19.508Z"
     },
     {
       "id": "evt-mudec-dialogo-arti",
@@ -198,7 +198,7 @@
         "icon": "🌤️"
       },
       "natureLabel": "Mostra Temporanea Verificata",
-      "verifiedByAgentAt": "2026-11-09T09:08:06.366Z"
+      "verifiedByAgentAt": "2026-11-09T09:08:19.508Z"
     },
     {
       "id": "evt-torre-branca-sunset",
@@ -235,7 +235,7 @@
         "icon": "🌤️"
       },
       "natureLabel": "Incontro Pubblico / Presentazione con Data",
-      "verifiedByAgentAt": "2026-11-09T09:08:06.366Z"
+      "verifiedByAgentAt": "2026-11-09T09:08:19.508Z"
     },
     {
       "id": "evt-hangar-bicocca",
@@ -272,7 +272,7 @@
         "icon": "🌤️"
       },
       "natureLabel": "Mostra Temporanea Verificata",
-      "verifiedByAgentAt": "2026-11-09T09:08:06.366Z"
+      "verifiedByAgentAt": "2026-11-09T09:08:19.508Z"
     },
     {
       "id": "evt-palazzo-reale-brueghel",
@@ -309,7 +309,7 @@
         "icon": "🌤️"
       },
       "natureLabel": "Mostra Temporanea Verificata",
-      "verifiedByAgentAt": "2026-11-09T09:08:06.366Z"
+      "verifiedByAgentAt": "2026-11-09T09:08:19.508Z"
     },
     {
       "id": "evt-lafeltrinelli-duomo",
@@ -346,7 +346,7 @@
         "icon": "🌤️"
       },
       "natureLabel": "Incontro Pubblico / Presentazione con Data",
-      "verifiedByAgentAt": "2026-11-09T09:08:06.366Z"
+      "verifiedByAgentAt": "2026-11-09T09:08:19.508Z"
     },
     {
       "id": "evt-verso-talk",
@@ -383,7 +383,7 @@
         "icon": "🌆"
       },
       "natureLabel": "Appuntamento Speciale Verificato",
-      "verifiedByAgentAt": "2026-11-09T09:08:06.366Z"
+      "verifiedByAgentAt": "2026-11-09T09:08:19.508Z"
     },
     {
       "id": "evt-casa-donne-milano",
@@ -420,7 +420,7 @@
         "icon": "🌆"
       },
       "natureLabel": "Appuntamento Speciale Verificato",
-      "verifiedByAgentAt": "2026-11-09T09:08:06.366Z"
+      "verifiedByAgentAt": "2026-11-09T09:08:19.508Z"
     },
     {
       "id": "evt-feltrinelli-fondazione",
@@ -457,7 +457,7 @@
         "icon": "🌆"
       },
       "natureLabel": "Appuntamento Speciale Verificato",
-      "verifiedByAgentAt": "2026-11-09T09:08:06.366Z"
+      "verifiedByAgentAt": "2026-11-09T09:08:19.508Z"
     },
     {
       "id": "evt-triennale-design-talk",
@@ -494,7 +494,7 @@
         "icon": "🌆"
       },
       "natureLabel": "Appuntamento Speciale Verificato",
-      "verifiedByAgentAt": "2026-11-09T09:08:06.366Z"
+      "verifiedByAgentAt": "2026-11-09T09:08:19.508Z"
     },
     {
       "id": "evt-base-vernissage",
@@ -531,7 +531,7 @@
         "icon": "🌆"
       },
       "natureLabel": "Appuntamento Speciale Verificato",
-      "verifiedByAgentAt": "2026-11-09T09:08:06.366Z"
+      "verifiedByAgentAt": "2026-11-09T09:08:19.508Z"
     },
     {
       "id": "evt-cinemino-essay-early",
@@ -568,7 +568,7 @@
         "icon": "🌆"
       },
       "natureLabel": "Appuntamento Speciale Verificato",
-      "verifiedByAgentAt": "2026-11-09T09:08:06.366Z"
+      "verifiedByAgentAt": "2026-11-09T09:08:19.508Z"
     },
     {
       "id": "evt-piccolo-strehler",
@@ -605,7 +605,7 @@
         "icon": "🌆"
       },
       "natureLabel": "Appuntamento Speciale Verificato",
-      "verifiedByAgentAt": "2026-11-09T09:08:06.366Z"
+      "verifiedByAgentAt": "2026-11-09T09:08:19.508Z"
     },
     {
       "id": "evt-elfo-puccini-contemp",
@@ -642,7 +642,7 @@
         "icon": "🌆"
       },
       "natureLabel": "Appuntamento Speciale Verificato",
-      "verifiedByAgentAt": "2026-11-09T09:08:06.366Z"
+      "verifiedByAgentAt": "2026-11-09T09:08:19.508Z"
     },
     {
       "id": "evt-parenti-bagni",
@@ -679,7 +679,7 @@
         "icon": "🌆"
       },
       "natureLabel": "Appuntamento Speciale Verificato",
-      "verifiedByAgentAt": "2026-11-09T09:08:06.366Z"
+      "verifiedByAgentAt": "2026-11-09T09:08:19.508Z"
     },
     {
       "id": "evt-casa-cultura-abitare",
@@ -716,7 +716,7 @@
         "icon": "🌆"
       },
       "natureLabel": "Appuntamento Speciale Verificato",
-      "verifiedByAgentAt": "2026-11-09T09:08:06.366Z"
+      "verifiedByAgentAt": "2026-11-09T09:08:19.508Z"
     },
     {
       "id": "evt-manzoni-prosa",
@@ -753,7 +753,7 @@
         "icon": "🌆"
       },
       "natureLabel": "Appuntamento Speciale Verificato",
-      "verifiedByAgentAt": "2026-11-09T09:08:06.366Z"
+      "verifiedByAgentAt": "2026-11-09T09:08:19.508Z"
     },
     {
       "id": "evt-anteo-anteprima",
@@ -790,7 +790,7 @@
         "icon": "🌆"
       },
       "natureLabel": "Appuntamento Speciale Verificato",
-      "verifiedByAgentAt": "2026-11-09T09:08:06.366Z"
+      "verifiedByAgentAt": "2026-11-09T09:08:19.508Z"
     },
     {
       "id": "evt-mexico-qa",
@@ -827,7 +827,7 @@
         "icon": "🌆"
       },
       "natureLabel": "Appuntamento Speciale Verificato",
-      "verifiedByAgentAt": "2026-11-09T09:08:06.366Z"
+      "verifiedByAgentAt": "2026-11-09T09:08:19.508Z"
     },
     {
       "id": "evt-blue-note-jazz",
@@ -864,7 +864,7 @@
         "icon": "🌆"
       },
       "natureLabel": "Concerto / Live Club in Programma",
-      "verifiedByAgentAt": "2026-11-09T09:08:06.366Z"
+      "verifiedByAgentAt": "2026-11-09T09:08:19.508Z"
     },
     {
       "id": "evt-santeria-live-teatro",
@@ -901,7 +901,7 @@
         "icon": "🌆"
       },
       "natureLabel": "Concerto / Live Club in Programma",
-      "verifiedByAgentAt": "2026-11-09T09:08:06.366Z"
+      "verifiedByAgentAt": "2026-11-09T09:08:19.508Z"
     },
     {
       "id": "evt-beltrade-corti",
@@ -938,7 +938,7 @@
         "icon": "🌆"
       },
       "natureLabel": "Proiezione Cinematografica Programmata",
-      "verifiedByAgentAt": "2026-11-09T09:08:06.366Z"
+      "verifiedByAgentAt": "2026-11-09T09:08:19.508Z"
     },
     {
       "id": "evt-santeria-listening",
@@ -975,7 +975,7 @@
         "icon": "🌆"
       },
       "natureLabel": "Concerto / Live Club in Programma",
-      "verifiedByAgentAt": "2026-11-09T09:08:06.366Z"
+      "verifiedByAgentAt": "2026-11-09T09:08:19.508Z"
     },
     {
       "id": "evt-biko-live-showcase",
@@ -1012,7 +1012,7 @@
         "icon": "🌆"
       },
       "natureLabel": "Concerto / Live Club in Programma",
-      "verifiedByAgentAt": "2026-11-09T09:08:06.366Z"
+      "verifiedByAgentAt": "2026-11-09T09:08:19.508Z"
     },
     {
       "id": "evt-cinemino-essay",
@@ -1049,7 +1049,7 @@
         "icon": "🌆"
       },
       "natureLabel": "Proiezione Cinematografica Programmata",
-      "verifiedByAgentAt": "2026-11-09T09:08:06.366Z"
+      "verifiedByAgentAt": "2026-11-09T09:08:19.508Z"
     },
     {
       "id": "evt-magnolia-clubnight",
@@ -1086,7 +1086,7 @@
         "icon": "🌙"
       },
       "natureLabel": "Concerto / Live Club in Programma",
-      "verifiedByAgentAt": "2026-11-09T09:08:06.366Z"
+      "verifiedByAgentAt": "2026-11-09T09:08:19.508Z"
     },
     {
       "id": "evt-tempio-futuro-perduto",
@@ -1123,7 +1123,7 @@
         "icon": "🌙"
       },
       "natureLabel": "Concerto / Live Club in Programma",
-      "verifiedByAgentAt": "2026-11-09T09:08:06.366Z"
+      "verifiedByAgentAt": "2026-11-09T09:08:19.508Z"
     },
     {
       "id": "evt-villa-necchi-fai",
@@ -1160,7 +1160,7 @@
         "icon": "☀️"
       },
       "natureLabel": "Appuntamento Speciale Verificato",
-      "verifiedByAgentAt": "2026-11-09T09:08:06.366Z"
+      "verifiedByAgentAt": "2026-11-09T09:08:19.508Z"
     },
     {
       "id": "evt-gallerie-italia-libere",
@@ -1197,7 +1197,7 @@
         "icon": "☀️"
       },
       "natureLabel": "Mostra Temporanea Verificata",
-      "verifiedByAgentAt": "2026-11-09T09:08:06.366Z"
+      "verifiedByAgentAt": "2026-11-09T09:08:19.508Z"
     }
   ],
   "rejectedCandidatesLog": [
