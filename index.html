@@ -592,7 +592,7 @@
           🛡️ CONSOLE ADMIN • ACCESSO DIRETTO (SENZA PASSWORD)
         </span>
         <span class="text-xs text-zinc-400 mono-num">
-          Elenco Fonti Attive • Database Fonti Apprese • Coda Safeguard
+          Elenco Fonti Attive • Registro Domini • Database Fonti Apprese • Coda Safeguard
         </span>
       </div>
       <div class="flex items-center gap-2">
@@ -606,7 +606,101 @@
       </div>
     </div>
 
-    <!-- ADMIN DASHBOARD CONTENT (Directly accessible via URL without password) -->
+    <!-- Admin Sub-Navigation Tabs -->
+    <div class="mb-6 flex items-center gap-2 border-b border-[#23272f] pb-3">
+      <button
+        id="admin-tab-btn-overview"
+        type="button"
+        class="px-3.5 py-2 rounded-lg bg-orange-500 text-black font-extrabold text-xs cursor-pointer transition flex items-center gap-1.5 shadow-sm"
+      >
+        <span>📊</span>
+        <span>Cruscotto &amp; Fonti Ufficiali</span>
+      </button>
+      <button
+        id="admin-tab-btn-domains"
+        type="button"
+        class="px-3.5 py-2 rounded-lg bg-[#161920] hover:bg-[#1f242d] text-zinc-300 font-bold text-xs cursor-pointer border border-[#262b36] transition flex items-center gap-1.5"
+      >
+        <span>🌐</span>
+        <span>Tutti i Domini Fonti Eventi</span>
+        <span id="admin-domains-total-badge" class="px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-[10px] font-mono">0</span>
+      </button>
+    </div>
+
+    <!-- VIEW 2: DOMINI FONTI EVENTI (Dedicated View) -->
+    <div id="admin-domains-content" class="hidden space-y-6 text-xs">
+      <!-- Header & Search Toolbar -->
+      <div class="p-5 rounded-xl bg-[#111318] border border-emerald-500/30 space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#23272f] pb-3">
+          <div>
+            <span class="text-xs font-bold uppercase tracking-widest text-emerald-400 mono-num">ANAGRAFICA DOMINI FONTI</span>
+            <h3 class="text-sm sm:text-base font-bold text-white mt-0.5">
+              🌐 Registro Completo dei Domini di Origine degli Eventi
+            </h3>
+            <p class="text-zinc-400 mt-0.5">
+              Tutti i domini web (host ufficiali, ticketing partner, spazi comunali, archivi e connettori) da cui sono estratti gli eventi attivi e verificati nella timeline delle prossime 24 ore a Milano.
+            </p>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="px-3 py-1.5 rounded-lg bg-emerald-500/15 text-emerald-300 border border-emerald-500/40 font-mono font-bold text-xs shrink-0">
+              <span id="admin-domains-stats-count" class="font-black text-sm">0</span> domini unici
+            </span>
+            <span class="px-3 py-1.5 rounded-lg bg-sky-500/15 text-sky-300 border border-sky-500/40 font-mono font-bold text-xs shrink-0">
+              <span id="admin-domains-stats-events" class="font-black text-sm">0</span> eventi mappati
+            </span>
+          </div>
+        </div>
+
+        <!-- Search & Filter bar -->
+        <div class="flex flex-wrap items-center justify-between gap-3 pt-1">
+          <div class="relative flex-1 min-w-[240px]">
+            <input
+              type="text"
+              id="admin-domains-search-input"
+              placeholder="Cerca per dominio (es. spazicinema, ticket, gallerie, base...)"
+              class="w-full px-3.5 py-2 rounded-lg bg-[#0c0e12] border border-[#2a2f3a] text-zinc-100 placeholder-zinc-500 text-xs focus:outline-none focus:border-emerald-500"
+            />
+          </div>
+          <div class="flex items-center gap-2">
+            <button
+              id="admin-domains-filter-all"
+              type="button"
+              class="px-2.5 py-1.5 rounded bg-emerald-500 text-black font-bold text-xs cursor-pointer"
+            >
+              Tutti
+            </button>
+            <button
+              id="admin-domains-filter-cinema"
+              type="button"
+              class="px-2.5 py-1.5 rounded bg-[#161920] hover:bg-[#202530] text-zinc-300 border border-[#2a2f3a] text-xs cursor-pointer"
+            >
+              🎬 Cinema &amp; 18tickets
+            </button>
+            <button
+              id="admin-domains-filter-teatro"
+              type="button"
+              class="px-2.5 py-1.5 rounded bg-[#161920] hover:bg-[#202530] text-zinc-300 border border-[#2a2f3a] text-xs cursor-pointer"
+            >
+              🎭 Teatri &amp; Spettacoli
+            </button>
+            <button
+              id="admin-domains-filter-mostre"
+              type="button"
+              class="px-2.5 py-1.5 rounded bg-[#161920] hover:bg-[#202530] text-zinc-300 border border-[#2a2f3a] text-xs cursor-pointer"
+            >
+              🏛️ Mostre &amp; Cultura
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Domains Grid / Cards -->
+      <div id="admin-domains-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+        <!-- Rendered dynamically by renderAdminDomainsPage() -->
+      </div>
+    </div>
+
+    <!-- VIEW 1: ADMIN DASHBOARD CONTENT (Directly accessible via URL without password) -->
     <div id="admin-console-content" class="space-y-8 text-xs">
 
       <!-- Admin KPI Summary Row -->
@@ -3472,24 +3566,248 @@
     }
 
     /**
-     * Hidden Admin Page Router (`?admin=1` or `/#admin`) — Passwordless Direct Access
+     * Admin Tabs & Domains Page State
+     */
+    let currentAdminTab = 'overview'; // 'overview' | 'domains'
+    let adminDomainSearchQuery = '';
+    let adminDomainCategoryFilter = 'all';
+
+    function setAdminActiveTab(tabName) {
+      currentAdminTab = tabName;
+      const overviewBtn = document.getElementById('admin-tab-btn-overview');
+      const domainsBtn = document.getElementById('admin-tab-btn-domains');
+      const overviewContent = document.getElementById('admin-console-content');
+      const domainsContent = document.getElementById('admin-domains-content');
+
+      if (tabName === 'domains') {
+        overviewBtn?.classList.remove('bg-orange-500', 'text-black', 'font-extrabold', 'shadow-sm');
+        overviewBtn?.classList.add('bg-[#161920]', 'hover:bg-[#1f242d]', 'text-zinc-300', 'font-bold', 'border', 'border-[#262b36]');
+
+        domainsBtn?.classList.remove('bg-[#161920]', 'hover:bg-[#1f242d]', 'text-zinc-300', 'font-bold', 'border', 'border-[#262b36]');
+        domainsBtn?.classList.add('bg-orange-500', 'text-black', 'font-extrabold', 'shadow-sm');
+
+        overviewContent?.classList.add('hidden');
+        domainsContent?.classList.remove('hidden');
+        renderAdminDomainsPage();
+      } else {
+        domainsBtn?.classList.remove('bg-orange-500', 'text-black', 'font-extrabold', 'shadow-sm');
+        domainsBtn?.classList.add('bg-[#161920]', 'hover:bg-[#1f242d]', 'text-zinc-300', 'font-bold', 'border', 'border-[#262b36]');
+
+        overviewBtn?.classList.remove('bg-[#161920]', 'hover:bg-[#1f242d]', 'text-zinc-300', 'font-bold', 'border', 'border-[#262b36]');
+        overviewBtn?.classList.add('bg-orange-500', 'text-black', 'font-extrabold', 'shadow-sm');
+
+        domainsContent?.classList.add('hidden');
+        overviewContent?.classList.remove('hidden');
+      }
+    }
+
+    /**
+     * Aggregates and renders all unique domains from active verified events
+     */
+    function renderAdminDomainsPage() {
+      const grid = document.getElementById('admin-domains-grid');
+      const badge = document.getElementById('admin-domains-total-badge');
+      const statsCount = document.getElementById('admin-domains-stats-count');
+      const statsEvents = document.getElementById('admin-domains-stats-events');
+      if (!grid) return;
+
+      // Extract domains from all active events (allNormalizedEvents or LIVE_FEED.verifiedEvents)
+      const eventsPool = (Array.isArray(allNormalizedEvents) && allNormalizedEvents.length > 0)
+        ? allNormalizedEvents
+        : (window.LIVE_FEED && Array.isArray(window.LIVE_FEED.verifiedEvents) ? window.LIVE_FEED.verifiedEvents : []);
+
+      const domainsMap = new Map();
+
+      eventsPool.forEach(ev => {
+        if (!ev.sourceUrl) return;
+        try {
+          const parsed = new URL(ev.sourceUrl);
+          const rawHost = parsed.hostname.toLowerCase();
+          const cleanHost = rawHost.replace(/^www\./, '');
+
+          if (!domainsMap.has(cleanHost)) {
+            domainsMap.set(cleanHost, {
+              hostname: cleanHost,
+              fullOrigin: parsed.origin,
+              eventCount: 0,
+              categories: new Set(),
+              venues: new Set(),
+              sampleTitles: [],
+              sampleUrls: []
+            });
+          }
+
+          const entry = domainsMap.get(cleanHost);
+          entry.eventCount += 1;
+          if (ev.category) entry.categories.add(ev.category);
+          if (ev.venueName) entry.venues.add(ev.venueName);
+          if (entry.sampleTitles.length < 3 && ev.title) {
+            entry.sampleTitles.push(ev.title);
+            entry.sampleUrls.push(ev.sourceUrl);
+          }
+        } catch {
+          // Ignore invalid URLs
+        }
+      });
+
+      // Update counters
+      const totalUniqueDomains = domainsMap.size;
+      const totalMappedEvents = Array.from(domainsMap.values()).reduce((acc, d) => acc + d.eventCount, 0);
+
+      if (badge) badge.textContent = totalUniqueDomains;
+      if (statsCount) statsCount.textContent = totalUniqueDomains;
+      if (statsEvents) statsEvents.textContent = totalMappedEvents;
+
+      // Filter domains based on search query and category filter
+      let domainEntries = Array.from(domainsMap.values());
+
+      if (adminDomainCategoryFilter !== 'all') {
+        domainEntries = domainEntries.filter(d => {
+          if (adminDomainCategoryFilter === 'cinema') {
+            return d.categories.has('cinema') || d.hostname.includes('18tickets') || d.hostname.includes('webtic') || d.hostname.includes('cinema');
+          }
+          if (adminDomainCategoryFilter === 'teatro') {
+            return d.categories.has('teatro') || d.categories.has('musica') || d.hostname.includes('teatro');
+          }
+          if (adminDomainCategoryFilter === 'mostre') {
+            return d.categories.has('mostre') || d.categories.has('aperture') || d.categories.has('libri') || d.categories.has('incontri');
+          }
+          return true;
+        });
+      }
+
+      if (adminDomainSearchQuery.trim()) {
+        const q = adminDomainSearchQuery.trim().toLowerCase();
+        domainEntries = domainEntries.filter(d => {
+          return d.hostname.toLowerCase().includes(q) ||
+            Array.from(d.venues).some(v => v.toLowerCase().includes(q)) ||
+            d.sampleTitles.some(t => t.toLowerCase().includes(q));
+        });
+      }
+
+      // Sort by event count descending
+      domainEntries.sort((a, b) => b.eventCount - a.eventCount);
+
+      if (domainEntries.length === 0) {
+        grid.innerHTML = `
+          <div class="col-span-full p-8 rounded-xl bg-[#111318] border border-zinc-800 text-center text-zinc-400">
+            <span class="text-2xl block mb-2">🔍</span>
+            Nessun dominio trovato per i criteri di ricerca selezionati.
+          </div>
+        `;
+        return;
+      }
+
+      grid.innerHTML = domainEntries.map(d => {
+        const catBadges = Array.from(d.categories).map(catKey => {
+          const meta = CATEGORY_META[catKey] || { emoji: '📍', label: catKey };
+          return `<span class="px-2 py-0.5 rounded bg-zinc-800/80 text-zinc-300 text-[10px] mono-num">${meta.emoji} ${meta.label || catKey}</span>`;
+        }).join(' ');
+
+        const venuesList = Array.from(d.venues).slice(0, 4);
+        const moreVenues = d.venues.size > 4 ? `+${d.venues.size - 4} altri` : '';
+
+        const sampleTitle = d.sampleTitles[0] || 'Evento verificato';
+        const sampleUrl = d.sampleUrls[0] || `https://${d.hostname}`;
+
+        return `
+          <div class="p-4 rounded-xl bg-[#131519] border border-[#252a34] hover:border-emerald-500/50 transition flex flex-col justify-between gap-3 group">
+            <div class="space-y-2">
+              <div class="flex items-start justify-between gap-2">
+                <div class="flex items-center gap-2 min-w-0">
+                  <div class="w-7 h-7 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center shrink-0 text-xs">
+                    🌐
+                  </div>
+                  <div class="min-w-0">
+                    <div class="font-extrabold text-white text-xs truncate mono-num" title="${d.hostname}">
+                      ${d.hostname}
+                    </div>
+                    <a
+                      href="https://${d.hostname}"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="text-[10px] text-zinc-400 hover:text-emerald-400 underline truncate block mono-num"
+                    >
+                      Visita sito ↗
+                    </a>
+                  </div>
+                </div>
+                <span class="px-2.5 py-1 rounded-md bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-mono font-black text-xs shrink-0">
+                  ${d.eventCount} ${d.eventCount === 1 ? 'evento' : 'eventi'}
+                </span>
+              </div>
+
+              <!-- Categories -->
+              <div class="flex flex-wrap gap-1 pt-1">
+                ${catBadges}
+              </div>
+
+              <!-- Venues associated with this domain -->
+              <div class="text-[11px] text-zinc-300 space-y-0.5 pt-1 border-t border-[#1d222b]">
+                <span class="text-zinc-500 text-[10px] uppercase font-semibold block">Spazi &amp; Luoghi associati:</span>
+                <div class="text-zinc-300 font-medium">
+                  ${venuesList.join(', ')} ${moreVenues ? `<span class="text-zinc-500 font-normal">(${moreVenues})</span>` : ''}
+                </div>
+              </div>
+
+              <!-- Sample verified event -->
+              <div class="text-[10px] text-zinc-400 bg-[#0d0f13] p-2 rounded border border-[#1e232d] space-y-0.5">
+                <span class="text-zinc-500 uppercase tracking-wider block font-semibold">Esempio evento attivo:</span>
+                <a
+                  href="${sampleUrl}"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="text-zinc-300 hover:text-emerald-300 line-clamp-1 underline"
+                  title="${sampleTitle}"
+                >
+                  ${sampleTitle}
+                </a>
+              </div>
+            </div>
+
+            <!-- Footer Action -->
+            <div class="pt-2 border-t border-[#1e232d] flex items-center justify-between text-[10px]">
+              <span class="text-emerald-400 font-semibold flex items-center gap-1">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block animate-pulse"></span> Fonte Verificata
+              </span>
+              <a
+                href="${sampleUrl}"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="px-2 py-1 rounded bg-[#1e232d] hover:bg-emerald-500 hover:text-black text-zinc-300 font-semibold transition"
+              >
+                Apri Scheda ↗
+              </a>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    /**
+     * Hidden Admin Page Router (`?admin=1` or `/#admin` or `/#admin-domains`) — Passwordless Direct Access
      */
     function isDirectAdminUrl() {
       const params = new URLSearchParams(window.location.search);
-      return window.location.hash === '#admin' || params.has('admin');
+      return window.location.hash.startsWith('#admin') || params.has('admin');
     }
 
     function syncAdminRouteVisibility() {
       const publicView = document.getElementById('public-app-view');
       const adminPage = document.getElementById('hidden-admin-page');
-      const consoleContent = document.getElementById('admin-console-content');
 
       if (isDirectAdminUrl()) {
         publicView?.classList.add('hidden');
         adminPage?.classList.remove('hidden');
-        consoleContent?.classList.remove('hidden');
+
+        // Check if direct deep link to domains view: `#admin-domains` or `?admin=domains`
+        const params = new URLSearchParams(window.location.search);
+        const isDomainsDeepLink = window.location.hash === '#admin-domains' || params.get('admin') === 'domains';
+        setAdminActiveTab(isDomainsDeepLink ? 'domains' : (currentAdminTab || 'overview'));
+
         renderStudioAdminAndLearnedUI();
         populateArchitectureModal();
+        renderAdminDomainsPage();
         window.scrollTo({ top: 0, behavior: 'smooth' });
       } else {
         adminPage?.classList.add('hidden');
@@ -3599,6 +3917,49 @@
         history.pushState('', document.title, window.location.pathname);
         syncAdminRouteVisibility();
       });
+
+      // Admin Tab switching buttons (Overview vs Domains)
+      document.getElementById('admin-tab-btn-overview')?.addEventListener('click', () => {
+        window.location.hash = '#admin';
+        setAdminActiveTab('overview');
+      });
+
+      document.getElementById('admin-tab-btn-domains')?.addEventListener('click', () => {
+        window.location.hash = '#admin-domains';
+        setAdminActiveTab('domains');
+      });
+
+      // Admin Domains search input
+      const domainSearchInput = document.getElementById('admin-domains-search-input');
+      domainSearchInput?.addEventListener('input', (e) => {
+        adminDomainSearchQuery = e.target.value;
+        renderAdminDomainsPage();
+      });
+
+      // Admin Domains category filter buttons
+      const updateDomainFilterButtons = (activeKey) => {
+        adminDomainCategoryFilter = activeKey;
+        const btnMap = {
+          all: document.getElementById('admin-domains-filter-all'),
+          cinema: document.getElementById('admin-domains-filter-cinema'),
+          teatro: document.getElementById('admin-domains-filter-teatro'),
+          mostre: document.getElementById('admin-domains-filter-mostre')
+        };
+        Object.entries(btnMap).forEach(([key, btn]) => {
+          if (!btn) return;
+          if (key === activeKey) {
+            btn.className = 'px-2.5 py-1.5 rounded bg-emerald-500 text-black font-bold text-xs cursor-pointer';
+          } else {
+            btn.className = 'px-2.5 py-1.5 rounded bg-[#161920] hover:bg-[#202530] text-zinc-300 border border-[#2a2f3a] text-xs cursor-pointer';
+          }
+        });
+        renderAdminDomainsPage();
+      };
+
+      document.getElementById('admin-domains-filter-all')?.addEventListener('click', () => updateDomainFilterButtons('all'));
+      document.getElementById('admin-domains-filter-cinema')?.addEventListener('click', () => updateDomainFilterButtons('cinema'));
+      document.getElementById('admin-domains-filter-teatro')?.addEventListener('click', () => updateDomainFilterButtons('teatro'));
+      document.getElementById('admin-domains-filter-mostre')?.addEventListener('click', () => updateDomainFilterButtons('mostre'));
 
       const updateCommunityRadarToggleLabel = () => {
         const body = document.getElementById('studio-collapsible-body');
