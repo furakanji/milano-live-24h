@@ -43,6 +43,7 @@ export default function App() {
   const [nowMs, setNowMs] = useState(() => Date.now());
   const [priceFilter, setPriceFilter] = useState('all'); // 'all' | 'free' | 'paid'
   const [categoryFilter, setCategoryFilter] = useState('all');
+  const [disabledCategories, setDisabledCategories] = useState(() => new Set());
   const [searchQuery, setSearchQuery] = useState('');
   const [onlyLiveNow, setOnlyLiveNow] = useState(false);
   const [expandedIds, setExpandedIds] = useState(() => new Set(['evt-mexico-qa', 'evt-base-vernissage']));
@@ -392,6 +393,7 @@ export default function App() {
     return events.filter((ev) => {
       if (priceFilter === 'free' && !ev.isFree) return false;
       if (priceFilter === 'paid' && ev.isFree) return false;
+      if (disabledCategories.has(ev.category)) return false;
       if (categoryFilter !== 'all' && ev.category !== categoryFilter) return false;
       if (onlyLiveNow && !ev.isHappeningNow) return false;
       if (searchQuery.trim() !== '') {
@@ -401,7 +403,7 @@ export default function App() {
       }
       return true;
     });
-  }, [events, priceFilter, categoryFilter, onlyLiveNow, searchQuery]);
+  }, [events, priceFilter, categoryFilter, disabledCategories, onlyLiveNow, searchQuery]);
 
   // Build all 24 hourly slots so hours without events (e.g. 03:00 AM) are left empty
   const hourlyGroups = useMemo(() => {
@@ -740,20 +742,71 @@ export default function App() {
 
           {/* Category Pills */}
           <div className="flex items-center gap-1.5 overflow-x-auto pb-1">
-            {CATEGORIES.map((cat) => (
-              <button
-                key={cat.id}
-                type="button"
-                onClick={() => setCategoryFilter(cat.id)}
-                className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold border transition ${
-                  categoryFilter === cat.id
-                    ? 'bg-zinc-100 text-black border-zinc-100'
-                    : 'bg-zinc-900 text-zinc-300 border-zinc-800 hover:border-zinc-600'
-                }`}
-              >
-                {cat.label}
-              </button>
-            ))}
+            {CATEGORIES.map((cat) => {
+              const isDis = disabledCategories.has(cat.id);
+              const isSelected = categoryFilter === cat.id;
+              return (
+                <button
+                  key={cat.id}
+                  type="button"
+                  onClick={() => {
+                    if (cat.id === 'all') {
+                      setCategoryFilter('all');
+                      setDisabledCategories(new Set());
+                    } else if (isDis) {
+                      setDisabledCategories((prev) => {
+                        const next = new Set(prev);
+                        next.delete(cat.id);
+                        return next;
+                      });
+                      setCategoryFilter(cat.id);
+                    } else {
+                      setCategoryFilter(cat.id);
+                    }
+                  }}
+                  className={`shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border transition cursor-pointer ${
+                    isDis
+                      ? 'border-red-500/30 bg-[#0d0e12]/60 text-zinc-500 opacity-60 line-through hover:opacity-90'
+                      : isSelected
+                      ? 'bg-zinc-100 text-black border-zinc-100'
+                      : 'bg-zinc-900 text-zinc-300 border-zinc-800 hover:border-zinc-600 hover:text-white'
+                  }`}
+                >
+                  <span>{cat.label}</span>
+                  {cat.id !== 'all' && (
+                    <span
+                      role="button"
+                      aria-label={`Disattiva categoria ${cat.label}`}
+                      title={isDis ? 'Riattiva questa categoria' : 'Disattiva questa categoria'}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setDisabledCategories((prev) => {
+                          const next = new Set(prev);
+                          if (next.has(cat.id)) {
+                            next.delete(cat.id);
+                          } else {
+                            next.add(cat.id);
+                            if (categoryFilter === cat.id) {
+                              setCategoryFilter('all');
+                            }
+                          }
+                          return next;
+                        });
+                      }}
+                      className={`inline-flex items-center justify-center w-4 h-4 rounded-full text-[10px] font-bold transition ml-0.5 ${
+                        isDis
+                          ? 'bg-red-500/20 text-red-300 border border-red-500/40'
+                          : isSelected
+                          ? 'bg-black/10 hover:bg-black/20 text-zinc-700 hover:text-black'
+                          : 'bg-zinc-800 hover:bg-red-500/30 text-zinc-400 hover:text-red-300'
+                      }`}
+                    >
+                      &times;
+                    </span>
+                  )}
+                </button>
+              );
+            })}
           </div>
 
           {/* Quick Time-Block Jump Bar */}

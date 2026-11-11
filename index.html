@@ -201,58 +201,107 @@
         <button
           type="button"
           data-category="all"
-          class="category-pill shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold border transition cursor-pointer bg-zinc-100 text-black border-zinc-100"
+          class="category-pill shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border transition cursor-pointer bg-zinc-100 text-black border-zinc-100"
         >
-          Tutte le Categorie
+          <span>Tutte le Categorie</span>
         </button>
         <button
           type="button"
           data-category="politica"
-          class="category-pill shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold border border-[#23272f] bg-[#131519] text-zinc-300 hover:border-zinc-600 hover:text-white transition cursor-pointer"
+          class="category-pill shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border border-[#23272f] bg-[#131519] text-zinc-300 hover:border-zinc-600 hover:text-white transition cursor-pointer"
         >
-          ✊ Politica, Attivismo &amp; Sociale
+          <span class="category-pill-label">✊ Politica, Attivismo &amp; Sociale</span>
+          <span
+            data-toggle-exclude="politica"
+            role="button"
+            aria-label="Disattiva categoria Politica"
+            title="Disattiva/Attiva questa categoria"
+            class="category-exclude-btn inline-flex items-center justify-center w-4 h-4 rounded-full bg-zinc-800/80 hover:bg-red-500/30 text-zinc-400 hover:text-red-300 text-[10px] font-bold transition ml-0.5"
+          >&times;</span>
         </button>
         <button
           type="button"
           data-category="concerti"
-          class="category-pill shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold border border-[#23272f] bg-[#131519] text-zinc-300 hover:border-zinc-600 hover:text-white transition cursor-pointer"
+          class="category-pill shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border border-[#23272f] bg-[#131519] text-zinc-300 hover:border-zinc-600 hover:text-white transition cursor-pointer"
         >
-          🎵 Concerti &amp; Club
+          <span class="category-pill-label">🎵 Concerti &amp; Club</span>
+          <span
+            data-toggle-exclude="concerti"
+            role="button"
+            aria-label="Disattiva categoria Concerti"
+            title="Disattiva/Attiva questa categoria"
+            class="category-exclude-btn inline-flex items-center justify-center w-4 h-4 rounded-full bg-zinc-800/80 hover:bg-red-500/30 text-zinc-400 hover:text-red-300 text-[10px] font-bold transition ml-0.5"
+          >&times;</span>
         </button>
         <button
           type="button"
           data-category="cinema"
-          class="category-pill shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold border border-[#23272f] bg-[#131519] text-zinc-300 hover:border-zinc-600 hover:text-white transition cursor-pointer"
+          class="category-pill shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border border-[#23272f] bg-[#131519] text-zinc-300 hover:border-zinc-600 hover:text-white transition cursor-pointer"
         >
-          🎬 Cinema &amp; Rassegne
+          <span class="category-pill-label">🎬 Cinema &amp; Rassegne</span>
+          <span
+            data-toggle-exclude="cinema"
+            role="button"
+            aria-label="Disattiva categoria Cinema"
+            title="Disattiva/Attiva questa categoria"
+            class="category-exclude-btn inline-flex items-center justify-center w-4 h-4 rounded-full bg-zinc-800/80 hover:bg-red-500/30 text-zinc-400 hover:text-red-300 text-[10px] font-bold transition ml-0.5"
+          >&times;</span>
         </button>
         <button
           type="button"
           data-category="teatro"
-          class="category-pill shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold border border-[#23272f] bg-[#131519] text-zinc-300 hover:border-zinc-600 hover:text-white transition cursor-pointer"
+          class="category-pill shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border border-[#23272f] bg-[#131519] text-zinc-300 hover:border-zinc-600 hover:text-white transition cursor-pointer"
         >
-          🎭 Teatro
+          <span class="category-pill-label">🎭 Teatro</span>
+          <span
+            data-toggle-exclude="teatro"
+            role="button"
+            aria-label="Disattiva categoria Teatro"
+            title="Disattiva/Attiva questa categoria"
+            class="category-exclude-btn inline-flex items-center justify-center w-4 h-4 rounded-full bg-zinc-800/80 hover:bg-red-500/30 text-zinc-400 hover:text-red-300 text-[10px] font-bold transition ml-0.5"
+          >&times;</span>
         </button>
         <button
           type="button"
           data-category="libri"
-          class="category-pill shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold border border-[#23272f] bg-[#131519] text-zinc-300 hover:border-zinc-600 hover:text-white transition cursor-pointer"
+          class="category-pill shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border border-[#23272f] bg-[#131519] text-zinc-300 hover:border-zinc-600 hover:text-white transition cursor-pointer"
         >
-          📚 Libri, Talk &amp; Conferenze
+          <span class="category-pill-label">📚 Libri, Talk &amp; Conferenze</span>
+          <span
+            data-toggle-exclude="libri"
+            role="button"
+            aria-label="Disattiva categoria Libri"
+            title="Disattiva/Attiva questa categoria"
+            class="category-exclude-btn inline-flex items-center justify-center w-4 h-4 rounded-full bg-zinc-800/80 hover:bg-red-500/30 text-zinc-400 hover:text-red-300 text-[10px] font-bold transition ml-0.5"
+          >&times;</span>
         </button>
         <button
           type="button"
           data-category="mostre"
-          class="category-pill shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold border border-[#23272f] bg-[#131519] text-zinc-300 hover:border-zinc-600 hover:text-white transition cursor-pointer"
+          class="category-pill shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border border-[#23272f] bg-[#131519] text-zinc-300 hover:border-zinc-600 hover:text-white transition cursor-pointer"
         >
-          🖼️ Mostre &amp; Musei
+          <span class="category-pill-label">🖼️ Mostre &amp; Musei</span>
+          <span
+            data-toggle-exclude="mostre"
+            role="button"
+            aria-label="Disattiva categoria Mostre"
+            title="Disattiva/Attiva questa categoria"
+            class="category-exclude-btn inline-flex items-center justify-center w-4 h-4 rounded-full bg-zinc-800/80 hover:bg-red-500/30 text-zinc-400 hover:text-red-300 text-[10px] font-bold transition ml-0.5"
+          >&times;</span>
         </button>
         <button
           type="button"
           data-category="aperture"
-          class="category-pill shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold border border-[#23272f] bg-[#131519] text-zinc-300 hover:border-zinc-600 hover:text-white transition cursor-pointer"
+          class="category-pill shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border border-[#23272f] bg-[#131519] text-zinc-300 hover:border-zinc-600 hover:text-white transition cursor-pointer"
         >
-          🏛️ Aperture Speciali &amp; Luoghi Segreti
+          <span class="category-pill-label">🏛️ Aperture Speciali &amp; Luoghi Segreti</span>
+          <span
+            data-toggle-exclude="aperture"
+            role="button"
+            aria-label="Disattiva categoria Aperture"
+            title="Disattiva/Attiva questa categoria"
+            class="category-exclude-btn inline-flex items-center justify-center w-4 h-4 rounded-full bg-zinc-800/80 hover:bg-red-500/30 text-zinc-400 hover:text-red-300 text-[10px] font-bold transition ml-0.5"
+          >&times;</span>
         </button>
       </div>
       <!-- Row 2B: Cinema Quick Venue Filter (visible when category is 'cinema' or 'all') -->
@@ -1584,7 +1633,9 @@
     let allNormalizedEvents = [];
     let activePriceFilter = 'all'; // 'all' | 'free' | 'paid'
     let activeCategoryFilter = 'all';
+      disabledCategories.clear();
     let activeCinemaVenueFilter = 'all'; // 'all' | category id
+    let disabledCategories = new Set(); // Categorie disattivate tramite X
     let activeSearchQuery = '';
     let onlyHappeningNow = false;
     let expandedEventIds = new Set(['evt-mexico-qa', 'evt-base-vernissage']);
@@ -1844,6 +1895,7 @@
       return allNormalizedEvents.filter(ev => {
         if (activePriceFilter === 'free' && !ev.isFree) return false;
         if (activePriceFilter === 'paid' && ev.isFree) return false;
+        if (disabledCategories.has(ev.category)) return false;
         if (activeCategoryFilter !== 'all' && ev.category !== activeCategoryFilter) return false;
         if (activeCinemaVenueFilter !== 'all' && (ev.category === 'cinema' || activeCategoryFilter === 'cinema')) {
           const vName = (ev.venueName || '').toLowerCase();
@@ -2345,10 +2397,37 @@
 
       document.querySelectorAll('.category-pill').forEach(pill => {
         const cat = pill.getAttribute('data-category');
-        if (cat === activeCategoryFilter) {
-          pill.className = 'category-pill shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold border transition cursor-pointer bg-zinc-100 text-black border-zinc-100';
+        const xBtn = pill.querySelector('.category-exclude-btn');
+        const isDis = disabledCategories.has(cat);
+
+        if (cat === 'all') {
+          if (activeCategoryFilter === 'all' && disabledCategories.size === 0) {
+            pill.className = 'category-pill shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border transition cursor-pointer bg-zinc-100 text-black border-zinc-100';
+          } else {
+            pill.className = 'category-pill shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border border-[#23272f] bg-[#131519] text-zinc-300 hover:border-zinc-600 hover:text-white transition cursor-pointer';
+          }
+          return;
+        }
+
+        if (isDis) {
+          // Stato disattivato: colore mutato (grigio spento/trasparente + testo sbarrato)
+          pill.className = 'category-pill category-pill-disabled shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border border-red-500/30 bg-[#0d0e12]/60 text-zinc-500 opacity-60 line-through hover:opacity-90 hover:border-zinc-500 transition cursor-pointer';
+          if (xBtn) {
+            xBtn.className = 'category-exclude-btn inline-flex items-center justify-center w-4 h-4 rounded-full bg-red-500/20 text-red-300 border border-red-500/40 text-[10px] font-bold transition ml-0.5';
+            xBtn.title = 'Riattiva questa categoria';
+          }
+        } else if (cat === activeCategoryFilter) {
+          pill.className = 'category-pill shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border transition cursor-pointer bg-zinc-100 text-black border-zinc-100';
+          if (xBtn) {
+            xBtn.className = 'category-exclude-btn inline-flex items-center justify-center w-4 h-4 rounded-full bg-black/10 hover:bg-black/20 text-zinc-700 hover:text-black text-[10px] font-bold transition ml-0.5';
+            xBtn.title = 'Disattiva questa categoria';
+          }
         } else {
-          pill.className = 'category-pill shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold border border-[#23272f] bg-[#131519] text-zinc-300 hover:border-zinc-600 hover:text-white transition cursor-pointer';
+          pill.className = 'category-pill shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border border-[#23272f] bg-[#131519] text-zinc-300 hover:border-zinc-600 hover:text-white transition cursor-pointer';
+          if (xBtn) {
+            xBtn.className = 'category-exclude-btn inline-flex items-center justify-center w-4 h-4 rounded-full bg-zinc-800/80 hover:bg-red-500/30 text-zinc-400 hover:text-red-300 text-[10px] font-bold transition ml-0.5';
+            xBtn.title = 'Disattiva questa categoria';
+          }
         }
       });
 
@@ -2371,6 +2450,12 @@
       if (activePriceFilter === 'paid') tags.push('A Pagamento');
       if (activeCategoryFilter !== 'all' && CATEGORY_META[activeCategoryFilter]) {
         tags.push(CATEGORY_META[activeCategoryFilter].label);
+      }
+      if (disabledCategories.size > 0) {
+        disabledCategories.forEach(catId => {
+          const meta = CATEGORY_META[catId];
+          tags.push(`Escluso: ${meta ? meta.shortLabel : catId}`);
+        });
       }
       if (onlyHappeningNow) tags.push('⚡ Solo Prima Ora');
       if (activeSearchQuery.trim() !== '') tags.push(`Ricerca: "${activeSearchQuery.trim()}"`);
@@ -3422,10 +3507,43 @@
         });
       });
 
-      // Bind Category Pill clicks
+      // Bind Category Pill clicks & X buttons
       document.querySelectorAll('.category-pill').forEach(pill => {
-        pill.addEventListener('click', () => {
-          activeCategoryFilter = pill.getAttribute('data-category');
+        pill.addEventListener('click', (e) => {
+          const cat = pill.getAttribute('data-category');
+          const isXClick = e.target.closest('.category-exclude-btn');
+
+          if (isXClick) {
+            // Premuto pulsante X: cambia stato della categoria (disattiva/riattiva)
+            e.stopPropagation();
+            if (cat === 'all') return;
+            if (disabledCategories.has(cat)) {
+              disabledCategories.delete(cat);
+            } else {
+              disabledCategories.add(cat);
+              if (activeCategoryFilter === cat) {
+                activeCategoryFilter = 'all';
+              }
+            }
+            updateFilterControlsUI();
+            renderTimeline();
+            return;
+          }
+
+          // Click sull'intera categoria
+          if (cat === 'all') {
+            activeCategoryFilter = 'all';
+            disabledCategories.clear();
+            activeCinemaVenueFilter = 'all';
+          } else if (disabledCategories.has(cat)) {
+            // Se era disattivata, ripremerla la riattiva e la fa ricomparire
+            disabledCategories.delete(cat);
+            activeCategoryFilter = cat;
+          } else {
+            // Se era già attiva, selezionala
+            activeCategoryFilter = cat;
+          }
+
           if (activeCategoryFilter !== 'cinema') { activeCinemaVenueFilter = 'all'; }
           updateFilterControlsUI();
           renderTimeline();
