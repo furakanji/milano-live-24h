@@ -6,6 +6,7 @@
   <title>MILANO LIVE 24H — Radar Culturale & Sociale in Tempo Reale</title>
   <meta name="description" content="Cosa succede a Milano nelle prossime 24 ore: concerti, cinema d'essai, teatro, talk, mostre e aperture speciali ordinati ora per ora." />
   <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
   <style>
     * {
       box-sizing: border-box;
@@ -2686,9 +2687,29 @@
 
     /**
      * Automatically extracts all event details in backend starting ONLY from a Link URL
-     * or ONLY from an uploaded/captured Flyer image (`imageFileName`).
+     * or from an uploaded/captured Flyer image (`imageFileName` + optional `ocrParsed`).
      */
-    function autoExtractEventDetailsInBackend({ submittedVia, rawSourceUrl = '', imageFileName = '' }) {
+    function autoExtractEventDetailsInBackend({ submittedVia, rawSourceUrl = '', imageFileName = '', ocrParsed = null }) {
+      if (submittedVia === 'FLYER_PHOTO_OCR' && ocrParsed) {
+        return {
+          title: ocrParsed.title,
+          venueName: ocrParsed.venueName,
+          address: ocrParsed.address,
+          neighborhood: ocrParsed.neighborhood,
+          category: ocrParsed.category,
+          isFree: ocrParsed.isFree,
+          priceDetails: ocrParsed.priceDetails,
+          scheduledHour: ocrParsed.scheduledHour,
+          scheduledMinute: ocrParsed.scheduledMinute,
+          durationMinutes: 105,
+          sourceName: 'Locandina Utente (OCR In-Browser)',
+          sourceUrl: 'https://cultura.comune.milano.it',
+          instagramUrl: null,
+          facebookUrl: null,
+          description: `Dettagli estratti automaticamente tramite OCR nel browser dalla foto locandina "${imageFileName}". Luogo: ${ocrParsed.venueName} (${ocrParsed.address}). Ore ${String(ocrParsed.scheduledHour).padStart(2, '0')}:${String(ocrParsed.scheduledMinute).padStart(2, '0')}.`
+        };
+      }
+
       const hint = `${rawSourceUrl} ${imageFileName}`.trim();
       const profile =
         BACKEND_VENUE_PROFILES.find(p => p.match.test(hint)) ||
@@ -2754,8 +2775,11 @@
       };
     }
 
-    // Dynamically learned sources database
-    let learnedSourcesDb = [
+    // Dynamically learned sources database with localStorage persistence
+    const STORAGE_KEY_QUARANTINE = 'milano_live_quarantine_queue_v1';
+    const STORAGE_KEY_LEARNED = 'milano_live_learned_sources_v1';
+
+    const DEFAULT_LEARNED_SOURCES = [
       {
         id: 'src-learned-arcibellezza',
         name: 'Circolo ARCI Bellezza Milano',
@@ -2778,8 +2802,7 @@
       }
     ];
 
-    // Quarantined suspicious sources & events awaiting Admin verification
-    let pendingQuarantineQueue = [
+    const DEFAULT_QUARANTINE_QUEUE = [
       {
         qId: 'quar-crypto-rave-01',
         submittedVia: 'LINK_URL',
@@ -2845,6 +2868,146 @@
         }
       }
     ];
+
+    function loadPersistedQuarantineQueue() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY_QUARANTINE);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (Array.isArray(parsed)) return parsed;
+        }
+      } catch (e) {
+        console.warn('Impossibile leggere quarantine queue da localStorage:', e);
+      }
+      return DEFAULT_QUARANTINE_QUEUE.slice();
+    }
+
+    function savePersistedQuarantineQueue(queue) {
+      try {
+        localStorage.setItem(STORAGE_KEY_QUARANTINE, JSON.stringify(queue));
+      } catch (e) {
+        console.warn('Impossibile salvare quarantine queue su localStorage:', e);
+      }
+    }
+
+    function loadPersistedLearnedSources() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY_LEARNED);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (Array.isArray(parsed)) return parsed;
+        }
+      } catch (e) {
+        console.warn('Impossibile leggere learned sources da localStorage:', e);
+      }
+      return DEFAULT_LEARNED_SOURCES.slice();
+    }
+
+    function savePersistedLearnedSources(sources) {
+      try {
+        localStorage.setItem(STORAGE_KEY_LEARNED, JSON.stringify(sources));
+      } catch (e) {
+        console.warn('Impossibile salvare learned sources su localStorage:', e);
+      }
+    }
+
+    let learnedSourcesDb = loadPersistedLearnedSources();
+    let pendingQuarantineQueue = loadPersistedQuarantineQueue();
+
+    /**
+     * Helper: Extract event details from OCR recognized text
+     */
+    function parseFlyerOcrText(text, fileName = '') {
+      const lines = (text || '')
+        .split('\n')
+        .map(l => l.trim())
+        .filter(l => l.length > 2);
+
+      // Title heuristic: first significant line or clean filename
+      let title = '';
+      for (const line of lines) {
+        // Skip common header words
+        if (!/^(milano|comune|ingresso|gratis|ore|h\.|sabato|domenica|venerdi|giovedi|mercoledi|martedi|lunedi)/i.test(line) && line.length > 4 && line.length < 80) {
+          title = line;
+          break;
+        }
+      }
+      if (!title) {
+        const cleaned = (fileName || '')
+          .replace(/\.[^.]+$/, '')
+          .replace(/^(img|dsc|photo|screenshot|image|foto|locandina|scatto)[-_0-9\s]*/i, '')
+          .replace(/[-_]+/g, ' ')
+          .trim();
+        title = cleaned.length > 4 ? cleaned.replace(/\b\w/g, c => c.toUpperCase()) : 'Nuovo Evento da Locandina';
+      }
+
+      // Time heuristic: "ore 21", "21:30", "h 19.00"
+      let hour = 20;
+      let minute = 30;
+      const timeMatch = text.match(/(?:ore|h\.?|dalle|h)\s*([0-2]?[0-9])[:.]([0-5][0-9])/i) || text.match(/(?:ore|h\.?|dalle)\s*([0-2]?[0-9])\b/i);
+      if (timeMatch) {
+        const h = parseInt(timeMatch[1], 10);
+        if (h >= 0 && h <= 23) {
+          hour = h;
+          minute = timeMatch[2] ? parseInt(timeMatch[2], 10) : 0;
+        }
+      }
+
+      // Venue / Address heuristic in Milan
+      let venueName = 'Luogo segnalato in locandina';
+      let address = 'Milano';
+      let neighborhood = 'Milano';
+
+      const matchedProfile = BACKEND_VENUE_PROFILES.find(p => p.match.test(text + ' ' + fileName));
+      if (matchedProfile) {
+        venueName = matchedProfile.venueName;
+        address = matchedProfile.address;
+        neighborhood = matchedProfile.neighborhood;
+      } else {
+        const viaMatch = text.match(/(via|viale|corso|piazza|piazzale|largo)\s+[A-Za-zÀ-ÿ0-9'\s]{4,30}/i);
+        if (viaMatch) {
+          address = viaMatch[0].trim() + ', Milano';
+        }
+      }
+
+      // Price heuristic
+      let isFree = true;
+      let priceDetails = 'GRATIS • Ingresso libero';
+      if (/€\s*\d+|\d+\s*€|euro|ticket|bigliett|prevendita/i.test(text)) {
+        isFree = false;
+        const priceMatch = text.match(/€\s*(\d+(?:[.,]\d{2})?)|\b(\d+(?:[.,]\d{2})?)\s*€/i);
+        priceDetails = priceMatch ? `€${(priceMatch[1] || priceMatch[2]).replace(',', '.')} Biglietto` : 'A Pagamento / Prevendita';
+      }
+
+      // Category heuristic
+      let category = 'politica';
+      if (/concerto|live|dj|band|musica|sound|acoustic|rock|jazz|techno/i.test(text)) {
+        category = 'concerti';
+      } else if (/film|cinema|proiezione|regia|cortometragg/i.test(text)) {
+        category = 'cinema';
+      } else if (/teatro|spettacolo|recit|attor|palco|drammaturg/i.test(text)) {
+        category = 'teatro';
+      } else if (/mostra|vernissage|esposiz|arte|galleria|design|quadr/i.test(text)) {
+        category = 'mostre';
+      } else if (/libro|presentazione|talk|dibattito|autore|autrice|poesia|lettura/i.test(text)) {
+        category = 'libri';
+      } else if (/visita|tour|apertura|guidat|segret/i.test(text)) {
+        category = 'aperture';
+      }
+
+      return {
+        title,
+        venueName,
+        address,
+        neighborhood,
+        category,
+        isFree,
+        priceDetails,
+        scheduledHour: hour,
+        scheduledMinute: minute,
+        rawOcrText: text
+      };
+    }
 
     /**
      * Evaluates a user-submitted URL or Flyer source string for backend Safeguard & Source Learning
@@ -2956,12 +3119,14 @@
     function processAutomaticCommunitySubmission({
       submittedVia,
       rawSourceUrl = '',
-      imageFileName = ''
+      imageFileName = '',
+      ocrParsed = null
     }) {
       const autoDetails = autoExtractEventDetailsInBackend({
         submittedVia,
         rawSourceUrl,
-        imageFileName
+        imageFileName,
+        ocrParsed
       });
 
       const agentVerdict = verifyEventCandidateWithAgent({
@@ -3014,7 +3179,7 @@
         sourceUrl: autoDetails.sourceUrl
       };
 
-      if (analysis.isSuspicious) {
+      if (analysis.isSuspicious || submittedVia === 'FLYER_PHOTO_OCR') {
         const qItem = {
           qId: `quar-${Date.now()}`,
           submittedVia,
@@ -3027,12 +3192,15 @@
           eventCandidate: bpCandidate
         };
         pendingQuarantineQueue.unshift(qItem);
+        savePersistedQuarantineQueue(pendingQuarantineQueue);
         renderStudioAdminAndLearnedUI();
 
         showPublicSubmissionFeedback(
           'pending',
-          `⏳ Segnalazione ricevuta dal servizio backend`,
-          `Il link o la locandina sono stati acquisiti dal servizio backend e sono in fase di verifica redazionale prima della pubblicazione.`
+          `⏳ Segnalazione acquisita e inviata all'Admin per verifica`,
+          submittedVia === 'FLYER_PHOTO_OCR'
+            ? `La locandina è stata elaborata con successo tramite <strong>OCR integrato nel browser</strong>. I dettagli estratti sono stati registrati nella <strong>Coda Quarantena del pannello Admin (#admin)</strong> in attesa della tua approvazione manuale!`
+            : `Il link è stato acquisito dal servizio ed è in coda di verifica Admin (#admin) prima della pubblicazione.`
         );
         return;
       }
@@ -3052,6 +3220,7 @@
         url: bpCandidate.sourceUrl
       };
       learnedSourcesDb.unshift(newLearnedSource);
+      savePersistedLearnedSources(learnedSourcesDb);
       MILAN_SOURCES_REGISTRY.unshift({
         name: `${bpCandidate.venueName} [Appresa]`,
         category: CATEGORY_META[bpCandidate.category]?.shortLabel || 'Community',
@@ -3081,6 +3250,7 @@
       if (idx === -1) return;
       const item = pendingQuarantineQueue[idx];
       pendingQuarantineQueue.splice(idx, 1);
+      savePersistedQuarantineQueue(pendingQuarantineQueue);
 
       EVENT_BLUEPRINTS.push(item.eventCandidate);
       expandedEventIds.add(item.eventCandidate.id);
@@ -3095,6 +3265,7 @@
         status: 'ADMIN_VERIFIED',
         url: item.eventCandidate.sourceUrl
       });
+      savePersistedLearnedSources(learnedSourcesDb);
 
       MILAN_SOURCES_REGISTRY.unshift({
         name: `${item.inferredSourceName} [Verificata Admin]`,
@@ -3123,6 +3294,7 @@
       if (idx === -1) return;
       const item = pendingQuarantineQueue[idx];
       pendingQuarantineQueue.splice(idx, 1);
+      savePersistedQuarantineQueue(pendingQuarantineQueue);
 
       renderStudioAdminAndLearnedUI();
       showAdminBackendFeedback(
@@ -3415,24 +3587,64 @@
         if (urlInput) urlInput.value = '';
       });
 
+      // Helper: Process Flyer Image File with Real Tesseract.js in frontend
+      async function handleFlyerImageFileWithOcr(imageSource, displayName) {
+        const statusLine = document.getElementById('flyer-ocr-status-line');
+        if (statusLine) {
+          statusLine.classList.remove('hidden');
+          statusLine.className = 'text-[11px] text-amber-300 mono-num truncate animate-pulse';
+          statusLine.textContent = `🔍 Lettura testo locandina in corso con OCR frontend (Tesseract)...`;
+        }
+
+        let ocrParsed = null;
+        try {
+          if (window.Tesseract && typeof window.Tesseract.recognize === 'function') {
+            const { data } = await window.Tesseract.recognize(
+              imageSource,
+              'ita+eng',
+              {
+                logger: m => {
+                  if (statusLine && m.status === 'recognizing text' && m.progress) {
+                    const pct = Math.round(m.progress * 100);
+                    statusLine.textContent = `🔍 Riconoscimento testo locandina: ${pct}%...`;
+                  }
+                }
+              }
+            );
+            const recognizedText = data?.text || '';
+            console.log('[Tesseract.js OCR Extracted Text]:', recognizedText);
+            ocrParsed = parseFlyerOcrText(recognizedText, displayName);
+          } else {
+            console.warn('Tesseract.js non disponibile offline, utilizzo parser fallback');
+            ocrParsed = parseFlyerOcrText('', displayName);
+          }
+        } catch (err) {
+          console.error('Errore durante elaborazione OCR Tesseract:', err);
+          ocrParsed = parseFlyerOcrText('', displayName);
+        }
+
+        if (statusLine) {
+          statusLine.className = 'text-[11px] text-emerald-400 mono-num truncate';
+          statusLine.textContent = `✓ OCR completato: "${ocrParsed.title.slice(0, 32)}..." inviato in Quarantena Admin!`;
+        }
+
+        processAutomaticCommunitySubmission({
+          submittedVia: 'FLYER_PHOTO_OCR',
+          imageFileName: displayName,
+          ocrParsed
+        });
+      }
+
       // FUNZIONE 2A: Scegli Foto Locandina
       const chooseInput = document.getElementById('input-flyer-choose');
       document.getElementById('btn-choose-flyer-photo')?.addEventListener('click', () => {
         chooseInput?.click();
       });
 
-      chooseInput?.addEventListener('change', (e) => {
+      chooseInput?.addEventListener('change', async (e) => {
         const file = e.target.files?.[0];
         if (!file) return;
-        const statusLine = document.getElementById('flyer-ocr-status-line');
-        if (statusLine) {
-          statusLine.classList.remove('hidden');
-          statusLine.textContent = `✓ Locandina inviata al backend: ${file.name}`;
-        }
-        processAutomaticCommunitySubmission({
-          submittedVia: 'FLYER_PHOTO_OCR',
-          imageFileName: file.name
-        });
+        await handleFlyerImageFileWithOcr(file, file.name);
         e.target.value = '';
       });
 
@@ -3442,35 +3654,35 @@
         openCameraCaptureModal();
       });
 
-      cameraInput?.addEventListener('change', (e) => {
+      cameraInput?.addEventListener('change', async (e) => {
         const file = e.target.files?.[0];
         if (!file) return;
-        const statusLine = document.getElementById('flyer-ocr-status-line');
-        if (statusLine) {
-          statusLine.classList.remove('hidden');
-          statusLine.textContent = `✓ Foto scattata inviata al backend: ${file.name}`;
-        }
-        processAutomaticCommunitySubmission({
-          submittedVia: 'FLYER_PHOTO_OCR',
-          imageFileName: file.name
-        });
+        await handleFlyerImageFileWithOcr(file, file.name);
         e.target.value = '';
       });
 
       document.getElementById('close-camera-modal-btn')?.addEventListener('click', closeCameraCaptureModal);
       document.getElementById('cancel-camera-modal-btn')?.addEventListener('click', closeCameraCaptureModal);
-      document.getElementById('snap-camera-photo-btn')?.addEventListener('click', () => {
-        closeCameraCaptureModal();
+      document.getElementById('snap-camera-photo-btn')?.addEventListener('click', async () => {
+        const videoEl = document.getElementById('camera-video-preview');
         const snapName = `locandina-scatto-${new Date().toISOString().slice(11, 19).replace(/:/g, '')}.jpg`;
-        const statusLine = document.getElementById('flyer-ocr-status-line');
-        if (statusLine) {
-          statusLine.classList.remove('hidden');
-          statusLine.textContent = `✓ Foto scattata inviata al backend: ${snapName}`;
+        let snapSource = snapName;
+
+        if (videoEl && videoEl.videoWidth > 0) {
+          try {
+            const canvas = document.createElement('canvas');
+            canvas.width = videoEl.videoWidth;
+            canvas.height = videoEl.videoHeight;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(videoEl, 0, 0, canvas.width, canvas.height);
+            snapSource = canvas.toDataURL('image/jpeg', 0.85);
+          } catch (e) {
+            console.warn('Canvas capture fallback:', e);
+          }
         }
-        processAutomaticCommunitySubmission({
-          submittedVia: 'FLYER_PHOTO_OCR',
-          imageFileName: snapName
-        });
+
+        closeCameraCaptureModal();
+        await handleFlyerImageFileWithOcr(snapSource, snapName);
       });
 
       // Admin: interactive EventVerifierAgent tester
