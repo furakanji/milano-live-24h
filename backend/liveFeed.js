@@ -12,6 +12,7 @@ import { fileURLToPath } from 'node:url';
 import cinemino from './adapters/cinemino.js';
 import milanocinema from './adapters/milanocinema.js';
 import verso from './adapters/verso.js';
+import { crawlDiceMilanEvents } from './diceMilanCrawler.js';
 import { verifyEventCandidateWithAgent, checkSourceUrlFaithfulness, REJECTED_CANDIDATES_LOG } from './eventVerifierAgent.js';
 
 export const ADAPTERS = [cinemino, milanocinema, verso];
@@ -35,6 +36,55 @@ export async function buildFeed({ nowMs = Date.now(), loadLines = (a, now) => a.
   const okCategories = new Set();
   const results = {};
   const rejected = [...REJECTED_CANDIDATES_LOG];
+
+  // 1. Ingestione Eventi Live da DICE.fm Milano Crawler
+  const diceSourceRep = {
+    id: 'dice-milan',
+    venueName: 'DICE.fm Milano (Real-Time Crawler)',
+    url: 'https://dice.fm/browse/milano-5d68e89f7f285e094f60b00e',
+    checkedAt: new Date(nowMs).toISOString()
+  };
+  try {
+    const diceResult = await crawlDiceMilanEvents({ nowMs, forceRefresh: true, concurrencyLimit: 5 });
+    const inWinDice = (diceResult.events || []).filter(e => {
+      const s = Date.parse(e.startTime);
+      const end = Date.parse(e.endTime);
+      return end > nowMs && s < to;
+    });
+    diceSourceRep.status = 'ok';
+    diceSourceRep.found = diceResult.events.length;
+    diceSourceRep.published = inWinDice.length;
+
+    for (const de of inWinDice) {
+      const v = verifyEventCandidateWithAgent(de);
+      if (!v.isValidEvent) {
+        rejected.push({
+          id: de.id,
+          title: de.title,
+          venueName: de.venueName,
+          sourceUrl: de.sourceUrl,
+          verdict: v.verdict,
+          rejectionReasons: v.rejectionReasons,
+          checkedAt: diceSourceRep.checkedAt
+        });
+        diceSourceRep.published -= 1;
+        continue;
+      }
+      events.push({
+        ...de,
+        isSoldOut: v.isSoldOut,
+        availabilityBadge: v.availabilityBadge,
+        origin: 'dice_crawler',
+        sourceBadge: 'DICE Live'
+      });
+      okVenues.add(de.venueName);
+    }
+  } catch (err) {
+    diceSourceRep.status = 'error';
+    diceSourceRep.error = String(err.message || err);
+    diceSourceRep.published = 0;
+  }
+  sources.push(diceSourceRep);
 
   for (const ad of ADAPTERS) {
     const rep = { id: ad.id, venueName: ad.venueName, url: ad.url, checkedAt: new Date(nowMs).toISOString() };

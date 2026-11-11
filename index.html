@@ -73,6 +73,15 @@
       <div class="flex flex-wrap items-center gap-2.5">
         <span class="text-zinc-400 mono-num" id="rome-clock">Europe/Rome --:--:--</span>
         <button
+          id="sync-dice-btn"
+          type="button"
+          class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-[#161920] hover:bg-[#202530] text-amber-300 border border-amber-500/40 font-bold transition cursor-pointer text-xs"
+          title="Aggiorna gli eventi in tempo reale da DICE.fm (Milano 24h)"
+        >
+          <span id="sync-dice-icon">⚡</span>
+          <span id="sync-dice-label">Sync DICE 24h</span>
+        </button>
+        <button
           id="open-submit-panel-btn"
           type="button"
           class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-orange-500 hover:bg-orange-400 text-black font-bold transition cursor-pointer"
@@ -1932,32 +1941,55 @@
      */
     // Feed "live" generato 3 volte al giorno da GitHub Actions (backend/liveFeed.js)
     let LIVE_FEED = null;
+    let liveDiceEvents = [];
 
     /**
      * Sorgente eventi: se il feed live è disponibile usa le date/orari reali del feed
-     * (ritagliati sulla finestra esatta), più le segnalazioni utente/admin. Altrimenti ripiega sui blueprint.
+     * (ritagliati sulla finestra esatta), più gli eventi DICE real-time e le segnalazioni utente/admin.
      */
     function getActiveBlueprints(startOfNextHourMs) {
       const persisted = (typeof persistedCommunityEvents !== 'undefined' && Array.isArray(persistedCommunityEvents))
         ? persistedCommunityEvents
         : [];
 
-      if (!LIVE_FEED || !Array.isArray(LIVE_FEED.verifiedEvents)) {
-        return [...EVENT_BLUEPRINTS, ...persisted];
-      }
       const endWindowMs = startOfNextHourMs + 24 * 3600000;
       const seen = new Set();
       const fromFeed = [];
-      LIVE_FEED.verifiedEvents.forEach(fe => {
-        const s = Date.parse(fe.startTime);
-        const e = Date.parse(fe.endTime);
-        if (!(s >= startOfNextHourMs && s < endWindowMs)) return;
-        if (e <= startOfNextHourMs) return;
-        const key = `${fe.id}|${fe.startTime}`;
-        if (seen.has(key)) return;
-        seen.add(key);
-        fromFeed.push({ ...fe, id: `${fe.id}@${s}`, _fixedStartMs: s, _fixedEndMs: e });
-      });
+
+      // 1. Eventi dal feed live principale
+      if (LIVE_FEED && Array.isArray(LIVE_FEED.verifiedEvents)) {
+        LIVE_FEED.verifiedEvents.forEach(fe => {
+          const s = Date.parse(fe.startTime);
+          const e = Date.parse(fe.endTime);
+          if (!(s >= startOfNextHourMs && s < endWindowMs)) return;
+          if (e <= startOfNextHourMs) return;
+          const key = `${fe.id}|${fe.startTime}`;
+          if (seen.has(key)) return;
+          seen.add(key);
+          fromFeed.push({ ...fe, id: `${fe.id}@${s}`, _fixedStartMs: s, _fixedEndMs: e });
+        });
+      }
+
+      // 2. Eventi live da DICE.fm (crawled in real-time o sincronizzati con Sync DICE 24h)
+      if (Array.isArray(liveDiceEvents)) {
+        liveDiceEvents.forEach(de => {
+          const s = Date.parse(de.startTime);
+          const e = Date.parse(de.endTime);
+          if (!(s >= startOfNextHourMs && s < endWindowMs)) return;
+          if (e <= startOfNextHourMs) return;
+          const key = `${de.id}|${de.startTime}`;
+          if (seen.has(key)) return;
+          seen.add(key);
+          fromFeed.push({
+            ...de,
+            id: `${de.id}@${s}`,
+            _fixedStartMs: s,
+            _fixedEndMs: e,
+            sourceBadge: 'DICE Live'
+          });
+        });
+      }
+
       const userAdded = [
         ...EVENT_BLUEPRINTS.filter(bp => /^evt-(user|quar)-/.test(bp.id)),
         ...persisted
@@ -1988,6 +2020,63 @@
         } catch { /* prova il percorso successivo */ }
       }
       return false;
+    }
+
+    /**
+     * Real-time client-side sync trigger for DICE.fm Milan Crawler
+     */
+    async function syncDiceEvents24h() {
+      const syncBtn = document.getElementById('sync-dice-btn');
+      const syncIcon = document.getElementById('sync-dice-icon');
+      const syncLabel = document.getElementById('sync-dice-label');
+
+      if (syncIcon) syncIcon.textContent = '⏳';
+      if (syncLabel) syncLabel.textContent = 'Scansione DICE...';
+      if (syncBtn) syncBtn.classList.add('opacity-75', 'cursor-wait');
+
+      try {
+        // Try serverless API route first
+        let events = null;
+        try {
+          const apiRes = await fetch('/api/crawl/dice?refresh=1', { signal: AbortSignal.timeout(12000) });
+          if (apiRes.ok) {
+            const apiData = await apiRes.json();
+            if (Array.isArray(apiData.events)) {
+              events = apiData.events;
+            }
+          }
+        } catch {
+          // If serverless endpoint is not hosted or local preview, fallback to verified live feed
+        }
+
+        // If API route is unavailable, trigger direct verified feed reload
+        if (!events) {
+          await loadLiveFeed();
+        } else {
+          liveDiceEvents = events;
+        }
+
+        allNormalizedEvents = generateDynamic24hEvents(pageLoadAnchorMs);
+        renderTimeline();
+        renderFeedSourcesReport();
+
+        if (syncIcon) syncIcon.textContent = '✅';
+        if (syncLabel) syncLabel.textContent = `DICE Sincronizzato (${liveDiceEvents.length || 'Live'})`;
+        setTimeout(() => {
+          if (syncIcon) syncIcon.textContent = '⚡';
+          if (syncLabel) syncLabel.textContent = 'Sync DICE 24h';
+          if (syncBtn) syncBtn.classList.remove('opacity-75', 'cursor-wait');
+        }, 3000);
+      } catch (err) {
+        console.warn('[syncDiceEvents24h] Failed:', err);
+        if (syncIcon) syncIcon.textContent = '⚠️';
+        if (syncLabel) syncLabel.textContent = 'Errore Sync DICE';
+        setTimeout(() => {
+          if (syncIcon) syncIcon.textContent = '⚡';
+          if (syncLabel) syncLabel.textContent = 'Sync DICE 24h';
+          if (syncBtn) syncBtn.classList.remove('opacity-75', 'cursor-wait');
+        }, 3000);
+      }
     }
 
     function generateDynamic24hEvents(nowMs) {
@@ -2283,6 +2372,11 @@
                 <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-semibold border ${catMeta.badgeClass}">
                   ${catMeta.emoji} ${catMeta.shortLabel}
                 </span>
+                ${(ev.sourceBadge === 'DICE Live' || (ev.id && ev.id.startsWith('dice-')) || (ev.sourceUrl && ev.sourceUrl.includes('dice.fm'))) ? `
+                  <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-black tracking-wide bg-amber-500/20 text-amber-300 border border-amber-500/40 uppercase mono-num">
+                    ⚡ DICE LIVE
+                  </span>
+                ` : ''}
                 <span class="text-xs text-zinc-400 mono-num">• Fonte: ${ev.sourceName}</span>
               </div>
               <h3 class="text-base sm:text-lg font-bold text-white leading-snug">
@@ -4324,6 +4418,11 @@
         updateCommunityRadarToggleLabel();
         document.getElementById('community-ingestion-section')?.scrollIntoView({ behavior: 'smooth' });
         document.getElementById('input-link-url')?.focus();
+      });
+
+      // Top bar manual trigger for DICE.fm Milan Real-Time Crawler
+      document.getElementById('sync-dice-btn')?.addEventListener('click', () => {
+        syncDiceEvents24h();
       });
 
       document.getElementById('toggle-studio-collapse-btn')?.addEventListener('click', () => {

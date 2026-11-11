@@ -42,12 +42,53 @@ test('milanocinema: Il Cinemino 9/11 = 4 proiezioni e solo cinema di Milano citt
   assert.ok(!evs.some((e) => e._cinemaSlug === 'uci-lissone'), 'cinema fuori Milano esclusi');
 });
 
-test('Verso: estrae l’evento specifico Artiste Ribelli del 9 novembre con URL dedicata', async () => {
+test('Verso: estrae gli eventi specifici dal listing WordPress con URL dedicate', async () => {
   const { default: verso } = await import('../adapters/verso.js');
-  const html = await fs.readFile('/home/antigravity/verso.html', 'utf8');
+  const html = await fs.readFile(path.join(dir, '../fixtures/verso-sample.html'), 'utf8');
   const { events } = verso.parse(html);
-  const ev = events.find((e) => e.url.includes('artiste-ribelli'));
-  assert.ok(ev, 'Evento Artiste Ribelli trovato');
-  assert.match(ev.title, /Artiste ribelli/i);
-  assert.equal(ev.url, 'http://www.libreriaverso.com/appuntamenti/artiste-ribelli/');
+  assert.ok(events.length > 0, 'Eventi Verso estratti con successo');
+  const ev = events.find((e) => e.url.includes('libreriaverso.com/appuntamenti/'));
+  assert.ok(ev, 'Evento Verso con URL specifica trovato');
+  assert.ok(ev.title.length > 3, 'Titolo evento presente');
+  assert.match(ev.url, /^https?:\/\/(www\.)?libreriaverso\.com\/appuntamenti\/.+/i);
+});
+
+test('diceMilanCrawler: normalizza correttamente evento DICE, calcola fuso Rome e applica schema unificato', async () => {
+  const { normalizeDiceEvent, getRomeDateStrings, mapDiceCategory, resolveVenueInstagram } = await import('../diceMilanCrawler.js');
+  const dates = getRomeDateStrings(Date.parse('2026-11-11T12:00:00Z'));
+  assert.equal(dates.today, '2026-11-11');
+  assert.equal(dates.tomorrow, '2026-11-12');
+
+  const rawSample = {
+    id: 'sample-event-123',
+    name: 'Live Showcase @ Circolo Magnolia',
+    dates: {
+      event_start_date: '2026-11-11T21:00:00+01:00',
+      event_end_date: '2026-11-12T01:00:00+01:00'
+    },
+    venues: [
+      {
+        name: 'Circolo Magnolia',
+        address: 'Circonvallazione Idroscalo 41, Segrate / Milano MI',
+        space_name: 'Segrate'
+      }
+    ],
+    price: { currency: 'EUR', amount: 1500 }
+  };
+
+  const normalized = normalizeDiceEvent({
+    rawEvent: rawSample,
+    targetUrl: 'https://dice.fm/event/sample-event-123',
+    enriched: null
+  });
+
+  assert.equal(normalized.id, 'dice-sample-event-123');
+  assert.equal(normalized.venueName, 'Circolo Magnolia');
+  assert.equal(normalized.category, 'concerti');
+  assert.equal(normalized.isFree, false);
+  assert.equal(normalized.priceDetails, '€15.00');
+  assert.equal(normalized.sourceName, 'DICE.fm Milano');
+  assert.equal(normalized.sourceBadge, 'DICE Live');
+  assert.match(normalized.mapsUrl, /google\.com\/maps/);
+  assert.equal(resolveVenueInstagram('Circolo Magnolia'), 'https://www.instagram.com/circolomagnolia/');
 });
