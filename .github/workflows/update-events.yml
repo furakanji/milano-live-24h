@@ -28,15 +28,27 @@ jobs:
           node-version: '22'
 
       - name: Run multi-source Milan event crawlers
+        env:
+          VITE_FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID || secrets.VITE_FIREBASE_PROJECT_ID }}
+          VITE_FIREBASE_API_KEY: ${{ secrets.FIREBASE_API_KEY || secrets.VITE_FIREBASE_API_KEY }}
+          CLOUD_SYNC_URL: ${{ secrets.CLOUD_SYNC_URL }}
+          CLOUD_SYNC_SECRET: ${{ secrets.CLOUD_SYNC_SECRET }}
         run: node scripts/crawl-milan-sources.mjs
 
-      - name: Commit updated live-events.json if changed
+      - name: Commit fallback snapshot to Git (only if cloud sync is unconfigured or once daily at 00:00 UTC)
+        env:
+          HAS_CLOUD_SYNC: ${{ secrets.FIREBASE_PROJECT_ID || secrets.CLOUD_SYNC_URL }}
         run: |
+          HOUR=$(date -u +%H)
+          if [ -n "$HAS_CLOUD_SYNC" ] && [ "$HOUR" != "00" ] && [ "${{ github.event_name }}" != "workflow_dispatch" ]; then
+            echo "Cloud sync is configured. Skipping frequent Git commits to keep repository history clean."
+            exit 0
+          fi
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add public/live-events.json
           if ! git diff --staged --quiet; then
-            git commit -m "chore(crawler): update live Milan events feed via multi-source crawlers [skip ci]"
+            git commit -m "chore(crawler): snapshot fallback live-events.json [skip ci]"
             git push
           else
             echo "No changes in live events."

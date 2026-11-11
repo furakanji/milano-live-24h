@@ -1,11 +1,13 @@
 /**
  * Application Bootstrap Entry Point (`src/main.js`)
- * Orchestrates Store, Timeline, FilterBar, Community Ingestion, and Lazy Loading of Admin Studio & Vision OCR.
+ * Orchestrates Store, Timeline, FilterBar, Community Ingestion, Gemini Vision OCR,
+ * StorageProvider, and Lazy Loading of Admin Studio & Vision OCR Modal.
  */
 
 import { store } from './state/store.js';
 import { Timeline } from './components/Timeline.js';
 import { FilterBar } from './components/FilterBar.js';
+import { storageProvider } from './services/storageProvider.js';
 import { generateRolling24hFeed, getRomeDateParts, getNextHourStartMs } from './data/milanEventsGenerator.js';
 
 let adminStudioInstance = null;
@@ -29,27 +31,15 @@ function updateLiveClock() {
   }
 }
 
-// Ingestion of live-events.json
+// Ingestion via storageProvider (Firestore -> public/live-events.json -> localStorage -> generator)
 async function loadLiveFeed() {
-  const candidateUrls = [
-    'live-events.json',
-    'public/live-events.json',
-    'verified-events-24h.json',
-    'public/verified-events-24h.json'
-  ];
-
-  for (const url of candidateUrls) {
-    try {
-      const res = await fetch(`${url}?t=${Date.now()}`, { cache: 'no-store' });
-      if (!res.ok) continue;
-      const data = await res.json();
-      const eventsList = (data && (data.events || data.verifiedEvents)) || [];
-      if (Array.isArray(eventsList) && eventsList.length > 0) {
-        return eventsList;
-      }
-    } catch {
-      // try next
+  try {
+    const snapshot = await storageProvider.fetchLiveSnapshot();
+    if (snapshot && Array.isArray(snapshot.events) && snapshot.events.length > 0) {
+      return snapshot.events;
     }
+  } catch (err) {
+    console.warn('[main.js] storageProvider fetchLiveSnapshot error:', err);
   }
   return null;
 }
@@ -77,45 +67,69 @@ async function syncAdminRoute() {
   }
 }
 
-// Lazy load Vision OCR
+// Vision OCR Processor with Gemini Vision & Dual-Routing
+async function processFlyerWithOcrPipeline(imageSource, displayName) {
+  const statusLine = document.getElementById('flyer-ocr-status-line');
+  if (statusLine) {
+    statusLine.classList.remove('hidden');
+    statusLine.className = 'text-[11px] text-amber-300 mono-num truncate animate-pulse';
+    statusLine.textContent = '🔍 Analisi locandina in corso (Gemini Vision Flash)...';
+  }
+
+  const { extractEventsFromFlyerImage, routeOcrEvent } = await import('./features/visionOcrService.js');
+  const extractedList = await extractEventsFromFlyerImage(imageSource, displayName);
+
+  if (extractedList && extractedList.length > 0) {
+    for (const rawEv of extractedList) {
+      const decision = routeOcrEvent(rawEv);
+
+      if (decision.destination === 'live_24h') {
+        // Immediate 24h timeline
+        const currentEvents = store.getState().allEvents;
+        store.setEvents([decision.event, ...currentEvents]);
+
+        if (statusLine) {
+          statusLine.className = 'text-[11px] text-emerald-400 mono-num truncate';
+          statusLine.textContent = `✓ OCR: "${decision.event.title.slice(0, 28)}..." pubblicato nel radar 24h!`;
+        }
+      } else if (decision.destination === 'scheduled_events') {
+        // Save to future scheduled events cloud queue
+        await storageProvider.saveScheduledEvent(decision.event);
+        if (statusLine) {
+          statusLine.className = 'text-[11px] text-purple-300 mono-num truncate';
+          statusLine.textContent = `✓ OCR: "${decision.event.title.slice(0, 28)}..." programmato in coda futura!`;
+        }
+      } else {
+        // Quarantine
+        const studio = await ensureAdminStudioLoaded();
+        studio.quarantineQueue.unshift({
+          qId: `quar-ocr-${Date.now()}`,
+          submittedVia: 'FLYER_OCR',
+          rawSourceInput: displayName,
+          inferredSourceName: rawEv.venueName,
+          inferredSourceType: rawEv.extractionMethod,
+          trustScore: 65,
+          riskLevel: 'MEDIO',
+          redFlags: [decision.reason],
+          eventCandidate: rawEv
+        });
+        studio.saveQuarantineQueue(studio.quarantineQueue);
+        if (statusLine) {
+          statusLine.className = 'text-[11px] text-amber-300 mono-num truncate';
+          statusLine.textContent = `⏳ Locandina inviata in Quarantena Admin (#admin) per revisione`;
+        }
+      }
+    }
+  }
+}
+
+// Lazy load Vision OCR Camera Modal
 async function handleVisionOcrTrigger(action) {
-  const { openCameraCaptureModal, processFlyerWithTesseract } = await import('./features/VisionOcrModal.js');
-
-  const onCaptured = async (source, name) => {
-    const statusLine = document.getElementById('flyer-ocr-status-line');
-    if (statusLine) {
-      statusLine.classList.remove('hidden');
-      statusLine.className = 'text-[11px] text-amber-300 mono-num truncate animate-pulse';
-      statusLine.textContent = '🔍 Lettura testo locandina in corso (Tesseract OCR)...';
-    }
-
-    const ocrResult = await processFlyerWithTesseract(source, name, (pct) => {
-      if (statusLine) statusLine.textContent = `🔍 Lettura testo locandina: ${pct}%...`;
-    });
-
-    if (statusLine) {
-      statusLine.className = 'text-[11px] text-emerald-400 mono-num truncate';
-      statusLine.textContent = `✓ OCR completato: "${ocrResult.title.slice(0, 32)}..." inviato in Quarantena Admin!`;
-    }
-
-    const studio = await ensureAdminStudioLoaded();
-    studio.quarantineQueue.unshift({
-      qId: `quar-flyer-${Date.now()}`,
-      submittedVia: 'FLYER_PHOTO_OCR',
-      rawSourceInput: name,
-      inferredSourceName: ocrResult.venueName,
-      inferredSourceType: 'VISION_OCR + FRONTEND_TESSERACT',
-      trustScore: 75,
-      riskLevel: 'MEDIO',
-      redFlags: ['Evento estratto da foto locandina, richiede approvazione dell\'Admin'],
-      eventCandidate: ocrResult
-    });
-    studio.saveQuarantineQueue(studio.quarantineQueue);
-    studio.render();
-  };
-
+  const { openCameraCaptureModal } = await import('./features/VisionOcrModal.js');
   if (action === 'camera') {
-    openCameraCaptureModal(onCaptured);
+    openCameraCaptureModal(async (source, name) => {
+      await processFlyerWithOcrPipeline(source, name);
+    });
   }
 }
 
@@ -168,27 +182,7 @@ function setupCommunityRadar() {
   chooseInput?.addEventListener('change', async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    const { processFlyerWithTesseract } = await import('./features/VisionOcrModal.js');
-    const studio = await ensureAdminStudioLoaded();
-    const ocrResult = await processFlyerWithTesseract(file, file.name);
-    studio.quarantineQueue.unshift({
-      qId: `quar-flyer-${Date.now()}`,
-      submittedVia: 'FLYER_FILE_UPLOAD',
-      rawSourceInput: file.name,
-      inferredSourceName: ocrResult.venueName,
-      inferredSourceType: 'VISION_OCR_FILE',
-      trustScore: 78,
-      riskLevel: 'MEDIO',
-      redFlags: ['Locandina caricata da utente, in attesa di validazione'],
-      eventCandidate: ocrResult
-    });
-    studio.saveQuarantineQueue(studio.quarantineQueue);
-    studio.render();
-    const statusLine = document.getElementById('flyer-ocr-status-line');
-    if (statusLine) {
-      statusLine.classList.remove('hidden');
-      statusLine.textContent = `✓ OCR completato: "${ocrResult.title.slice(0, 32)}..." in Quarantena Admin!`;
-    }
+    await processFlyerWithOcrPipeline(file, file.name);
     e.target.value = '';
   });
 

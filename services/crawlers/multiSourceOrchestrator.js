@@ -7,11 +7,10 @@
  * - YesMilano
  * - Mentelocale
  *
- * Upgraded Deduplication 2.0:
- * - Canonical Venue resolution
- * - Elastic Time Window (±90 minutes)
- * - Jaccard Token Similarity (>= 0.60, excluding stop words)
- * - Smart Multi-Source Field Merging (best description, ticketing data, dual badges)
+ * Release 2 Upgrades:
+ * - Telemetry & Source Health Log (`HEALTHY`, `DEGRADED`, `DOWN`, latencyMs, error)
+ * - Self-Healing Retention ("Stale-While-Degraded"): retains valid previous events if scraper fails
+ * - Future Scheduled Events promotion: automatically pulls queued community events into active 24h feed
  */
 
 import { crawlZeroMilano } from './zeroCrawler.js';
@@ -38,45 +37,43 @@ const CACHE_TTL_MS = 30 * 60 * 1000; // 30 minutes cache
  * Check if two events are duplicates based on:
  * 1. Same canonical venue (or high venue string match)
  * 2. Start times within ±90 minutes
- * 3. Title Jaccard similarity >= 0.60 or substring containment
+ * 3. Title token Jaccard similarity >= 0.60
  */
 export function areEventsDuplicates(eventA, eventB) {
   if (!eventA || !eventB) return false;
-  if (eventA.id === eventB.id) return true;
 
-  // 1. Venue comparison
-  const venueA = resolveCanonicalVenue(eventA.venueName);
-  const venueB = resolveCanonicalVenue(eventB.venueName);
+  // 1. Venue Matching via Canonical resolution
+  const venueA = resolveCanonicalVenue(eventA.venueName || '');
+  const venueB = resolveCanonicalVenue(eventB.venueName || '');
 
-  const sameCanonical = venueA.canonicalId === venueB.canonicalId && venueA.canonicalId !== 'milano-generic';
-  const cleanVA = (eventA.venueName || '').toLowerCase().replace(/[^a-z0-9]/gi, '');
-  const cleanVB = (eventB.venueName || '').toLowerCase().replace(/[^a-z0-9]/gi, '');
-  const venueStringMatch = cleanVA.length > 3 && cleanVB.length > 3 && (cleanVA.includes(cleanVB) || cleanVB.includes(cleanVA));
+  const sameCanonical = venueA.canonicalId && venueB.canonicalId && venueA.canonicalId !== 'milano-generic'
+    ? venueA.canonicalId === venueB.canonicalId
+    : false;
 
-  if (!sameCanonical && !venueStringMatch) {
+  const sameVenueString = (eventA.venueName || '').toLowerCase() === (eventB.venueName || '').toLowerCase();
+
+  const venueMatches = sameCanonical || sameVenueString;
+  if (!venueMatches) {
+    // If venues are completely distinct (e.g. Santeria vs Anteo), they are NOT duplicates
     return false;
   }
 
-  // 2. Elastic Time Window check (±90 minutes = 5400000 ms)
+  // 2. Elastic Time Window Matching (±90 minutes = 5,400,000 ms)
   const timeA = Date.parse(eventA.startTime);
   const timeB = Date.parse(eventB.startTime);
-  if (!isNaN(timeA) && !isNaN(timeB)) {
-    const diffMs = Math.abs(timeA - timeB);
-    if (diffMs > 90 * 60 * 1000) {
-      return false;
-    }
+
+  if (isNaN(timeA) || isNaN(timeB)) return false;
+
+  const diffMs = Math.abs(timeA - timeB);
+  if (diffMs > 90 * 60 * 1000) {
+    return false;
   }
 
-  // 3. Title similarity (Jaccard on non-stopwords + Substring check)
-  const titleA = (eventA.title || '').toLowerCase().trim();
-  const titleB = (eventB.title || '').toLowerCase().trim();
+  // 3. Jaccard Token Similarity on Titles (>= 0.60 threshold)
+  const normTitleA = (eventA.title || '').trim().toLowerCase();
+  const normTitleB = (eventB.title || '').trim().toLowerCase();
 
-  const normA = titleA.replace(/[^a-z0-9]/gi, '');
-  const normB = titleB.replace(/[^a-z0-9]/gi, '');
-
-  if (normA.length >= 5 && normB.length >= 5 && (normA.includes(normB) || normB.includes(normA))) {
-    return true;
-  }
+  if (normTitleA === normTitleB) return true;
 
   const tokensA = tokenizeTitle(eventA.title);
   const tokensB = tokenizeTitle(eventB.title);
@@ -90,12 +87,10 @@ export function areEventsDuplicates(eventA, eventB) {
  * Merges two duplicate events into a richer UnifiedEvent
  */
 export function mergeDuplicateEvents(primary, secondary) {
-  // Source badges merging (e.g. "DICE + ZERO" or "ZERO + MENTELOCALE")
   const badgeA = primary.sourceBadge || primary.source || 'EVENT';
   const badgeB = secondary.sourceBadge || secondary.source || 'EVENT';
   const combinedBadge = badgeA.includes(badgeB) ? badgeA : `${badgeA} + ${badgeB}`;
 
-  // Priority for ticketing: DICE > Zero > MilanoToday > Mentelocale > YesMilano
   const isSecondaryTicketingPriority =
     (secondary.source === 'DICE' && primary.source !== 'DICE') ||
     (secondary.source === 'Zero' && !['DICE', 'Zero'].includes(primary.source));
@@ -107,12 +102,10 @@ export function mergeDuplicateEvents(primary, secondary) {
   const preferredIsFree = primary.isFree && secondary.isFree;
   const preferredIsSoldOut = Boolean(primary.isSoldOut || secondary.isSoldOut);
 
-  // Longest, cleanest description
   const descA = primary.description || '';
   const descB = secondary.description || '';
   const preferredDescription = descB.length > descA.length && !descB.includes('segnalato da') ? descB : descA;
 
-  // Instagram URL
   const preferredInstagram = primary.instagramUrl || secondary.instagramUrl;
 
   return {
@@ -129,12 +122,127 @@ export function mergeDuplicateEvents(primary, secondary) {
 }
 
 /**
- * Runs all 4 crawlers in parallel, applies Deduplication 2.0 and smart merge
+ * Deduplicates an array of events using Deduplication 2.0 and Smart Merge
+ */
+export function deduplicateEventsList(rawEvents = []) {
+  const deduplicated = [];
+  for (const rawEv of rawEvents) {
+    if (!rawEv || !rawEv.title) continue;
+    const existingIndex = deduplicated.findIndex(item => areEventsDuplicates(item, rawEv));
+    if (existingIndex !== -1) {
+      deduplicated[existingIndex] = mergeDuplicateEvents(deduplicated[existingIndex], rawEv);
+    } else {
+      deduplicated.push(rawEv);
+    }
+  }
+  deduplicated.sort((a, b) => Date.parse(a.startTime) - Date.parse(b.startTime));
+  return deduplicated;
+}
+
+/**
+ * Evaluates crawler health telemetry & applies Self-Healing Stale-While-Degraded retention
+ */
+export function applySelfHealingRetention({
+  crawlerId,
+  crawlerBadge,
+  freshEvents = [],
+  previousEvents = [],
+  error = null,
+  latencyMs = 0,
+  nowMs = Date.now()
+}) {
+  const previousSourceEvents = (previousEvents || []).filter(e => {
+    const src = (e.source || e.sourceBadge || '').toLowerCase();
+    const isTargetSource = src.includes(crawlerId) || (e.id && e.id.toLowerCase().startsWith(`${crawlerId}-`));
+    if (!isTargetSource) return false;
+    // Check if still within valid rolling 24h window
+    const startMs = Date.parse(e.startTime);
+    return startMs >= (nowMs - 3600000) && startMs <= (nowMs + 24 * 3600000);
+  });
+
+  const isFailedRun = Boolean(error) || (freshEvents.length === 0 && previousSourceEvents.length >= 3);
+
+  if (isFailedRun) {
+    if (previousSourceEvents.length > 0) {
+      return {
+        events: previousSourceEvents,
+        telemetry: {
+          sourceId: crawlerId,
+          badge: crawlerBadge,
+          status: 'DEGRADED',
+          statusText: 'DEGRADED (Using Cached Events)',
+          eventsCount: previousSourceEvents.length,
+          latencyMs,
+          lastError: error ? error.message || String(error) : 'Empty results during active hours',
+          lastRunAt: new Date(nowMs).toISOString(),
+          retainedFromCache: true
+        }
+      };
+    }
+    return {
+      events: [],
+      telemetry: {
+        sourceId: crawlerId,
+        badge: crawlerBadge,
+        status: 'DOWN',
+        statusText: 'DOWN (Error & No Cache)',
+        eventsCount: 0,
+        latencyMs,
+        lastError: error ? error.message || String(error) : 'No events available',
+        lastRunAt: new Date(nowMs).toISOString(),
+        retainedFromCache: false
+      }
+    };
+  }
+
+  return {
+    events: freshEvents,
+    telemetry: {
+      sourceId: crawlerId,
+      badge: crawlerBadge,
+      status: 'HEALTHY',
+      statusText: 'HEALTHY',
+      eventsCount: freshEvents.length,
+      latencyMs,
+      lastError: null,
+      lastRunAt: new Date(nowMs).toISOString(),
+      retainedFromCache: false
+    }
+  };
+}
+
+/**
+ * Filters and promotes scheduled community events whose startTime has entered the rolling 24h window
+ */
+export function promoteScheduledEventsInto24h(scheduledQueue = [], nowMs = Date.now()) {
+  const windowEndMs = nowMs + 24 * 3600000;
+  const windowStartMs = nowMs - 3600000; // include happening now up to 1h past
+
+  const promoted = [];
+  const remaining = [];
+
+  for (const item of scheduledQueue) {
+    const ev = item.event || item;
+    const startMs = Date.parse(ev.startTime);
+    if (startMs >= windowStartMs && startMs <= windowEndMs) {
+      promoted.push(ev);
+    } else if (startMs > windowEndMs) {
+      remaining.push(item);
+    }
+  }
+
+  return { promoted, remaining };
+}
+
+/**
+ * Runs all 4 crawlers in parallel, applies Self-Healing Telemetry, Deduplication 2.0 and Promotion
  */
 export async function runMultiSourceCrawlers({
   nowMs = Date.now(),
   forceRefresh = false,
-  fetcher = undefined
+  fetcher = undefined,
+  previousSnapshotEvents = [],
+  scheduledEventsQueue = []
 } = {}) {
   // Check client-side localStorage cache if available
   if (!forceRefresh && typeof localStorage !== 'undefined') {
@@ -146,6 +254,7 @@ export async function runMultiSourceCrawlers({
           return {
             events: cached.events,
             stats: cached.stats || {},
+            telemetry: cached.telemetry || {},
             fromCache: true,
             fetchedAt: new Date(cached.timestampMs).toISOString()
           };
@@ -156,52 +265,57 @@ export async function runMultiSourceCrawlers({
     }
   }
 
-  const stats = {
-    zero: { count: 0, status: 'pending' },
-    milanotoday: { count: 0, status: 'pending' },
-    yesmilano: { count: 0, status: 'pending' },
-    mentelocale: { count: 0, status: 'pending' }
-  };
-
-  const results = await Promise.allSettled(
-    CRAWLER_MODULES.map(m => m.run({ nowMs, fetcher }))
-  );
-
+  const telemetry = {};
+  const stats = {};
   const allRawEvents = [];
 
-  results.forEach((res, idx) => {
-    const mod = CRAWLER_MODULES[idx];
-    if (res.status === 'fulfilled' && Array.isArray(res.value)) {
-      stats[mod.id] = { count: res.value.length, status: 'ok' };
-      allRawEvents.push(...res.value);
-    } else {
-      stats[mod.id] = {
-        count: 0,
-        status: 'error',
-        error: res.reason?.message || 'Crawl failed'
-      };
+  // Concurrently run crawlers with timing measurement
+  const runPromises = CRAWLER_MODULES.map(async (mod) => {
+    const startT = Date.now();
+    try {
+      const result = await mod.run({ nowMs, fetcher });
+      const latencyMs = Date.now() - startT;
+      return { id: mod.id, badge: mod.badge, freshEvents: result || [], latencyMs, error: null };
+    } catch (err) {
+      const latencyMs = Date.now() - startT;
+      return { id: mod.id, badge: mod.badge, freshEvents: [], latencyMs, error: err };
     }
   });
 
-  // Deduplication 2.0 with Smart Merge
-  const deduplicated = [];
+  const settledResults = await Promise.all(runPromises);
 
-  for (const rawEv of allRawEvents) {
-    if (!rawEv || !rawEv.title) continue;
+  for (const item of settledResults) {
+    const healed = applySelfHealingRetention({
+      crawlerId: item.id,
+      crawlerBadge: item.badge,
+      freshEvents: item.freshEvents,
+      previousEvents: previousSnapshotEvents,
+      error: item.error,
+      latencyMs: item.latencyMs,
+      nowMs
+    });
 
-    // Check if duplicate of an existing event in list
-    const existingIndex = deduplicated.findIndex(item => areEventsDuplicates(item, rawEv));
+    telemetry[item.id] = healed.telemetry;
+    stats[item.id] = {
+      count: healed.events.length,
+      status: healed.telemetry.status.toLowerCase(),
+      latencyMs: item.latencyMs,
+      retainedFromCache: healed.telemetry.retainedFromCache
+    };
 
-    if (existingIndex !== -1) {
-      // Merge into richer unified event
-      deduplicated[existingIndex] = mergeDuplicateEvents(deduplicated[existingIndex], rawEv);
-    } else {
-      deduplicated.push(rawEv);
+    allRawEvents.push(...healed.events);
+  }
+
+  // Promote any scheduled community events entered into the 24h window
+  if (Array.isArray(scheduledEventsQueue) && scheduledEventsQueue.length > 0) {
+    const { promoted } = promoteScheduledEventsInto24h(scheduledEventsQueue, nowMs);
+    if (promoted.length > 0) {
+      allRawEvents.push(...promoted);
     }
   }
 
-  // Sort chronologically
-  deduplicated.sort((a, b) => Date.parse(a.startTime) - Date.parse(b.startTime));
+  // Deduplication 2.0 with Smart Merge
+  const deduplicated = deduplicateEventsList(allRawEvents);
 
   // Save to localStorage if in browser
   if (typeof localStorage !== 'undefined') {
@@ -209,7 +323,8 @@ export async function runMultiSourceCrawlers({
       localStorage.setItem(LOCAL_STORAGE_CACHE_KEY, JSON.stringify({
         timestampMs: nowMs,
         events: deduplicated,
-        stats
+        stats,
+        telemetry
       }));
     } catch {
       // Ignore quota exceed
@@ -219,6 +334,7 @@ export async function runMultiSourceCrawlers({
   return {
     events: deduplicated,
     stats,
+    telemetry,
     fromCache: false,
     fetchedAt: new Date(nowMs).toISOString()
   };
@@ -228,5 +344,8 @@ export default {
   CRAWLER_MODULES,
   runMultiSourceCrawlers,
   areEventsDuplicates,
-  mergeDuplicateEvents
+  mergeDuplicateEvents,
+  deduplicateEventsList,
+  applySelfHealingRetention,
+  promoteScheduledEventsInto24h
 };

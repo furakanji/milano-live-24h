@@ -312,10 +312,36 @@
         <div id="agent-test-result-box" class="hidden p-3.5 rounded-lg border text-xs"></div>
       </div>
 
+      <!-- Crawler Health Telemetry Status Bar -->
+      <div class="p-5 rounded-xl bg-[#111318] border border-orange-500/30 space-y-3">
+        <div class="flex items-center justify-between">
+          <div>
+            <h4 class="text-xs font-bold uppercase tracking-wider text-orange-400">📡 Telemetria &amp; Self-Healing Crawlers Live</h4>
+            <p class="text-zinc-400 text-[11px] mt-0.5">Stato di salute in tempo reale di Zero, MilanoToday, YesMilano, Mentelocale e DICE con retention automatica Stale-While-Degraded.</p>
+          </div>
+          <span id="telemetry-last-sync" class="text-zinc-500 mono-num text-[11px]">Controllo automatico</span>
+        </div>
+        <div id="crawlers-telemetry-grid" class="grid grid-cols-2 sm:grid-cols-5 gap-2.5">
+          <!-- Populated by AdminStudio -->
+        </div>
+      </div>
+
       <!-- Active Sources Grid -->
       <div class="p-5 rounded-xl bg-[#111318] border border-emerald-500/30 space-y-4">
         <h3 class="text-sm font-bold text-white">📚 1. Elenco delle Fonti Milanesi Ufficiali</h3>
         <div id="sources-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5"></div>
+      </div>
+
+      <!-- Scheduled Future Events Queue (>24h) -->
+      <div class="p-5 rounded-xl bg-[#111318] border border-purple-500/40 space-y-4">
+        <div class="flex items-center justify-between border-b border-[#23272f] pb-3">
+          <div>
+            <h3 class="text-sm font-bold text-white flex items-center gap-2"><span>🗓️</span><span>2. Coda Eventi Futuri Programmati (&gt;24h)</span></h3>
+            <p class="text-zinc-400 mt-0.5 text-[11px]">Locandine e manifesti fotografati dagli utenti che pubblicizzano date future oltre le 24 ore. Vengono promossi automaticamente nel radar 24h prima dell'inizio.</p>
+          </div>
+          <span id="scheduled-events-count-badge" class="px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 border border-purple-500/40 font-mono text-[11px]">0 programmati</span>
+        </div>
+        <div id="scheduled-events-container" class="space-y-2.5"></div>
       </div>
 
       <!-- Quarantine list -->

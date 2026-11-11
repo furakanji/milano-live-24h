@@ -523,6 +523,7 @@ export function resolveVenueInstagram(venueName = '') {
  * Universal safe fetch with CORS proxy fallback for in-browser client calls
  */
 export async function universalFetch(targetUrl, options = {}) {
+  // 1. Direct fetch (server-side Node or CORS-enabled endpoints)
   try {
     const res = await fetch(targetUrl, {
       ...options,
@@ -538,9 +539,24 @@ export async function universalFetch(targetUrl, options = {}) {
       return await res.text();
     }
   } catch (err) {
-    // Try CORS proxies if in browser
+    // Try custom proxy or CORS proxies if in browser
   }
 
+  // 2. Proprietary Serverless / Edge Proxy priority (4500ms circuit breaker)
+  const customProxy = (typeof import.meta !== 'undefined' && import.meta.env?.VITE_CUSTOM_PROXY_URL) ||
+    (typeof process !== 'undefined' && (process.env?.VITE_CUSTOM_PROXY_URL || process.env?.CUSTOM_PROXY_URL));
+
+  if (customProxy) {
+    try {
+      const pUrl = `${customProxy}?url=${encodeURIComponent(targetUrl)}`;
+      const res = await fetch(pUrl, { signal: AbortSignal.timeout(4500) });
+      if (res.ok) return await res.text();
+    } catch {
+      // Fallback to public proxies
+    }
+  }
+
+  // 3. Fallback to public CORS proxies
   for (const proxyFn of CORS_PROXIES) {
     const proxyUrl = proxyFn(targetUrl);
     try {

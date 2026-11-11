@@ -11,6 +11,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { runMultiSourceCrawlers } from '../services/crawlers/multiSourceOrchestrator.js';
 import { crawlDiceMilanEvents } from '../backend/diceMilanCrawler.js';
+import { syncSnapshotToCloud } from '../backend/cloudSync.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(__dirname, '..');
@@ -53,6 +54,12 @@ async function main() {
 
   console.log(`[crawl-milan-sources] Successfully wrote ${allEvents.length} events to ${outPath}`);
   console.log('[crawl-milan-sources] Breakdown:', JSON.stringify(payload.stats.crawlers, null, 2));
+
+  // Push to cloud store if Firebase / cloud sync is configured
+  const cloudRes = await syncSnapshotToCloud(payload);
+  if (cloudRes.success) {
+    console.log(`[crawl-milan-sources] Cloud sync completed (${cloudRes.target})`);
+  }
 }
 
 main().catch(err => {
