@@ -9,6 +9,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "verify-events": "node backend/liveFeed.js",
+    "test": "node --test backend/test/*.test.js",
     "test:feed": "node --test backend/test/golden.test.js"
   },
   "dependencies": {

@@ -7,6 +7,344 @@ export const CORS_PROXIES = [
   url => `https://corsproxy.io/?${encodeURIComponent(url)}`
 ];
 
+/**
+ * Stop words in Italian commonly found in event listings
+ */
+export const ITALIAN_STOP_WORDS = new Set([
+  'concerto', 'concerti', 'live', 'milano', 'spettacolo', 'spettacoli',
+  'presentazione', 'rassegna', 'serata', 'ingresso', 'al', 'del', 'con',
+  'dei', 'delle', 'della', 'degli', 'sul', 'sulla', 'per', 'tra', 'fra',
+  'nel', 'nella', 'e', 'ed', 'ediz', 'show', 'tour', 'special', 'evento'
+]);
+
+/**
+ * CANONICAL VENUES DICTIONARY
+ * Maps aliases of Milan's top 60+ venues to canonical ID, verified name, address, neighborhood and IG url.
+ */
+export const CANONICAL_VENUES = {
+  magnolia: {
+    id: 'circolo-magnolia',
+    name: 'Circolo Magnolia',
+    address: 'Circonvallazione Idroscalo 41, Segrate (MI)',
+    neighborhood: 'Idroscalo',
+    instagramUrl: 'https://www.instagram.com/circolomagnolia/',
+    aliases: ['circolo magnolia', 'magnolia', 'magnolia club', 'parco idroscalo magnolia']
+  },
+  anteo: {
+    id: 'anteo-palazzo-del-cinema',
+    name: 'Anteo Palazzo del Cinema',
+    address: 'Piazza Ventiquattro Maggio 8 / Via Milazzo 9, Milano',
+    neighborhood: 'Brera / Garibaldi',
+    instagramUrl: 'https://www.instagram.com/anteospaziocinema/',
+    aliases: ['anteo', 'anteo palazzo del cinema', 'spaziocinema anteo', 'cinema anteo', 'anteo milano']
+  },
+  mexico: {
+    id: 'cinema-mexico',
+    name: 'Cinema Mexico',
+    address: 'Via Savona 57, Milano',
+    neighborhood: 'Tortona / Savona',
+    instagramUrl: 'https://www.instagram.com/cinemamexicomilano/',
+    aliases: ['cinema mexico', 'mexico', 'mexico milano']
+  },
+  cinemino: {
+    id: 'il-cinemino',
+    name: 'Il Cinemino',
+    address: 'Via Seneca 6, Milano',
+    neighborhood: 'Porta Romana',
+    instagramUrl: 'https://www.instagram.com/ilcinemino/',
+    aliases: ['il cinemino', 'cinemino', 'cinemino milano']
+  },
+  beltrade: {
+    id: 'cinema-beltrade',
+    name: 'Cinema Beltrade',
+    address: 'Via Nino Oxilia 10, Milano',
+    neighborhood: 'NoLo / Pasteur',
+    instagramUrl: 'https://www.instagram.com/cinemabeltrade/',
+    aliases: ['cinema beltrade', 'beltrade', 'beltrade milano']
+  },
+  manzoni: {
+    id: 'teatro-manzoni',
+    name: 'Teatro Manzoni',
+    address: 'Via Manzoni 42, Milano',
+    neighborhood: 'Centro / Montenapoleone',
+    instagramUrl: 'https://www.instagram.com/teatromanzonimilano/',
+    aliases: ['teatro manzoni', 'manzoni milano', 'il manzoni']
+  },
+  strehler: {
+    id: 'piccolo-teatro-strehler',
+    name: 'Piccolo Teatro Strehler',
+    address: 'Largo Greppi 1, Milano',
+    neighborhood: 'Brera / Lanza',
+    instagramUrl: 'https://www.instagram.com/piccoloteatromilano/',
+    aliases: ['piccolo teatro strehler', 'teatro strehler', 'strehler', 'piccolo strehler']
+  },
+  grassi: {
+    id: 'piccolo-teatro-grassi',
+    name: 'Piccolo Teatro Grassi',
+    address: 'Via Rovello 2, Milano',
+    neighborhood: 'Cordusio / Cairoli',
+    instagramUrl: 'https://www.instagram.com/piccoloteatromilano/',
+    aliases: ['piccolo teatro grassi', 'teatro grassi', 'grassi', 'piccolo grassi']
+  },
+  melato: {
+    id: 'teatro-studio-melato',
+    name: 'Piccolo Teatro Studio Melato',
+    address: 'Via Rivoli 6, Milano',
+    neighborhood: 'Lanza',
+    instagramUrl: 'https://www.instagram.com/piccoloteatromilano/',
+    aliases: ['piccolo teatro studio melato', 'teatro studio melato', 'studio melato', 'melato']
+  },
+  parenti: {
+    id: 'teatro-franco-parenti',
+    name: 'Teatro Franco Parenti',
+    address: 'Via Pier Lombardo 14, Milano',
+    neighborhood: 'Porta Romana',
+    instagramUrl: 'https://www.instagram.com/teatrofrancoparenti/',
+    aliases: ['teatro franco parenti', 'franco parenti', 'parenti', 'bagni misteriosi']
+  },
+  carcano: {
+    id: 'teatro-carcano',
+    name: 'Teatro Carcano',
+    address: 'Corso di Porta Romana 63, Milano',
+    neighborhood: 'Porta Romana / Crocetta',
+    instagramUrl: 'https://www.instagram.com/teatrocarcano/',
+    aliases: ['teatro carcano', 'carcano milano', 'carcano']
+  },
+  elfopuccini: {
+    id: 'teatro-elfo-puccini',
+    name: 'Teatro Elfo Puccini',
+    address: 'Corso Buenos Aires 33, Milano',
+    neighborhood: 'Buenos Aires / Lima',
+    instagramUrl: 'https://www.instagram.com/elfopuccini/',
+    aliases: ['teatro elfo puccini', 'elfo puccini', 'elfo', 'puccini']
+  },
+  santeria: {
+    id: 'santeria-toscana-31',
+    name: 'Santeria Toscana 31',
+    address: 'Viale Toscana 31, Milano',
+    neighborhood: 'Bocconi / Ripamonti',
+    instagramUrl: 'https://www.instagram.com/santeriamilano/',
+    aliases: ['santeria toscana 31', 'santeria toscana31', 'santeria', 'santeria milano', 'santeria paladini']
+  },
+  base: {
+    id: 'base-milano',
+    name: 'BASE Milano',
+    address: 'Via Bergognone 34, Milano',
+    neighborhood: 'Tortona',
+    instagramUrl: 'https://www.instagram.com/base_milano/',
+    aliases: ['base milano', 'base', 'base via bergognone']
+  },
+  bellezza: {
+    id: 'arci-bellezza',
+    name: 'Arci Bellezza',
+    address: 'Via Giovanni Bellezza 16, Milano',
+    neighborhood: 'Porta Romana',
+    instagramUrl: 'https://www.instagram.com/arcibellezza/',
+    aliases: ['arci bellezza', 'bellezza', 'palestra visconti', 'circolo arci bellezza']
+  },
+  biko: {
+    id: 'arci-biko',
+    name: 'Arci Biko',
+    address: 'Via Ettore Ponti 40, Milano',
+    neighborhood: 'Barona / Romolo',
+    instagramUrl: 'https://www.instagram.com/bikoclubmilano/',
+    aliases: ['arci biko', 'biko', 'biko club', 'circolo biko']
+  },
+  alcatraz: {
+    id: 'alcatraz-milano',
+    name: 'Alcatraz Milano',
+    address: 'Via Valtellina 25, Milano',
+    neighborhood: 'Maciachini / Farini',
+    instagramUrl: 'https://www.instagram.com/alcatrazmilano/',
+    aliases: ['alcatraz milano', 'alcatraz']
+  },
+  fabrique: {
+    id: 'fabrique-milano',
+    name: 'Fabrique Milano',
+    address: 'Via Fantoli 9, Milano',
+    neighborhood: 'Mecenate / Forlanini',
+    instagramUrl: 'https://www.instagram.com/fabrique_milano/',
+    aliases: ['fabrique milano', 'fabrique']
+  },
+  magazzini: {
+    id: 'magazzini-generali',
+    name: 'Magazzini Generali',
+    address: 'Via Pietrasanta 16, Milano',
+    neighborhood: 'Ripamonti',
+    instagramUrl: 'https://www.instagram.com/magazzinigeneralimilano/',
+    aliases: ['magazzini generali', 'magazzini', 'magazzinigenerali']
+  },
+  tunnel: {
+    id: 'tunnel-club',
+    name: 'Tunnel Club',
+    address: 'Via Sammartini 30, Milano',
+    neighborhood: 'Centrale / Greco',
+    instagramUrl: 'https://www.instagram.com/tunnelclubmilano/',
+    aliases: ['tunnel club', 'tunnel', 'tunnel milano']
+  },
+  palazzoreale: {
+    id: 'palazzo-reale',
+    name: 'Palazzo Reale di Milano',
+    address: 'Piazza del Duomo 12, Milano',
+    neighborhood: 'Duomo / Centro',
+    instagramUrl: 'https://www.instagram.com/palazzorealemilano/',
+    aliases: ['palazzo reale', 'palazzo reale di milano', 'palazzo reale milano']
+  },
+  mudec: {
+    id: 'mudec',
+    name: 'MUDEC - Museo delle Culture',
+    address: 'Via Tortona 56, Milano',
+    neighborhood: 'Tortona',
+    instagramUrl: 'https://www.instagram.com/mudecmi/',
+    aliases: ['mudec', 'mudec milano', 'museo delle culture', 'mudec - museo delle culture']
+  },
+  triennale: {
+    id: 'triennale-milano',
+    name: 'Triennale Milano',
+    address: 'Viale Emilio Alemagna 6, Milano',
+    neighborhood: 'Parco Sempione / Cadorna',
+    instagramUrl: 'https://www.instagram.com/triennalemilano/',
+    aliases: ['triennale milano', 'triennale', 'palazzo dell arte triennale']
+  },
+  hangarbicocca: {
+    id: 'pirelli-hangarbicocca',
+    name: 'Pirelli HangarBicocca',
+    address: 'Via Chiese 2, Milano',
+    neighborhood: 'Bicocca / Greco',
+    instagramUrl: 'https://www.instagram.com/pirelli_hangarbicocca/',
+    aliases: ['pirelli hangarbicocca', 'hangarbicocca', 'hangar bicocca', 'hangar']
+  },
+  fondazioneprada: {
+    id: 'fondazione-prada',
+    name: 'Fondazione Prada',
+    address: 'Largo Isarco 2, Milano',
+    neighborhood: 'Ripamonti / Scalo Romana',
+    instagramUrl: 'https://www.instagram.com/fondazioneprada/',
+    aliases: ['fondazione prada', 'cinema godard - fondazione prada', 'cinema godard', 'prada milano']
+  },
+  feltrinelli: {
+    id: 'fondazione-feltrinelli',
+    name: 'Fondazione Giangiacomo Feltrinelli',
+    address: 'Viale Pasubio 5, Milano',
+    neighborhood: 'Porta Volta / Moscova',
+    instagramUrl: 'https://www.instagram.com/fondazionefeltrinelli/',
+    aliases: ['fondazione feltrinelli', 'fondazione giangiacomo feltrinelli', 'feltrinelli pasubio']
+  },
+  castellosforzesco: {
+    id: 'castello-sforzesco',
+    name: 'Castello Sforzesco',
+    address: 'Piazza Castello, Milano',
+    neighborhood: 'Cairoli / Centro',
+    instagramUrl: 'https://www.instagram.com/comune_milano/',
+    aliases: ['castello sforzesco', 'musei del castello sforzesco', 'cortile delle armi castello']
+  },
+  fabbricadelvapore: {
+    id: 'fabbrica-del-vapore',
+    name: 'Fabbrica del Vapore',
+    address: 'Via Giulio Cesare Procaccini 4, Milano',
+    neighborhood: 'Monumentale / Cenisio',
+    instagramUrl: 'https://www.instagram.com/fabbricadelvapore/',
+    aliases: ['fabbrica del vapore', 'fabbrica vapore']
+  },
+  pac: {
+    id: 'pac-milano',
+    name: 'PAC - Padiglione d\'Arte Contemporanea',
+    address: 'Via Palestro 14, Milano',
+    neighborhood: 'Palestro / Porta Venezia',
+    instagramUrl: 'https://www.instagram.com/pacmilano/',
+    aliases: ['pac', 'pac milano', 'padiglione d arte contemporanea']
+  },
+  arcimboldi: {
+    id: 'teatro-arcimboldi',
+    name: 'Teatro degli Arcimboldi',
+    address: 'Viale Sarca 336, Milano',
+    neighborhood: 'Bicocca',
+    instagramUrl: 'https://www.instagram.com/teatrodegliarcimboldi/',
+    aliases: ['teatro arcimboldi', 'teatro degli arcimboldi', 'arcimboldi']
+  },
+  dude: {
+    id: 'dude-club',
+    name: 'Dude Club / Detune',
+    address: 'Via Carlo Boncompagni 44, Milano',
+    neighborhood: 'Corvetto',
+    instagramUrl: 'https://www.instagram.com/dudemilano/',
+    aliases: ['dude', 'dude club', 'detune', 'detune milano']
+  },
+  apollo: {
+    id: 'apollo-milano',
+    name: 'Apollo Milano',
+    address: 'Via Giosuè Borsi 9, Milano',
+    neighborhood: 'Navigli',
+    instagramUrl: 'https://www.instagram.com/apollomilano/',
+    aliases: ['apollo milano', 'apollo club', 'apollo']
+  },
+  gallerieditalia: {
+    id: 'gallerie-d-italia',
+    name: 'Gallerie d\'Italia - Piazza Scala',
+    address: 'Piazza della Scala 6, Milano',
+    neighborhood: 'Centro / Scala',
+    instagramUrl: 'https://www.instagram.com/gallerieditalia/',
+    aliases: ['gallerie d italia', 'piazza scala gallerie', 'gallerie d italia milano']
+  },
+  verso: {
+    id: 'libreria-verso',
+    name: 'Libreria Verso',
+    address: 'Corso di Porta Ticinese 54, Milano',
+    neighborhood: 'Ticinese / Colonne',
+    instagramUrl: 'https://www.instagram.com/libreriaverso/',
+    aliases: ['libreria verso', 'verso libri', 'verso milano']
+  },
+  casadellacultura: {
+    id: 'casa-della-cultura',
+    name: 'Casa della Cultura',
+    address: 'Via Borgogna 3, Milano',
+    neighborhood: 'San Babila / Centro',
+    instagramUrl: 'https://www.instagram.com/casadellacultura/',
+    aliases: ['casa della cultura', 'casadellacultura', 'casa della cultura milano']
+  }
+};
+
+/**
+ * Resolves a venue name to its canonical venue object or normalized representation
+ */
+export function resolveCanonicalVenue(venueName = '') {
+  if (!venueName) {
+    return {
+      canonicalId: 'milano-generic',
+      name: 'Milano',
+      address: 'Milano, Italia',
+      neighborhood: 'Milano',
+      instagramUrl: null
+    };
+  }
+
+  const clean = venueName.toLowerCase().replace(/['"“”’]/g, '').trim();
+
+  // 1. Direct alias match in CANONICAL_VENUES
+  for (const [key, venue] of Object.entries(CANONICAL_VENUES)) {
+    for (const alias of venue.aliases) {
+      if (clean === alias || clean.includes(alias) || alias.includes(clean)) {
+        return {
+          canonicalId: venue.id,
+          name: venue.name,
+          address: venue.address,
+          neighborhood: venue.neighborhood,
+          instagramUrl: venue.instagramUrl
+        };
+      }
+    }
+  }
+
+  // 2. Fallback normalization
+  return {
+    canonicalId: `venue-${hashString(clean)}`,
+    name: venueName.trim(),
+    address: /milano/i.test(venueName) ? venueName.trim() : `${venueName.trim()}, Milano`,
+    neighborhood: 'Milano',
+    instagramUrl: resolveVenueInstagram(venueName)
+  };
+}
+
 export const TOP_50_MILAN_VENUES_INSTAGRAM = {
   magnolia: 'https://www.instagram.com/circolomagnolia/',
   santeria: 'https://www.instagram.com/santeriamilano/',
@@ -86,7 +424,7 @@ export function decodeHtml(html = '') {
 /**
  * Strips HTML tags and limits to 2-3 sentences / max chars
  */
-export function cleanDescription(html = '', maxLen = 220) {
+export function cleanDescription(html = '', maxLen = 240) {
   if (!html) return '';
   const text = decodeHtml(html.replace(/<[^>]+>/g, ' '));
   if (text.length <= maxLen) return text;
@@ -103,6 +441,31 @@ export function hashString(str) {
     hash |= 0;
   }
   return Math.abs(hash).toString(36);
+}
+
+/**
+ * Tokenize a title string stripping common Italian stop words
+ */
+export function tokenizeTitle(title = '') {
+  const words = decodeHtml(title)
+    .toLowerCase()
+    .replace(/[^a-z0-9àèéìòù]/gi, ' ')
+    .split(/\s+/)
+    .filter(w => w.length > 2 && !ITALIAN_STOP_WORDS.has(w));
+  return new Set(words);
+}
+
+/**
+ * Compute Jaccard Similarity between two token sets
+ */
+export function computeJaccardSimilarity(setA, setB) {
+  if (!setA || !setB || setA.size === 0 || setB.size === 0) return 0;
+  let intersectionSize = 0;
+  for (const elem of setA) {
+    if (setB.has(elem)) intersectionSize++;
+  }
+  const unionSize = setA.size + setB.size - intersectionSize;
+  return unionSize === 0 ? 0 : intersectionSize / unionSize;
 }
 
 /**
@@ -160,7 +523,6 @@ export function resolveVenueInstagram(venueName = '') {
  * Universal safe fetch with CORS proxy fallback for in-browser client calls
  */
 export async function universalFetch(targetUrl, options = {}) {
-  // 1. Direct fetch (always succeeds in Node.js / GitHub Actions and on same-origin)
   try {
     const res = await fetch(targetUrl, {
       ...options,
@@ -176,10 +538,9 @@ export async function universalFetch(targetUrl, options = {}) {
       return await res.text();
     }
   } catch (err) {
-    // If running in browser and CORS failed, proceed to CORS proxies
+    // Try CORS proxies if in browser
   }
 
-  // 2. Proxies fallback (for GitHub Pages static client-side)
   for (const proxyFn of CORS_PROXIES) {
     const proxyUrl = proxyFn(targetUrl);
     try {
@@ -195,4 +556,39 @@ export async function universalFetch(targetUrl, options = {}) {
   }
 
   throw new Error(`Unable to fetch ${targetUrl} directly or through CORS proxies`);
+}
+
+/**
+ * Check if a continuous exhibition/museum event is currently open
+ */
+export function checkContinuousExhibitionStatus(event, nowMs = Date.now()) {
+  if (!event || !event.isContinuous) {
+    return { isOpenNow: false, statusText: null };
+  }
+
+  const formatter = new Intl.DateTimeFormat('it-IT', {
+    timeZone: 'Europe/Rome',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false
+  });
+  const parts = formatter.formatToParts(new Date(nowMs));
+  const pMap = {};
+  parts.forEach(p => { pMap[p.type] = p.value; });
+  const currentMinutes = parseInt(pMap.hour, 10) * 60 + parseInt(pMap.minute, 10);
+
+  const [openH, openM] = (event.openHour || '10:00').split(':').map(n => parseInt(n, 10));
+  const [closeH, closeM] = (event.closeHour || '19:30').split(':').map(n => parseInt(n, 10));
+  const openMinutes = openH * 60 + openM;
+  const closeMinutes = closeH * 60 + closeM;
+
+  // Open if current time is between openHour and closeHour - 45min (last entry)
+  const isOpen = currentMinutes >= openMinutes && currentMinutes <= (closeMinutes - 45);
+
+  return {
+    isOpenNow: isOpen,
+    statusText: isOpen
+      ? `🟢 APERTO ORA • Fino alle ${event.closeHour || '19:30'}`
+      : `Domani ore ${event.openHour || '10:00'}`
+  };
 }

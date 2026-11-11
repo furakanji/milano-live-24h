@@ -1,0 +1,59 @@
+/* styles/main.css — Extracted styles from index.html */
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* Custom scrollbar for horizontal pill bars */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+@keyframes livePulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.45; transform: scale(0.92); }
+}
+
+.live-dot {
+  animation: livePulse 1.8s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.editorial-surface {
+  background-color: #0b0c0e;
+  color: #f3f4f6;
+}
+
+.editorial-card {
+  background-color: #131519;
+  border: 1px solid #23272f;
+  transition: border-color 0.18s ease, transform 0.18s ease, background-color 0.18s ease;
+}
+
+.editorial-card:hover {
+  border-color: #3b4252;
+  background-color: #171a20;
+}
+
+.editorial-card-live {
+  background-color: #15181e;
+  border: 1px solid rgba(249, 115, 22, 0.55);
+}
+
+.editorial-header {
+  background-color: rgba(11, 12, 14, 0.90);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+.mono-num {
+  font-variant-numeric: tabular-nums;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
