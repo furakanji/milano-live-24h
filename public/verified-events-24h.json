@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-11T21:39:43.168Z",
+  "generatedAt": "2026-11-11T21:43:55.985Z",
   "agentVersion": "3.0.0-live-feed",
   "schedule": "3 volte al giorno (05:00, 13:00, 19:00 UTC)",
   "sources": [
@@ -7,7 +7,7 @@
       "id": "dice-milan",
       "venueName": "DICE.fm Milano (Real-Time Crawler)",
       "url": "https://dice.fm/browse/milano-5d68e89f7f285e094f60b00e",
-      "checkedAt": "2026-11-11T21:39:43.168Z",
+      "checkedAt": "2026-11-11T21:43:55.985Z",
       "status": "ok",
       "found": 23,
       "published": 23
@@ -16,7 +16,7 @@
       "id": "cinemino",
       "venueName": "Il Cinemino",
       "url": "https://www.ilcinemino.it/programmazione/",
-      "checkedAt": "2026-11-11T21:39:43.168Z",
+      "checkedAt": "2026-11-11T21:43:55.985Z",
       "status": "ok",
       "found": 29,
       "published": 4
@@ -25,17 +25,17 @@
       "id": "milanocinema",
       "venueName": "Cinema di Milano (milanocinema.com)",
       "url": "https://milanocinema.com/",
-      "checkedAt": "2026-11-11T21:39:43.168Z",
+      "checkedAt": "2026-11-11T21:43:55.985Z",
       "status": "ok",
       "found": 819,
-      "published": 396,
+      "published": 395,
       "crossCheckOnly": 4
     },
     {
       "id": "verso",
       "venueName": "Libreria Verso",
       "url": "http://www.libreriaverso.com/appuntamenti/",
-      "checkedAt": "2026-11-11T21:39:43.168Z",
+      "checkedAt": "2026-11-11T21:43:55.985Z",
       "status": "ok",
       "found": 17,
       "published": 1
@@ -45,19 +45,19 @@
       "venueName": "Controllo incrociato Cinemino (fonte diretta vs milanocinema.com)",
       "status": "ok",
       "published": 0,
-      "checkedAt": "2026-11-11T21:39:43.168Z"
+      "checkedAt": "2026-11-11T21:43:55.985Z"
     },
     {
       "id": "curated",
       "venueName": "Venue senza adapter (dati curati verificati)",
       "status": "curated",
       "published": 26,
-      "checkedAt": "2026-11-11T21:39:43.168Z"
+      "checkedAt": "2026-11-11T21:43:55.985Z"
     }
   ],
   "stats": {
-    "approvedCount": 450,
-    "adapterEvents": 401,
+    "approvedCount": 449,
+    "adapterEvents": 400,
     "curatedEvents": 26,
     "soldOutWithBadgeCount": 5,
     "rejectedCount": 22
@@ -129,52 +129,6 @@
       "facebookUrl": null,
       "_cinemaSlug": "cinelandia",
       "mapsUrl": "https://www.google.com/maps/search/?api=1&query=Cinelandia%20Via%20Giovanni%20Gentile%2C%203%2C%20Milano+Milano",
-      "availabilityBadge": "PRENOTABILE • POSTI DISPONIBILI",
-      "origin": "adapter"
-    },
-    {
-      "id": "cine-anteo-1794426300000-wild-horse-nine",
-      "title": "Wild Horse Nine",
-      "description": "Proiezione al Anteo Palazzo del Cinema (President), in italiano. Regia di Martin McDonagh.",
-      "startTime": "2026-11-11T19:45:00.000Z",
-      "endTime": "2026-11-11T21:42:00.000Z",
-      "venueName": "Anteo Palazzo del Cinema",
-      "neighborhood": "Milano",
-      "address": "Piazza XXV Aprile 8, Milano",
-      "isFree": false,
-      "isSoldOut": false,
-      "priceDetails": "Biglietti in cassa o online",
-      "category": "cinema",
-      "eventType": "CINEMA_SCREENING",
-      "sourceName": "milanocinema.com",
-      "sourceUrl": "https://anteo.spaziocinema.18tickets.it/film/125680/63bbb3c8-24ed-4986-a824-5a5d16267cc2#theater-init",
-      "instagramUrl": null,
-      "facebookUrl": null,
-      "_cinemaSlug": "anteo",
-      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=Anteo%20Palazzo%20del%20Cinema%20Piazza%20XXV%20Aprile%208%2C%20Milano+Milano",
-      "availabilityBadge": "PRENOTABILE • POSTI DISPONIBILI",
-      "origin": "adapter"
-    },
-    {
-      "id": "cine-citylife-1794426300000-wild-horse-nine",
-      "title": "Wild Horse Nine",
-      "description": "Proiezione al City Life Anteo (Maestoso), in italiano. Regia di Martin McDonagh.",
-      "startTime": "2026-11-11T19:45:00.000Z",
-      "endTime": "2026-11-11T21:42:00.000Z",
-      "venueName": "City Life Anteo",
-      "neighborhood": "Milano",
-      "address": "Piazza 3 Torri, Milano",
-      "isFree": false,
-      "isSoldOut": false,
-      "priceDetails": "Biglietti in cassa o online",
-      "category": "cinema",
-      "eventType": "CINEMA_SCREENING",
-      "sourceName": "milanocinema.com",
-      "sourceUrl": "https://citylife.spaziocinema.18tickets.it/film/125680/4e5febda-4810-499f-88d6-9bc48f708bb6#theater-init",
-      "instagramUrl": null,
-      "facebookUrl": null,
-      "_cinemaSlug": "citylife",
-      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=City%20Life%20Anteo%20Piazza%203%20Torri%2C%20Milano+Milano",
       "availabilityBadge": "PRENOTABILE • POSTI DISPONIBILI",
       "origin": "adapter"
     },
@@ -8190,6 +8144,29 @@
       "origin": "curated"
     },
     {
+      "id": "dice-6a47e7f1cbff2c0001acc5ab",
+      "title": "Pierluca Mariti - Abbi Pazienza",
+      "description": "Evento dal vivo in programma a Milano presso Teatro Santuccio. Biglietti e dettagli ufficiali su DICE.fm.",
+      "startTime": "2026-11-12T20:00:00.000Z",
+      "endTime": "2026-11-12T22:45:00.000Z",
+      "venueName": "Teatro Santuccio",
+      "neighborhood": "Milano",
+      "address": "Via Luigi Sacco 10, 21100 Varese Varese, Italy, Milano",
+      "isFree": false,
+      "isSoldOut": true,
+      "priceDetails": "€19.66",
+      "category": "teatro",
+      "eventType": "LIVE_CONCERT",
+      "sourceName": "DICE.fm Milano",
+      "sourceUrl": "https://dice.fm/event/3o7va8-pierluca-mariti-abbi-pazienza-12th-nov-teatro-santuccio-varese-tickets",
+      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=Teatro%20Santuccio%20Via%20Luigi%20Sacco%2010%2C%2021100%20Varese%20Varese%2C%20Italy%2C%20Milano",
+      "instagramUrl": "https://www.instagram.com/explore/tags/teatrosantuccio/",
+      "facebookUrl": null,
+      "origin": "dice_crawler",
+      "sourceBadge": "DICE Live",
+      "availabilityBadge": "SOLD OUT • POSTI ESAURITI"
+    },
+    {
       "id": "dice-6aec6a8af4c4fb000157a4d0",
       "title": "Cantautori // Cesare Blanc + Pietro Bombardelli",
       "description": "Cesare Blanc Una voce graffiata, un pianoforte essenziale e una chitarra. Cesare Blanc porta sul palco un live acustico intimo e senza filtri. I suoi brani inediti si alternano alle canzoni che hanno ispirato il suo percorso artistico, in un racconto...",
@@ -8236,6 +8213,29 @@
       "availabilityBadge": "INGRESSO LIBERO • DISPONIBILE"
     },
     {
+      "id": "dice-6ae0c95cbdb58d00014dd4a5",
+      "title": "A Modino / Stand Up di Giacomo Pietrini",
+      "description": "Evento dal vivo in programma a Milano presso Alveare Culturale Studio. Biglietti e dettagli ufficiali su DICE.fm.",
+      "startTime": "2026-11-12T20:00:00.000Z",
+      "endTime": "2026-11-12T21:30:00.000Z",
+      "venueName": "Alveare Culturale Studio",
+      "neighborhood": "Milano",
+      "address": "Via Carlo Imbonati 12, 20159 Milan Milan, Italy, Milano",
+      "isFree": false,
+      "isSoldOut": false,
+      "priceDetails": "€€ / Biglietti su DICE",
+      "category": "teatro",
+      "eventType": "LIVE_CONCERT",
+      "sourceName": "DICE.fm Milano",
+      "sourceUrl": "https://dice.fm/event/q23dqy-a-modino-stand-up-di-giacomo-pietrini-12th-nov-alveare-culturale-studio-milan-tickets",
+      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=Alveare%20Culturale%20Studio%20Via%20Carlo%20Imbonati%2012%2C%2020159%20Milan%20Milan%2C%20Italy%2C%20Milano",
+      "instagramUrl": "https://www.instagram.com/explore/tags/alveareculturalestudio/",
+      "facebookUrl": null,
+      "origin": "dice_crawler",
+      "sourceBadge": "DICE Live",
+      "availabilityBadge": "PRENOTABILE • POSTI DISPONIBILI"
+    },
+    {
       "id": "dice-6ab0f33d40665d0001550c11",
       "title": "Daykoda + Ze in the clouds + Sup Nasa",
       "description": "DAYKODA è il progetto musicale del produttore e polistrumentista milanese Andrea Gamba, tra le figure più apprezzate del panorama elettronico ed experimental jazz contemporaneo. Dopo aver suonato nei principali festival jazz europei e aver aperto i c...",
@@ -8276,52 +8276,6 @@
       "sourceUrl": "https://dice.fm/event/v3lwl7-lunacorp-presents-stuart-mckenzie-12th-nov-combo-milano-tickets",
       "mapsUrl": "https://www.google.com/maps/search/?api=1&query=Combo%20Ripa%20di%20Porta%20Ticinese%2C%2083%2C%2020143%20Milano%20MI%2C%20Italy",
       "instagramUrl": "https://www.instagram.com/explore/tags/combo/",
-      "facebookUrl": null,
-      "origin": "dice_crawler",
-      "sourceBadge": "DICE Live",
-      "availabilityBadge": "PRENOTABILE • POSTI DISPONIBILI"
-    },
-    {
-      "id": "dice-6a47e7f1cbff2c0001acc5ab",
-      "title": "Pierluca Mariti - Abbi Pazienza",
-      "description": "Evento dal vivo in programma a Milano presso Teatro Santuccio. Biglietti e dettagli ufficiali su DICE.fm.",
-      "startTime": "2026-11-12T20:00:00.000Z",
-      "endTime": "2026-11-12T22:45:00.000Z",
-      "venueName": "Teatro Santuccio",
-      "neighborhood": "Milano",
-      "address": "Via Luigi Sacco 10, 21100 Varese Varese, Italy, Milano",
-      "isFree": false,
-      "isSoldOut": true,
-      "priceDetails": "€19.66",
-      "category": "teatro",
-      "eventType": "LIVE_CONCERT",
-      "sourceName": "DICE.fm Milano",
-      "sourceUrl": "https://dice.fm/event/3o7va8-pierluca-mariti-abbi-pazienza-12th-nov-teatro-santuccio-varese-tickets",
-      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=Teatro%20Santuccio%20Via%20Luigi%20Sacco%2010%2C%2021100%20Varese%20Varese%2C%20Italy%2C%20Milano",
-      "instagramUrl": "https://www.instagram.com/explore/tags/teatrosantuccio/",
-      "facebookUrl": null,
-      "origin": "dice_crawler",
-      "sourceBadge": "DICE Live",
-      "availabilityBadge": "SOLD OUT • POSTI ESAURITI"
-    },
-    {
-      "id": "dice-6ae0c95cbdb58d00014dd4a5",
-      "title": "A Modino / Stand Up di Giacomo Pietrini",
-      "description": "Evento dal vivo in programma a Milano presso Alveare Culturale Studio. Biglietti e dettagli ufficiali su DICE.fm.",
-      "startTime": "2026-11-12T20:00:00.000Z",
-      "endTime": "2026-11-12T21:30:00.000Z",
-      "venueName": "Alveare Culturale Studio",
-      "neighborhood": "Milano",
-      "address": "Via Carlo Imbonati 12, 20159 Milan Milan, Italy, Milano",
-      "isFree": false,
-      "isSoldOut": false,
-      "priceDetails": "€€ / Biglietti su DICE",
-      "category": "teatro",
-      "eventType": "LIVE_CONCERT",
-      "sourceName": "DICE.fm Milano",
-      "sourceUrl": "https://dice.fm/event/q23dqy-a-modino-stand-up-di-giacomo-pietrini-12th-nov-alveare-culturale-studio-milan-tickets",
-      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=Alveare%20Culturale%20Studio%20Via%20Carlo%20Imbonati%2012%2C%2020159%20Milan%20Milan%2C%20Italy%2C%20Milano",
-      "instagramUrl": "https://www.instagram.com/explore/tags/alveareculturalestudio/",
       "facebookUrl": null,
       "origin": "dice_crawler",
       "sourceBadge": "DICE Live",
@@ -10163,6 +10117,29 @@
       "origin": "curated"
     },
     {
+      "id": "cine-beltrade-1794562800000-l-estranea",
+      "title": "L'estranea",
+      "description": "Proiezione al Cinema Beltrade, in italiano. Regia di Paolo Strippoli.",
+      "startTime": "2026-11-13T09:40:00.000Z",
+      "endTime": "2026-11-13T11:35:00.000Z",
+      "venueName": "Cinema Beltrade",
+      "neighborhood": "Milano",
+      "address": "Via Oxilia, 10, Milano",
+      "isFree": false,
+      "isSoldOut": false,
+      "priceDetails": "Biglietti in cassa o online",
+      "category": "cinema",
+      "eventType": "CINEMA_SCREENING",
+      "sourceName": "milanocinema.com",
+      "sourceUrl": "https://bandhi.it/bah/beltrade/production/lestranea/",
+      "instagramUrl": null,
+      "facebookUrl": null,
+      "_cinemaSlug": "beltrade",
+      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=Cinema%20Beltrade%20Via%20Oxilia%2C%2010%2C%20Milano+Milano",
+      "availabilityBadge": "PRENOTABILE • POSTI DISPONIBILI",
+      "origin": "adapter"
+    },
+    {
       "id": "evt-torre-branca-sunset",
       "title": "Rassegna Eventi, Talk & Installazioni Immersive al MEET",
       "description": "Appuntamento pomeridiano dedicato alla cultura digitale, alle arti generative e alle installazioni immersive nella sede MEET di Porta Venezia.",
@@ -10447,7 +10424,7 @@
       "rejectionReasons": [
         "Gate 4 (Fedeltà Link Sorgente): L'URL associato (https://www.circolomagnolia.it/) è una homepage generica e non riporta il permalink con i dettagli specifici dell'evento \"Live Tour & Club Night al Circolo Magnolia — Idroscalo\"."
       ],
-      "checkedAt": "2026-11-11T21:39:43.168Z"
+      "checkedAt": "2026-11-11T21:43:55.985Z"
     },
     {
       "id": "evt-palazzo-reale-dali",
@@ -10458,7 +10435,7 @@
       "rejectionReasons": [
         "Gate 4 (Fedeltà Link Sorgente): La pagina sorgente ha risposto con errore HTTP 403"
       ],
-      "checkedAt": "2026-11-11T21:39:43.168Z"
+      "checkedAt": "2026-11-11T21:43:55.985Z"
     },
     {
       "id": "evt-gam-pellizza-volpedo",
@@ -10469,7 +10446,7 @@
       "rejectionReasons": [
         "Gate 4 (Fedeltà Link Sorgente): La pagina sorgente ha risposto con errore HTTP 403"
       ],
-      "checkedAt": "2026-11-11T21:39:43.168Z"
+      "checkedAt": "2026-11-11T21:43:55.985Z"
     },
     {
       "id": "evt-fondazione-prada-torre",
@@ -10480,7 +10457,7 @@
       "rejectionReasons": [
         "Gate 4 (Fedeltà Link Sorgente): La pagina sorgente ha risposto con errore HTTP 403"
       ],
-      "checkedAt": "2026-11-11T21:39:43.168Z"
+      "checkedAt": "2026-11-11T21:43:55.985Z"
     },
     {
       "id": "evt-mudec-dialogo-arti",
@@ -10491,7 +10468,7 @@
       "rejectionReasons": [
         "Gate 4 (Fedeltà Link Sorgente): La pagina sorgente ha risposto con errore HTTP 403"
       ],
-      "checkedAt": "2026-11-11T21:39:43.168Z"
+      "checkedAt": "2026-11-11T21:43:55.985Z"
     },
     {
       "id": "evt-palazzo-reale-brueghel",
@@ -10502,7 +10479,7 @@
       "rejectionReasons": [
         "Gate 4 (Fedeltà Link Sorgente): La pagina sorgente ha risposto con errore HTTP 403"
       ],
-      "checkedAt": "2026-11-11T21:39:43.168Z"
+      "checkedAt": "2026-11-11T21:43:55.985Z"
     },
     {
       "id": "evt-lafeltrinelli-duomo",
@@ -10513,7 +10490,7 @@
       "rejectionReasons": [
         "Gate 4 (Fedeltà Link Sorgente): Impossibile raggiungere l'URL sorgente: The operation was aborted due to timeout"
       ],
-      "checkedAt": "2026-11-11T21:39:43.168Z"
+      "checkedAt": "2026-11-11T21:43:55.985Z"
     },
     {
       "id": "evt-elfo-puccini-contemp",
@@ -10524,7 +10501,7 @@
       "rejectionReasons": [
         "Gate 4 (Fedeltà Link Sorgente): L'URL associato (https://www.elfo.org/) è una homepage generica e non riporta il permalink con i dettagli specifici dell'evento \"Stagione Teatro Contemporaneo — Sala Shakespeare, Bausch e Fassbinder\"."
       ],
-      "checkedAt": "2026-11-11T21:39:43.168Z"
+      "checkedAt": "2026-11-11T21:43:55.985Z"
     },
     {
       "id": "evt-blue-note-jazz",
@@ -10535,7 +10512,7 @@
       "rejectionReasons": [
         "Gate 4 (Fedeltà Link Sorgente): L'URL associato (https://www.bluenotemilano.com/) è una homepage generica e non riporta il permalink con i dettagli specifici dell'evento \"Live Jazz, Soul & Blues — First Set (Ore 21:00) in Via Borsieri\"."
       ],
-      "checkedAt": "2026-11-11T21:39:43.168Z"
+      "checkedAt": "2026-11-11T21:43:55.985Z"
     },
     {
       "id": "evt-magnolia-clubnight",
@@ -10546,7 +10523,7 @@
       "rejectionReasons": [
         "Gate 4 (Fedeltà Link Sorgente): L'URL associato (https://www.circolomagnolia.it/) è una homepage generica e non riporta il permalink con i dettagli specifici dell'evento \"Live Tour & Club Night al Circolo Magnolia — Idroscalo\"."
       ],
-      "checkedAt": "2026-11-11T21:39:43.168Z"
+      "checkedAt": "2026-11-11T21:43:55.985Z"
     },
     {
       "id": "evt-palazzo-reale-dali",
@@ -10557,7 +10534,7 @@
       "rejectionReasons": [
         "Gate 4 (Fedeltà Link Sorgente): La pagina sorgente ha risposto con errore HTTP 403"
       ],
-      "checkedAt": "2026-11-11T21:39:43.168Z"
+      "checkedAt": "2026-11-11T21:43:55.985Z"
     },
     {
       "id": "evt-gam-pellizza-volpedo",
@@ -10568,7 +10545,7 @@
       "rejectionReasons": [
         "Gate 4 (Fedeltà Link Sorgente): La pagina sorgente ha risposto con errore HTTP 403"
       ],
-      "checkedAt": "2026-11-11T21:39:43.168Z"
+      "checkedAt": "2026-11-11T21:43:55.985Z"
     },
     {
       "id": "evt-fondazione-prada-torre",
@@ -10579,7 +10556,7 @@
       "rejectionReasons": [
         "Gate 4 (Fedeltà Link Sorgente): La pagina sorgente ha risposto con errore HTTP 403"
       ],
-      "checkedAt": "2026-11-11T21:39:43.168Z"
+      "checkedAt": "2026-11-11T21:43:55.985Z"
     },
     {
       "id": "evt-mudec-dialogo-arti",
@@ -10590,7 +10567,7 @@
       "rejectionReasons": [
         "Gate 4 (Fedeltà Link Sorgente): La pagina sorgente ha risposto con errore HTTP 403"
       ],
-      "checkedAt": "2026-11-11T21:39:43.168Z"
+      "checkedAt": "2026-11-11T21:43:55.985Z"
     },
     {
       "id": "evt-palazzo-reale-brueghel",
@@ -10601,7 +10578,7 @@
       "rejectionReasons": [
         "Gate 4 (Fedeltà Link Sorgente): La pagina sorgente ha risposto con errore HTTP 403"
       ],
-      "checkedAt": "2026-11-11T21:39:43.168Z"
+      "checkedAt": "2026-11-11T21:43:55.985Z"
     },
     {
       "id": "evt-lafeltrinelli-duomo",
@@ -10612,7 +10589,7 @@
       "rejectionReasons": [
         "Gate 4 (Fedeltà Link Sorgente): Impossibile raggiungere l'URL sorgente: The operation was aborted due to timeout"
       ],
-      "checkedAt": "2026-11-11T21:39:43.168Z"
+      "checkedAt": "2026-11-11T21:43:55.985Z"
     },
     {
       "id": "evt-elfo-puccini-contemp",
@@ -10623,7 +10600,7 @@
       "rejectionReasons": [
         "Gate 4 (Fedeltà Link Sorgente): L'URL associato (https://www.elfo.org/) è una homepage generica e non riporta il permalink con i dettagli specifici dell'evento \"Stagione Teatro Contemporaneo — Sala Shakespeare, Bausch e Fassbinder\"."
       ],
-      "checkedAt": "2026-11-11T21:39:43.168Z"
+      "checkedAt": "2026-11-11T21:43:55.985Z"
     },
     {
       "id": "evt-blue-note-jazz",
@@ -10634,7 +10611,7 @@
       "rejectionReasons": [
         "Gate 4 (Fedeltà Link Sorgente): L'URL associato (https://www.bluenotemilano.com/) è una homepage generica e non riporta il permalink con i dettagli specifici dell'evento \"Live Jazz, Soul & Blues — First Set (Ore 21:00) in Via Borsieri\"."
       ],
-      "checkedAt": "2026-11-11T21:39:43.168Z"
+      "checkedAt": "2026-11-11T21:43:55.985Z"
     }
   ]
 }
