@@ -1633,9 +1633,8 @@
     let allNormalizedEvents = [];
     let activePriceFilter = 'all'; // 'all' | 'free' | 'paid'
     let activeCategoryFilter = 'all';
-      disabledCategories.clear();
-    let activeCinemaVenueFilter = 'all'; // 'all' | category id
     let disabledCategories = new Set(); // Categorie disattivate tramite X
+    let activeCinemaVenueFilter = 'all'; // 'all' | category id
     let activeSearchQuery = '';
     let onlyHappeningNow = false;
     let expandedEventIds = new Set(['evt-mexico-qa', 'evt-base-vernissage']);
@@ -1761,6 +1760,9 @@
         fromFeed.push({ ...fe, id: `${fe.id}@${s}`, _fixedStartMs: s, _fixedEndMs: e });
       });
       const userAdded = EVENT_BLUEPRINTS.filter(bp => /^evt-(user|quar)-/.test(bp.id));
+      if (fromFeed.length === 0) {
+        return EVENT_BLUEPRINTS;
+      }
       return [...fromFeed, ...userAdded];
     }
 
@@ -3582,7 +3584,11 @@
       document.getElementById('empty-reset-btn')?.addEventListener('click', resetAllFilters);
     }
 
-    document.addEventListener('DOMContentLoaded', initMilanoLiveApp);
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initMilanoLiveApp);
+    } else {
+      initMilanoLiveApp();
+    }
   </script>
 </body>
 </html>
