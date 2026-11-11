@@ -1,8 +1,8 @@
 /**
  * MilanoToday Eventi Crawler (`services/crawlers/milanoTodayCrawler.js`)
  * Targets:
- * - https://www.milanotoday.it/eventi/da/${today}/a/${today}/
- * - https://www.milanotoday.it/eventi/da/${tomorrow}/a/${tomorrow}/
+ * - https://www.milanotoday.it/eventi/dal/${today}/al/${today}/
+ * - https://www.milanotoday.it/eventi/dal/${tomorrow}/al/${tomorrow}/
  * - Fallback: https://www.milanotoday.it/eventi/
  */
 
@@ -20,30 +20,32 @@ import {
 export async function crawlMilanoToday({ nowMs = Date.now(), fetcher = universalFetch } = {}) {
   const { today, tomorrow } = getRomeDateStrings(nowMs);
   const targetUrls = [
-    `https://www.milanotoday.it/eventi/da/${today}/a/${today}/`,
-    `https://www.milanotoday.it/eventi/da/${tomorrow}/a/${tomorrow}/`,
+    `https://www.milanotoday.it/eventi/dal/${today}/al/${today}/`,
+    `https://www.milanotoday.it/eventi/dal/${tomorrow}/al/${tomorrow}/`,
     'https://www.milanotoday.it/eventi/'
   ];
 
   const events = [];
   const seenIds = new Set();
+  const windowEndMs = nowMs + 24 * 3600 * 1000;
 
   for (const url of targetUrls) {
     try {
       const html = await fetcher(url);
 
-      // Match c-card blocks
-      const cardMatches = [...html.matchAll(/<div\b[^>]*class="[^"]*c-card[^"]*"[^>]*>([\s\S]*?)<\/div>\s*<\/div>/gi)];
+      // Match <article class="...c-card...">
+      const cardMatches = [...html.matchAll(/<article\b[^>]*class="[^"]*c-card[^"]*"[^>]*>([\s\S]*?)<\/article>/gi)];
 
       for (const cm of cardMatches) {
         const chunk = cm[1];
-        const headingMatch = chunk.match(/<(?:h2|h3)\b[^>]*class="[^"]*c-card__heading[^"]*"[^>]*>([\s\S]*?)<\/(?:h2|h3)>/i);
+        const headingMatch = chunk.match(/<(?:h2|h3)\b[^>]*class="[^"]*c-card__heading[^"]*"[^>]*>([\s\S]*?)<\/(?:h2|h3)>/i)
+          || chunk.match(/<(?:h2|h3)\b[^>]*>([\s\S]*?)<\/(?:h2|h3)>/i);
         if (!headingMatch) continue;
 
         const title = decodeHtml(headingMatch[1].replace(/<[^>]+>/g, '')).trim();
-        if (!title || title.length < 4) continue;
+        if (!title || title.length < 3) continue;
 
-        const linkMatch = chunk.match(/<a\b[^>]*href="([^"]*\/eventi\/[^"]+)"[^>]*>/i);
+        const linkMatch = chunk.match(/href="(\/eventi\/[^"]+)"/i) || chunk.match(/href="([^"*]+\/eventi\/[^"]+)"/i);
         let sourceUrl = linkMatch ? linkMatch[1] : url;
         if (sourceUrl.startsWith('//')) sourceUrl = 'https:' + sourceUrl;
         else if (sourceUrl.startsWith('/')) sourceUrl = 'https://www.milanotoday.it' + sourceUrl;
@@ -52,32 +54,39 @@ export async function crawlMilanoToday({ nowMs = Date.now(), fetcher = universal
         if (seenIds.has(id)) continue;
         seenIds.add(id);
 
-        // Description / excerpt
-        const descMatch = chunk.match(/<p\b[^>]*class="[^"]*(?:c-card__description|c-card__text|o-text-lead)[^"]*"[^>]*>([\s\S]*?)<\/p>/i);
-        const descRaw = descMatch ? descMatch[1] : '';
-        const description = cleanDescription(descRaw) || `Evento in programma a Milano segnalato su MilanoToday.`;
+        // Venue from #icon-map-pin
+        const venuePinMatch = chunk.match(/#icon-map-pin[\s\S]*?<span\b[^>]*>([\s\S]*?)<\/span>/i);
+        const venueName = venuePinMatch ? decodeHtml(venuePinMatch[1].replace(/<[^>]+>/g, '')).trim() : 'Milano';
 
-        // Venue / Location info in card
-        const locMatch = chunk.match(/class="[^"]*(?:c-card__place|c-card__location|u-color-secondary)[^"]*"[^>]*>([\s\S]*?)<\/[a-z]+>/i);
-        const venueName = locMatch ? decodeHtml(locMatch[1].replace(/<[^>]+>/g, '')).trim() : 'Milano';
+        // Date / calendar details
+        const calMatch = chunk.match(/#icon-calendar[\s\S]*?<span\b[^>]*>([\s\S]*?)<\/span>/i);
+        const calText = calMatch ? decodeHtml(calMatch[1].replace(/<[^>]+>/g, '')).trim() : '';
 
-        // Time slot: infer from text or set default
-        const isFree = detectFreeEntry(`${title} ${chunk}`);
-        const category = classifyMilanCategory(`${title} ${descRaw}`);
+        // Category from kicker
+        const kickerMatch = chunk.match(/class="[^"]*c-card__kicker[^"]*"[^>]*>([\s\S]*?)<\/span>/i);
+        const kicker = kickerMatch ? decodeHtml(kickerMatch[1].replace(/<[^>]+>/g, '')).trim() : '';
 
-        // Extract hour if present (e.g. ore 21:00)
+        // Pricing badge
+        const isFree = detectFreeEntry(`${title} ${chunk}`) || /gratis|gratuito/i.test(chunk);
+        const priceDetails = isFree ? 'GRATIS' : 'A Pagamento / Consulta MilanoToday';
+
+        const category = classifyMilanCategory(`${title} ${kicker} ${venueName}`);
+
+        // Extract hour if explicitly mentioned (e.g. ore 21:00)
         const hourMatch = chunk.match(/ore\s+(\d{1,2})[.:](\d{2})/i) || title.match(/ore\s+(\d{1,2})[.:](\d{2})/i);
         const startHour = hourMatch ? parseInt(hourMatch[1], 10) : (category === 'mostre' ? 10 : 20);
-        const startMin = hourMatch ? parseInt(hourMatch[2], 10) : 30;
+        const startMin = hourMatch ? parseInt(hourMatch[2], 10) : 0;
 
-        const eventDate = new Date(nowMs);
-        if (url.includes(tomorrow)) {
-          eventDate.setDate(eventDate.getDate() + 1);
-        }
-        eventDate.setHours(startHour, startMin, 0, 0);
+        const isTomorrow = url.includes(tomorrow) || /solo domani|domani/i.test(chunk);
+        const targetDate = isTomorrow ? tomorrow : today;
+        const startMs = Date.parse(`${targetDate}T${String(startHour).padStart(2, '0')}:${String(startMin).padStart(2, '0')}:00+01:00`);
+        const durationHours = category === 'mostre' ? 8 : 2.5;
+        const endMs = startMs + durationHours * 3600 * 1000;
 
-        const startMs = eventDate.getTime();
-        const endMs = startMs + (category === 'mostre' ? 7 * 3600 * 1000 : 2 * 3600 * 1000);
+        // Strict 24h rolling window check
+        if (endMs <= nowMs || startMs > windowEndMs) continue;
+
+        const description = `Evento a Milano (${calText || 'oggi/domani'}) segnalato da MilanoToday presso ${venueName}.`;
 
         events.push({
           id,
@@ -88,11 +97,11 @@ export async function crawlMilanoToday({ nowMs = Date.now(), fetcher = universal
           startTime: new Date(startMs).toISOString(),
           endTime: new Date(endMs).toISOString(),
           venueName,
-          address: `${venueName}, Milano`,
+          address: /milano/i.test(venueName) ? venueName : `${venueName}, Milano`,
           neighborhood: 'Milano',
           isFree,
           isSoldOut: false,
-          priceDetails: isFree ? 'GRATIS' : (chunk.includes('Gratuito') ? 'GRATIS' : 'A Pagamento'),
+          priceDetails,
           category,
           eventType: 'SPECIAL_EVENT',
           mapsUrl: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(venueName + ' Milano')}`,
@@ -103,9 +112,7 @@ export async function crawlMilanoToday({ nowMs = Date.now(), fetcher = universal
           sourceBadge: 'MILANOTODAY'
         });
       }
-
-      if (events.length >= 10) break;
-    } catch (err) {
+    } catch {
       // Continue to next URL
     }
   }
