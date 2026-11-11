@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-11-11T21:59:50.176Z",
+  "generatedAt": "2026-11-11T22:09:43.863Z",
   "stats": {
-    "total": 93,
+    "total": 92,
     "crawlers": {
       "zero": {
         "count": 1,
@@ -20,7 +20,7 @@
         "status": "ok"
       },
       "dice": {
-        "count": 23,
+        "count": 22,
         "status": "ok"
       }
     }
@@ -1612,28 +1612,6 @@
       "sourceUrl": "https://www.mentelocale.it/milano/134069-omar-pedrini-band-timoria-25-anni-di-el-topo-grand-hotel.htm",
       "origin": "mentelocale_crawler",
       "sourceBadge": "MENTELOCALE"
-    },
-    {
-      "id": "dice-6adcc8de3d07320001393053",
-      "title": "Pescato del Giorno | Comedy Show - secondo turno",
-      "description": "Evento dal vivo in programma a Milano presso SALONE 14 @ Yellowsquare. Biglietti e dettagli ufficiali su DICE.fm.",
-      "startTime": "2026-11-11T21:00:00.000Z",
-      "endTime": "2026-11-11T23:00:00.000Z",
-      "venueName": "SALONE 14 @ Yellowsquare",
-      "neighborhood": "Milano",
-      "address": "Via Serviliano Lattuada, 14, 20135 Milano MI, Italy",
-      "isFree": false,
-      "isSoldOut": true,
-      "priceDetails": "€14.00",
-      "category": "teatro",
-      "eventType": "LIVE_CONCERT",
-      "sourceName": "DICE.fm Milano",
-      "sourceUrl": "https://dice.fm/event/xe83ea-pescato-del-giorno-comedy-show-secondo-turno-11th-nov-salone-14-yellowsquare-milano-tickets",
-      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=SALONE%2014%20%40%20Yellowsquare%20Via%20Serviliano%20Lattuada%2C%2014%2C%2020135%20Milano%20MI%2C%20Italy",
-      "instagramUrl": "https://www.instagram.com/yellowsquaremilano/",
-      "facebookUrl": null,
-      "origin": "dice_crawler",
-      "sourceBadge": "DICE Live"
     },
     {
       "id": "dice-6ae87061113d0f0001b3ff61",
