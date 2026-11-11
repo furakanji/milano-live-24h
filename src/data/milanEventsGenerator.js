@@ -500,24 +500,7 @@ export const MILAN_EVENT_TEMPLATES = [
     facebookUrl: null,
     sourceUrl: 'https://teatrofrancoparenti.it/cartellone/spettacoli-teatro-milano/'
   },
-  {
-    id: 'evt-casa-cultura-abitare',
-    scheduledHour: 20,
-    scheduledMinute: 30,
-    durationMinutes: 110,
-    title: 'Dialoghi di Filosofia, Politica e Cultura: "Ricostruire un Corpo Sociale Vivente"',
-    description: 'Ciclo di incontri pubblici, dibattiti su democrazia, urbanistica e pace promossi dalla storica Casa della Cultura in Via Borgogna 3.',
-    venueName: 'Casa della Cultura',
-    neighborhood: 'San Babila / Via Borgogna',
-    address: 'Via Borgogna 3',
-    isFree: true,
-    priceDetails: 'GRATIS • Accesso libero alla cittadinanza',
-    category: 'politica',
-    sourceName: 'casadellacultura.it — Programma',
-    instagramUrl: null,
-    facebookUrl: null,
-    sourceUrl: 'https://www.casadellacultura.it/'
-  },
+
   {
     id: 'evt-manzoni-prosa',
     scheduledHour: 20,

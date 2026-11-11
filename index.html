@@ -949,6 +949,19 @@
         reasons.push('Gate 2 (Disponibilità & Prenotabilità): L’attività non ha date attive e non è né disponibile né prenotabile.');
       }
 
+      // Gate 4: Fedeltà Link Sorgente (Esclude link a homepage generiche che non contengono permalink/dettagli dell'evento)
+      if (candidate.sourceUrl) {
+        try {
+          const parsed = new URL(candidate.sourceUrl);
+          const path = parsed.pathname.replace(/\/+$/, '');
+          if (!path && !parsed.search) {
+            reasons.push(`Gate 4 (Fedeltà Link Sorgente): L'URL associato (${parsed.origin}/) è una homepage generica e non riporta il permalink con i dettagli specifici dell'evento.`);
+          }
+        } catch {
+          // ignore url parse error if not valid url
+        }
+      }
+
       const isSoldOut =
         Boolean(candidate.isSoldOut) ||
         /sold\s*out|tutto\s+esaurito|posti\s+esauriti|biglietti\s+esauriti/i.test(text);
@@ -1427,24 +1440,7 @@
         facebookUrl: null,
         sourceUrl: 'https://teatrofrancoparenti.it/cartellone/spettacoli-teatro-milano/'
       },
-      {
-        id: 'evt-casa-cultura-abitare',
-        scheduledHour: 20,
-        scheduledMinute: 30,
-        durationMinutes: 110,
-        title: 'Scuola di Cultura Politica & Dialoghi: "Ricostruire un Corpo Sociale Vivente"',
-        description: 'Ciclo di incontri pubblici, dibattiti su democrazia, urbanistica e filosofia promossi dalla storica Casa della Cultura in Via Borgogna 3.',
-        venueName: 'Casa della Cultura',
-        neighborhood: 'San Babila / Via Borgogna',
-        address: 'Via Borgogna 3',
-        isFree: true,
-        priceDetails: 'GRATIS • Accesso libero alla cittadinanza',
-        category: 'politica',
-        sourceName: 'casadellacultura.it',
-        instagramUrl: null,
-        facebookUrl: null,
-        sourceUrl: 'https://www.casadellacultura.it/'
-      },
+
       {
         id: 'evt-manzoni-prosa',
         scheduledHour: 20,

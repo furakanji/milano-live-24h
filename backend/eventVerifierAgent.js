@@ -212,6 +212,117 @@ export function verifyEventCandidateWithAgent(candidate = {}) {
 }
 
 /**
+ * Gate 4: Link Faithfulness Checker (`checkSourceUrlFaithfulness`)
+ * Verifica se l'URL associato a una scheda riporta fedelmente i dettagli dell'evento
+ * (titolo, venue o parole chiave rilevanti presenti nel body della pagina di destinazione).
+ *
+ * @param {Object} event
+ * @param {string} event.title
+ * @param {string} [event.venueName]
+ * @param {string} event.sourceUrl
+ * @param {string} [htmlText] - HTML pre-scaricato (opzionale)
+ * @returns {Promise<{isFaithful: boolean, reason: string, score: number, checkedUrl: string}>}
+ */
+export async function checkSourceUrlFaithfulness(event = {}, htmlText = null) {
+  const url = (event.sourceUrl || '').trim();
+  if (!url || !/^https?:\/\//i.test(url)) {
+    return {
+      isFaithful: false,
+      score: 0,
+      reason: 'URL mancante o non valido (deve iniziare con http:// o https://)',
+      checkedUrl: url
+    };
+  }
+
+  // Se l'URL punta a una generica homepage (es. 'https://www.casadellacultura.it' o 'https://www.casadellacultura.it/'),
+  // non è un permalink fedele del singolo evento
+  try {
+    const parsed = new URL(url);
+    const path = parsed.pathname.replace(/\/+$/, '');
+    if (!path && !parsed.search) {
+      return {
+        isFaithful: false,
+        score: 15,
+        reason: `L'URL associato (${parsed.origin}/) è una homepage generica e non riporta il permalink con i dettagli specifici dell'evento "${event.title}".`,
+        checkedUrl: url
+      };
+    }
+  } catch {
+    return {
+      isFaithful: false,
+      score: 0,
+      reason: 'URL malformato',
+      checkedUrl: url
+    };
+  }
+
+  // Scarica il contenuto della pagina se non già fornito
+  let bodyText = htmlText;
+  if (!bodyText) {
+    try {
+      const res = await fetch(url, {
+        signal: AbortSignal.timeout(10000),
+        headers: { 'user-agent': 'MilanoLive24h-Verifier/2.0 (+https://milanolive24h.it)' }
+      });
+      if (!res.ok) {
+        return {
+          isFaithful: false,
+          score: 0,
+          reason: `La pagina sorgente ha risposto con errore HTTP ${res.status}`,
+          checkedUrl: url
+        };
+      }
+      bodyText = await res.text();
+    } catch (err) {
+      return {
+        isFaithful: false,
+        score: 0,
+        reason: `Impossibile raggiungere l'URL sorgente: ${err.message}`,
+        checkedUrl: url
+      };
+    }
+  }
+
+  // Estrai token significativi dal titolo dell'evento
+  const cleanTitle = (event.title || '')
+    .toLowerCase()
+    .replace(/[«»""''():;—–\-_.,!?/]/g, ' ')
+    .trim();
+  const titleTokens = cleanTitle
+    .split(/\s+/)
+    .filter((w) => w.length > 3 && !/^(della|delle|degli|nella|nelle|negli|senza|verso|presso|orario|orari|programma|milano|evento|giorno|sera)$/i.test(w));
+
+  const pageLower = bodyText.toLowerCase();
+
+  // Conta quanti token significativi del titolo sono presenti nella pagina
+  const matchedTokens = titleTokens.filter((token) => pageLower.includes(token));
+  const matchRatio = titleTokens.length > 0 ? (matchedTokens.length / titleTokens.length) : 0;
+
+  // Verifica presenza della venue
+  const cleanVenue = (event.venueName || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+  const venueInPage = cleanVenue.length > 4 && pageLower.replace(/[^a-z0-9]/g, '').includes(cleanVenue);
+
+  const score = Math.round(matchRatio * 75 + (venueInPage ? 25 : 0));
+
+  // Richiedi che almeno una parte del titolo dell'evento sia riscontrata nella pagina di destinazione
+  if (matchRatio < 0.3 || matchedTokens.length === 0) {
+    return {
+      isFaithful: false,
+      score,
+      reason: `Nessuna traccia sufficiente del titolo dell'evento nel contenuto della pagina (parole chiave trovate: ${matchedTokens.join(', ') || 'nessuna'} su ${titleTokens.length}).`,
+      checkedUrl: url
+    };
+  }
+
+  return {
+    isFaithful: true,
+    score,
+    reason: `Dettagli evento confermati nella pagina di destinazione (${matchedTokens.length}/${titleTokens.length} parole chiave riscontrate).`,
+    checkedUrl: url
+  };
+}
+
+/**
  * Esecuzione CLI / GitHub Actions dell'Agente di Verifica:
  * Valida tutti gli eventi in `src/data/milanEventsGenerator.js`, esegue un controllo HTTP
  * opzionale sulle pagine fonte e salva il report in `public/verified-events-24h.json`.

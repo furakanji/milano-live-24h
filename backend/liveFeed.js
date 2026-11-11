@@ -12,7 +12,7 @@ import { fileURLToPath } from 'node:url';
 import cinemino from './adapters/cinemino.js';
 import milanocinema from './adapters/milanocinema.js';
 import verso from './adapters/verso.js';
-import { verifyEventCandidateWithAgent, REJECTED_CANDIDATES_LOG } from './eventVerifierAgent.js';
+import { verifyEventCandidateWithAgent, checkSourceUrlFaithfulness, REJECTED_CANDIDATES_LOG } from './eventVerifierAgent.js';
 
 export const ADAPTERS = [cinemino, milanocinema, verso];
 const HOURS_WINDOW = 36; // margine oltre le 24h: il frontend ritaglia la finestra esatta
@@ -78,8 +78,27 @@ export async function buildFeed({ nowMs = Date.now(), loadLines = (a, now) => a.
       if (okVenues.has(ev.venueName) || okCategories.has(ev.category)) continue;
       const key = `${ev.id}|${ev.startTime}`;
       if (seen.has(key)) continue;
+
       const v = verifyEventCandidateWithAgent(ev);
       if (!v.isValidEvent) continue;
+
+      // Gate 4: Controllo di fedeltà del link (esclude homepage generiche e link non corrispondenti all'evento)
+      const faithfulness = await checkSourceUrlFaithfulness(ev);
+      if (!faithfulness.isFaithful) {
+        rejected.push({
+          id: ev.id,
+          title: ev.title,
+          venueName: ev.venueName,
+          sourceUrl: ev.sourceUrl,
+          verdict: 'REJECTED_UNFAITHFUL_LINK',
+          rejectionReasons: [
+            `Gate 4 (Fedeltà Link Sorgente): ${faithfulness.reason}`
+          ],
+          checkedAt: new Date(nowMs).toISOString()
+        });
+        continue;
+      }
+
       seen.add(key);
       curatedCount += 1;
       events.push({
@@ -91,7 +110,7 @@ export async function buildFeed({ nowMs = Date.now(), loadLines = (a, now) => a.
       });
     }
   }
-  sources.push({ id: 'curated', venueName: 'Venue senza adapter (dati curati)', status: 'curated', published: curatedCount, checkedAt: new Date(nowMs).toISOString() });
+  sources.push({ id: 'curated', venueName: 'Venue senza adapter (dati curati verificati)', status: 'curated', published: curatedCount, checkedAt: new Date(nowMs).toISOString() });
 
   events.sort((a, b) => Date.parse(a.startTime) - Date.parse(b.startTime));
   return {
