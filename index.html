@@ -694,6 +694,108 @@
         </div>
       </div>
 
+      <!-- AGGIUNGI NUOVO DOMINIO PER RICERCHE SU MILANO -->
+      <div class="p-5 rounded-xl bg-[#111318] border border-orange-500/40 space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#23272f] pb-3">
+          <div>
+            <span class="text-xs font-bold uppercase tracking-widest text-orange-400 mono-num">NUOVA FONTE DI RICERCA CITTADINA</span>
+            <h4 class="text-sm sm:text-base font-bold text-white mt-0.5">
+              ➕ Aggiungi Dominio per Ricerche ed Eventi a Milano
+            </h4>
+            <p class="text-zinc-400 mt-0.5">
+              Registra un nuovo dominio web da monitorare (es. portale culturale, teatro, circolo, cinema, festival o piattaforma ticketing di Milano). Il sistema aggiunge il dominio al registro attivo, configura il connettore e ne indicizza le occasioni.
+            </p>
+          </div>
+          <span class="px-2.5 py-1 rounded bg-orange-500/15 text-orange-300 border border-orange-500/30 font-bold mono-num text-xs shrink-0">
+            AUTO-SCAN &amp; INGESTION 24H
+          </span>
+        </div>
+
+        <!-- Add Domain Form -->
+        <form id="admin-add-domain-form" class="space-y-3">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <div class="space-y-1 md:col-span-1">
+              <label for="input-new-domain-host" class="block font-bold text-zinc-300 text-[11px]">
+                Dominio o URL Sito <span class="text-rose-400">*</span>
+              </label>
+              <input
+                type="text"
+                id="input-new-domain-host"
+                required
+                placeholder="es. cinetecamilano.it o https://teatrodellocoop.it"
+                class="w-full px-3 py-2 rounded-lg bg-[#0c0e12] border border-[#2a2f3a] text-zinc-100 placeholder-zinc-500 text-xs focus:outline-none focus:border-orange-500 mono-num"
+              />
+            </div>
+            <div class="space-y-1">
+              <label for="input-new-domain-venue" class="block font-bold text-zinc-300 text-[11px]">
+                Nome Luogo / Organizzatore
+              </label>
+              <input
+                type="text"
+                id="input-new-domain-venue"
+                placeholder="es. Teatro della Cooperativa"
+                class="w-full px-3 py-2 rounded-lg bg-[#0c0e12] border border-[#2a2f3a] text-zinc-100 placeholder-zinc-500 text-xs focus:outline-none focus:border-orange-500"
+              />
+            </div>
+            <div class="space-y-1">
+              <label for="input-new-domain-category" class="block font-bold text-zinc-300 text-[11px]">
+                Categoria Principale <span class="text-rose-400">*</span>
+              </label>
+              <select
+                id="input-new-domain-category"
+                class="w-full px-3 py-2 rounded-lg bg-[#0c0e12] border border-[#2a2f3a] text-zinc-100 text-xs focus:outline-none focus:border-orange-500"
+              >
+                <option value="teatro">🎭 Teatro &amp; Spettacoli</option>
+                <option value="cinema">🎬 Cinema &amp; Rassegne</option>
+                <option value="concerti">🎵 Concerti &amp; Live Music</option>
+                <option value="mostre">🏛️ Mostre &amp; Arte</option>
+                <option value="libri">📚 Libri &amp; Presentazioni</option>
+                <option value="incontri">🗣️ Incontri &amp; Talk</option>
+                <option value="aperture">🚪 Aperture Straordinarie</option>
+                <option value="politica">🏛️ Assemblee &amp; Territorio</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <div class="space-y-1">
+              <label for="input-new-domain-neighborhood" class="block font-bold text-zinc-300 text-[11px]">
+                Quartiere / Zona Milano
+              </label>
+              <input
+                type="text"
+                id="input-new-domain-neighborhood"
+                placeholder="es. Niguarda / Bovisa / Navigli"
+                class="w-full px-3 py-2 rounded-lg bg-[#0c0e12] border border-[#2a2f3a] text-zinc-100 placeholder-zinc-500 text-xs focus:outline-none focus:border-orange-500"
+              />
+            </div>
+            <div class="space-y-1 md:col-span-2">
+              <label for="input-new-domain-notes" class="block font-bold text-zinc-300 text-[11px]">
+                Note di Ricerca / Sezione Calendario
+              </label>
+              <div class="flex gap-2">
+                <input
+                  type="text"
+                  id="input-new-domain-notes"
+                  placeholder="es. /programma, /stagione o ticketing via DICE"
+                  class="flex-1 px-3 py-2 rounded-lg bg-[#0c0e12] border border-[#2a2f3a] text-zinc-100 placeholder-zinc-500 text-xs focus:outline-none focus:border-orange-500"
+                />
+                <button
+                  type="submit"
+                  class="px-4 py-2 rounded-lg bg-orange-500 hover:bg-orange-400 text-black font-extrabold text-xs cursor-pointer transition flex items-center gap-1.5 shrink-0"
+                >
+                  <span>⚡</span>
+                  <span>Aggiungi Dominio &amp; Attiva Ricerca</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </form>
+
+        <!-- Feedback Alert for Domain Addition -->
+        <div id="admin-add-domain-feedback" class="hidden p-3.5 rounded-lg border text-xs"></div>
+      </div>
+
       <!-- Domains Grid / Cards -->
       <div id="admin-domains-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
         <!-- Rendered dynamically by renderAdminDomainsPage() -->
@@ -3572,6 +3674,32 @@
     let adminDomainSearchQuery = '';
     let adminDomainCategoryFilter = 'all';
 
+    const STORAGE_CUSTOM_DOMAINS_KEY = 'milano_live_custom_search_domains_v1';
+
+    function loadCustomSearchDomains() {
+      try {
+        const raw = localStorage.getItem(STORAGE_CUSTOM_DOMAINS_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (Array.isArray(parsed)) return parsed;
+        }
+      } catch {
+        // Fallback
+      }
+      return [];
+    }
+
+    let customSearchDomainsDb = loadCustomSearchDomains();
+
+    function saveCustomSearchDomains(list) {
+      customSearchDomainsDb = list;
+      try {
+        localStorage.setItem(STORAGE_CUSTOM_DOMAINS_KEY, JSON.stringify(list));
+      } catch {
+        // LocalStorage quota or blocked
+      }
+    }
+
     function setAdminActiveTab(tabName) {
       currentAdminTab = tabName;
       const overviewBtn = document.getElementById('admin-tab-btn-overview');
@@ -3603,6 +3731,7 @@
 
     /**
      * Aggregates and renders all unique domains from active verified events
+     * as well as custom domains registered by admin for Milan web searches.
      */
     function renderAdminDomainsPage() {
       const grid = document.getElementById('admin-domains-grid');
@@ -3618,6 +3747,7 @@
 
       const domainsMap = new Map();
 
+      // 1. Ingest domains from active verified events
       eventsPool.forEach(ev => {
         if (!ev.sourceUrl) return;
         try {
@@ -3630,6 +3760,7 @@
               hostname: cleanHost,
               fullOrigin: parsed.origin,
               eventCount: 0,
+              isCustomAdded: false,
               categories: new Set(),
               venues: new Set(),
               sampleTitles: [],
@@ -3647,6 +3778,33 @@
           }
         } catch {
           // Ignore invalid URLs
+        }
+      });
+
+      // 2. Ingest custom registered search domains (added via Admin form)
+      customSearchDomainsDb.forEach(cd => {
+        const cleanHost = cd.domain.toLowerCase().replace(/^www\./, '');
+        if (!domainsMap.has(cleanHost)) {
+          domainsMap.set(cleanHost, {
+            hostname: cleanHost,
+            fullOrigin: `https://${cleanHost}`,
+            eventCount: cd.generatedEventId ? 1 : 0,
+            isCustomAdded: true,
+            customId: cd.id,
+            notes: cd.notes || '',
+            neighborhood: cd.neighborhood || '',
+            categories: new Set([cd.category || 'teatro']),
+            venues: new Set([cd.venueName || cleanHost]),
+            sampleTitles: [cd.sampleTitle || `Monitoraggio attivo per ricerche a Milano (${cd.venueName || cleanHost})`],
+            sampleUrls: [cd.url || `https://${cleanHost}`]
+          });
+        } else {
+          // Update existing with custom flags
+          const entry = domainsMap.get(cleanHost);
+          entry.isCustomAdded = true;
+          entry.customId = cd.id;
+          if (cd.category) entry.categories.add(cd.category);
+          if (cd.venueName) entry.venues.add(cd.venueName);
         }
       });
 
@@ -3711,16 +3869,19 @@
         const sampleUrl = d.sampleUrls[0] || `https://${d.hostname}`;
 
         return `
-          <div class="p-4 rounded-xl bg-[#131519] border border-[#252a34] hover:border-emerald-500/50 transition flex flex-col justify-between gap-3 group">
+          <div class="p-4 rounded-xl bg-[#131519] border ${d.isCustomAdded ? 'border-orange-500/50' : 'border-[#252a34]'} hover:border-emerald-500/50 transition flex flex-col justify-between gap-3 group">
             <div class="space-y-2">
               <div class="flex items-start justify-between gap-2">
                 <div class="flex items-center gap-2 min-w-0">
-                  <div class="w-7 h-7 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center shrink-0 text-xs">
-                    🌐
+                  <div class="w-7 h-7 rounded-lg ${d.isCustomAdded ? 'bg-orange-500/15 border border-orange-500/40' : 'bg-emerald-500/10 border border-emerald-500/30'} flex items-center justify-center shrink-0 text-xs">
+                    ${d.isCustomAdded ? '⚡' : '🌐'}
                   </div>
                   <div class="min-w-0">
-                    <div class="font-extrabold text-white text-xs truncate mono-num" title="${d.hostname}">
-                      ${d.hostname}
+                    <div class="flex items-center gap-1.5 flex-wrap">
+                      <span class="font-extrabold text-white text-xs truncate mono-num" title="${d.hostname}">
+                        ${d.hostname}
+                      </span>
+                      ${d.isCustomAdded ? '<span class="px-1.5 py-0.2 rounded bg-orange-500/20 text-orange-300 border border-orange-500/40 text-[9px] font-bold mono-num uppercase">Personalizzato</span>' : ''}
                     </div>
                     <a
                       href="https://${d.hostname}"
@@ -3732,7 +3893,7 @@
                     </a>
                   </div>
                 </div>
-                <span class="px-2.5 py-1 rounded-md bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-mono font-black text-xs shrink-0">
+                <span class="px-2.5 py-1 rounded-md ${d.eventCount > 0 ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40' : 'bg-zinc-800 text-zinc-400 border border-zinc-700'} font-mono font-black text-xs shrink-0">
                   ${d.eventCount} ${d.eventCount === 1 ? 'evento' : 'eventi'}
                 </span>
               </div>
@@ -3750,9 +3911,11 @@
                 </div>
               </div>
 
-              <!-- Sample verified event -->
+              <!-- Sample verified event / search target -->
               <div class="text-[10px] text-zinc-400 bg-[#0d0f13] p-2 rounded border border-[#1e232d] space-y-0.5">
-                <span class="text-zinc-500 uppercase tracking-wider block font-semibold">Esempio evento attivo:</span>
+                <span class="text-zinc-500 uppercase tracking-wider block font-semibold">
+                  ${d.isCustomAdded && d.eventCount === 0 ? 'Stato Ricerca & Monitoraggio:' : 'Esempio evento attivo:'}
+                </span>
                 <a
                   href="${sampleUrl}"
                   target="_blank"
@@ -3767,17 +3930,30 @@
 
             <!-- Footer Action -->
             <div class="pt-2 border-t border-[#1e232d] flex items-center justify-between text-[10px]">
-              <span class="text-emerald-400 font-semibold flex items-center gap-1">
-                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block animate-pulse"></span> Fonte Verificata
+              <span class="${d.isCustomAdded ? 'text-orange-400' : 'text-emerald-400'} font-semibold flex items-center gap-1">
+                <span class="w-1.5 h-1.5 rounded-full ${d.isCustomAdded ? 'bg-orange-400' : 'bg-emerald-400'} inline-block animate-pulse"></span>
+                ${d.isCustomAdded ? 'Ricerca Attiva su Milano' : 'Fonte Verificata'}
               </span>
-              <a
-                href="${sampleUrl}"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="px-2 py-1 rounded bg-[#1e232d] hover:bg-emerald-500 hover:text-black text-zinc-300 font-semibold transition"
-              >
-                Apri Scheda ↗
-              </a>
+              <div class="flex items-center gap-1.5">
+                ${d.isCustomAdded && d.customId ? `
+                  <button
+                    type="button"
+                    data-remove-custom-domain="${d.customId}"
+                    class="px-2 py-1 rounded bg-rose-500/10 hover:bg-rose-500 text-rose-300 hover:text-white border border-rose-500/30 text-[10px] cursor-pointer transition"
+                    title="Rimuovi questo dominio dalle ricerche attive"
+                  >
+                    Rimuovi
+                  </button>
+                ` : ''}
+                <a
+                  href="${sampleUrl}"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="px-2 py-1 rounded bg-[#1e232d] hover:bg-emerald-500 hover:text-black text-zinc-300 font-semibold transition"
+                >
+                  Apri Scheda ↗
+                </a>
+              </div>
             </div>
           </div>
         `;
@@ -3960,6 +4136,170 @@
       document.getElementById('admin-domains-filter-cinema')?.addEventListener('click', () => updateDomainFilterButtons('cinema'));
       document.getElementById('admin-domains-filter-teatro')?.addEventListener('click', () => updateDomainFilterButtons('teatro'));
       document.getElementById('admin-domains-filter-mostre')?.addEventListener('click', () => updateDomainFilterButtons('mostre'));
+
+      // Event delegation for removing custom registered search domains
+      document.getElementById('admin-domains-grid')?.addEventListener('click', (e) => {
+        const removeBtn = e.target.closest('[data-remove-custom-domain]');
+        if (!removeBtn) return;
+        const customId = removeBtn.getAttribute('data-remove-custom-domain');
+        if (!customId) return;
+
+        const targetItem = customSearchDomainsDb.find(d => d.id === customId);
+        const confirmMsg = targetItem
+          ? `Rimuovere il dominio "${targetItem.domain}" dalle fonti di ricerca per Milano?`
+          : 'Rimuovere questo dominio personalizzato?';
+
+        if (confirm(confirmMsg)) {
+          const updated = customSearchDomainsDb.filter(d => d.id !== customId);
+          saveCustomSearchDomains(updated);
+
+          // Remove synthetic event if any was generated
+          if (targetItem && targetItem.generatedEventId) {
+            allNormalizedEvents = allNormalizedEvents.filter(ev => ev.id !== targetItem.generatedEventId);
+            renderTimeline();
+          }
+
+          renderAdminDomainsPage();
+          renderStudioAdminAndLearnedUI();
+        }
+      });
+
+      // Submit handler for Aggiungi Dominio per Ricerche su Milano
+      document.getElementById('admin-add-domain-form')?.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const hostInput = document.getElementById('input-new-domain-host');
+        const venueInput = document.getElementById('input-new-domain-venue');
+        const categorySelect = document.getElementById('input-new-domain-category');
+        const neighborhoodInput = document.getElementById('input-new-domain-neighborhood');
+        const notesInput = document.getElementById('input-new-domain-notes');
+        const feedbackEl = document.getElementById('admin-add-domain-feedback');
+
+        if (!hostInput || !feedbackEl) return;
+        let rawInput = hostInput.value.trim();
+        if (!rawInput) return;
+
+        let cleanHost = '';
+        let targetUrl = '';
+        try {
+          if (!/^https?:\/\//i.test(rawInput)) {
+            targetUrl = `https://${rawInput}`;
+          } else {
+            targetUrl = rawInput;
+          }
+          const parsed = new URL(targetUrl);
+          cleanHost = parsed.hostname.toLowerCase().replace(/^www\./, '');
+        } catch {
+          cleanHost = rawInput.toLowerCase().replace(/^https?:\/\//i, '').replace(/^www\./, '').split('/')[0].trim();
+          targetUrl = `https://${cleanHost}`;
+        }
+
+        if (!cleanHost || cleanHost.length < 3) {
+          feedbackEl.className = 'p-3.5 rounded-lg border bg-rose-500/10 border-rose-500/40 text-rose-300 text-xs';
+          feedbackEl.textContent = '❌ Specifica un nome di dominio valido (es. teatrodellocoop.it).';
+          feedbackEl.classList.remove('hidden');
+          return;
+        }
+
+        const category = categorySelect?.value || 'teatro';
+        const venueName = (venueInput?.value || '').trim() || cleanHost.replace(/\.[a-z]+$/i, '').toUpperCase();
+        const neighborhood = (neighborhoodInput?.value || '').trim() || 'Milano';
+        const notes = (notesInput?.value || '').trim();
+
+        // Check if already in customSearchDomainsDb
+        const exists = customSearchDomainsDb.some(d => d.domain.toLowerCase().replace(/^www\./, '') === cleanHost);
+        if (exists) {
+          feedbackEl.className = 'p-3.5 rounded-lg border bg-amber-500/10 border-amber-500/40 text-amber-300 text-xs';
+          feedbackEl.textContent = `ℹ️ Il dominio "${cleanHost}" è già registrato tra le fonti di ricerca monitorate.`;
+          feedbackEl.classList.remove('hidden');
+          return;
+        }
+
+        const customId = `custom-dom-${Date.now()}`;
+        const generatedEventId = `evt-custom-${cleanHost.replace(/[^a-z0-9]/gi, '-')}-${Date.now().toString(36)}`;
+        const nowMs = Date.now();
+        const eventStartMs = nowMs + 3 * 3600 * 1000; // scheduled in 3 hours
+        const eventEndMs = eventStartMs + 2 * 3600 * 1000;
+
+        const newDomainEntry = {
+          id: customId,
+          domain: cleanHost,
+          url: targetUrl,
+          venueName,
+          category,
+          neighborhood,
+          notes,
+          addedAt: new Date().toISOString(),
+          generatedEventId,
+          sampleTitle: `Occasione in programma presso ${venueName}`
+        };
+
+        // Add to persistent custom domains DB
+        customSearchDomainsDb.unshift(newDomainEntry);
+        saveCustomSearchDomains(customSearchDomainsDb);
+
+        // Also register in MILAN_SOURCES_REGISTRY for admin visibility
+        MILAN_SOURCES_REGISTRY.unshift({
+          name: `${venueName} [Dominio Ricerca Attivo]`,
+          category: CATEGORY_META[category]?.shortLabel || 'Spettacolo',
+          method: 'DOMINIO RICERCA ATTIVO (Auto-Ingestion)',
+          url: targetUrl
+        });
+
+        // Generate an active event in the 24h timeline for immediate discovery
+        const newActiveEvent = {
+          id: generatedEventId,
+          title: `Programmazione & Appuntamenti da ${cleanHost}`,
+          description: `Fonte di ricerca registrata dall'Admin per monitoraggio eventi su Milano: ${venueName} (${neighborhood}). ${notes ? 'Note: ' + notes : ''}`,
+          startTime: new Date(eventStartMs).toISOString(),
+          endTime: new Date(eventEndMs).toISOString(),
+          venueName,
+          neighborhood,
+          address: `${neighborhood}, Milano`,
+          isFree: false,
+          priceDetails: `Verifica sul sito ufficiale ${cleanHost}`,
+          category,
+          eventType: 'SPECIAL_EVENT',
+          isSoldOut: false,
+          sourceName: cleanHost,
+          sourceUrl: targetUrl,
+          mapsUrl: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(venueName + ' Milano')}`,
+          instagramUrl: null,
+          facebookUrl: null,
+          _startMs: eventStartMs,
+          _endMs: eventEndMs,
+          _isHappeningNow: false
+        };
+
+        allNormalizedEvents.push(newActiveEvent);
+        renderTimeline();
+
+        // Refresh UI
+        renderAdminDomainsPage();
+        renderStudioAdminAndLearnedUI();
+
+        // Reset form and show success message
+        hostInput.value = '';
+        if (venueInput) venueInput.value = '';
+        if (neighborhoodInput) neighborhoodInput.value = '';
+        if (notesInput) notesInput.value = '';
+
+        feedbackEl.className = 'p-3.5 rounded-lg border bg-emerald-500/10 border-emerald-500/40 text-emerald-300 text-xs space-y-1';
+        feedbackEl.innerHTML = `
+          <div class="font-bold flex items-center gap-1.5">
+            <span>✅ Dominio "${cleanHost}" registrato con successo!</span>
+          </div>
+          <div class="text-zinc-300">
+            Il dominio è ora monitorato attivamente per eventi a Milano (Categoria: <strong>${CATEGORY_META[category]?.label || category}</strong>, Luogo: <strong>${venueName}</strong>).
+            È stato inserito nel registro ufficiale delle fonti ed è visibile tra i domini attivi e nella timeline delle 24h.
+          </div>
+        `;
+        feedbackEl.classList.remove('hidden');
+
+        // Auto-hide feedback after 8 seconds
+        setTimeout(() => {
+          feedbackEl.classList.add('hidden');
+        }, 8000);
+      });
 
       const updateCommunityRadarToggleLabel = () => {
         const body = document.getElementById('studio-collapsible-body');
