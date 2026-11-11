@@ -1746,7 +1746,13 @@
      * (ritagliati sulla finestra esatta), più le segnalazioni utente/admin. Altrimenti ripiega sui blueprint.
      */
     function getActiveBlueprints(startOfNextHourMs) {
-      if (!LIVE_FEED || !Array.isArray(LIVE_FEED.verifiedEvents)) return EVENT_BLUEPRINTS;
+      const persisted = (typeof persistedCommunityEvents !== 'undefined' && Array.isArray(persistedCommunityEvents))
+        ? persistedCommunityEvents
+        : [];
+
+      if (!LIVE_FEED || !Array.isArray(LIVE_FEED.verifiedEvents)) {
+        return [...EVENT_BLUEPRINTS, ...persisted];
+      }
       const endWindowMs = startOfNextHourMs + 24 * 3600000;
       const seen = new Set();
       const fromFeed = [];
@@ -1760,11 +1766,24 @@
         seen.add(key);
         fromFeed.push({ ...fe, id: `${fe.id}@${s}`, _fixedStartMs: s, _fixedEndMs: e });
       });
-      const userAdded = EVENT_BLUEPRINTS.filter(bp => /^evt-(user|quar)-/.test(bp.id));
+      const userAdded = [
+        ...EVENT_BLUEPRINTS.filter(bp => /^evt-(user|quar)-/.test(bp.id)),
+        ...persisted
+      ];
+      // Deduplicate user/persisted by ID
+      const uniqueUserAdded = [];
+      const seenUserIds = new Set();
+      userAdded.forEach(ev => {
+        if (!seenUserIds.has(ev.id)) {
+          seenUserIds.add(ev.id);
+          uniqueUserAdded.push(ev);
+        }
+      });
+
       if (fromFeed.length === 0) {
-        return EVENT_BLUEPRINTS;
+        return [...EVENT_BLUEPRINTS, ...uniqueUserAdded];
       }
-      return [...fromFeed, ...userAdded];
+      return [...fromFeed, ...uniqueUserAdded];
     }
 
     async function loadLiveFeed() {
@@ -2778,6 +2797,30 @@
     // Dynamically learned sources database with localStorage persistence
     const STORAGE_KEY_QUARANTINE = 'milano_live_quarantine_queue_v1';
     const STORAGE_KEY_LEARNED = 'milano_live_learned_sources_v1';
+    const STORAGE_KEY_COMMUNITY_EVENTS = 'milano_live_community_events_v1';
+
+    function loadPersistedCommunityEvents() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY_COMMUNITY_EVENTS);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (Array.isArray(parsed)) return parsed;
+        }
+      } catch (e) {
+        console.warn('Impossibile leggere community events da localStorage:', e);
+      }
+      return [];
+    }
+
+    function savePersistedCommunityEvents(events) {
+      try {
+        localStorage.setItem(STORAGE_KEY_COMMUNITY_EVENTS, JSON.stringify(events));
+      } catch (e) {
+        console.warn('Impossibile salvare community events su localStorage:', e);
+      }
+    }
+
+    let persistedCommunityEvents = loadPersistedCommunityEvents();
 
     const DEFAULT_LEARNED_SOURCES = [
       {
@@ -3255,6 +3298,9 @@
       EVENT_BLUEPRINTS.push(item.eventCandidate);
       expandedEventIds.add(item.eventCandidate.id);
 
+      persistedCommunityEvents.unshift(item.eventCandidate);
+      savePersistedCommunityEvents(persistedCommunityEvents);
+
       learnedSourcesDb.unshift({
         id: `src-admin-${Date.now()}`,
         name: `${item.eventCandidate.venueName} (${item.inferredSourceName})`,
@@ -3498,6 +3544,21 @@
      * Initialize App
      */
     function initMilanoLiveApp() {
+      // Sincronizza le fonti apprese persistite nel registro fonti
+      if (Array.isArray(learnedSourcesDb)) {
+        learnedSourcesDb.forEach(src => {
+          const alreadyInRegistry = MILAN_SOURCES_REGISTRY.some(r => r.url === src.url || r.name.includes(src.domainOrHandle));
+          if (!alreadyInRegistry) {
+            MILAN_SOURCES_REGISTRY.unshift({
+              name: `${src.name} [${src.status === 'ADMIN_VERIFIED' ? 'Verificata Admin' : 'Appresa'}]`,
+              category: CATEGORY_META[src.category]?.shortLabel || 'Community',
+              method: src.inferredType,
+              url: src.url || 'https://cultura.comune.milano.it'
+            });
+          }
+        });
+      }
+
       pageLoadAnchorMs = Date.now();
       nextHourStartMs = getNextHourStartMs(pageLoadAnchorMs);
       allNormalizedEvents = generateDynamic24hEvents(pageLoadAnchorMs);
