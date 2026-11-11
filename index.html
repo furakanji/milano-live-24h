@@ -330,6 +330,77 @@
         <div id="cinema-venue-buttons" class="flex items-center gap-1.5"></div>
       </div>
 
+      <!-- Row 2C: Source Filter & Live Crawler Status Bar (Zero, MilanoToday, YesMilano, Mentelocale, DICE) -->
+      <div id="source-filter-bar" class="flex flex-wrap items-center justify-between gap-2 pt-1.5 border-t border-[#1f232b] text-[11px]">
+        <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5">
+          <span class="font-bold text-zinc-400 uppercase tracking-wider shrink-0 mr-1 flex items-center gap-1">
+            📡 Fonti Radar:
+          </span>
+          <button
+            type="button"
+            data-source-filter="all"
+            class="source-pill shrink-0 px-2.5 py-1 rounded-md font-bold border transition cursor-pointer bg-white text-black border-white text-[11px]"
+          >
+            Tutte le Fonti
+          </button>
+          <button
+            type="button"
+            data-source-filter="Zero"
+            class="source-pill shrink-0 px-2.5 py-1 rounded-md font-bold border border-[#23272f] bg-[#131519] text-zinc-300 hover:text-white transition cursor-pointer text-[11px] flex items-center gap-1"
+          >
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+            <span>ZERO</span>
+            <span id="src-count-zero" class="text-[10px] text-zinc-400 mono-num">(0)</span>
+          </button>
+          <button
+            type="button"
+            data-source-filter="MilanoToday"
+            class="source-pill shrink-0 px-2.5 py-1 rounded-md font-bold border border-[#23272f] bg-[#131519] text-zinc-300 hover:text-white transition cursor-pointer text-[11px] flex items-center gap-1"
+          >
+            <span class="w-1.5 h-1.5 rounded-full bg-sky-400"></span>
+            <span>MILANOTODAY</span>
+            <span id="src-count-milanotoday" class="text-[10px] text-zinc-400 mono-num">(0)</span>
+          </button>
+          <button
+            type="button"
+            data-source-filter="YesMilano"
+            class="source-pill shrink-0 px-2.5 py-1 rounded-md font-bold border border-[#23272f] bg-[#131519] text-zinc-300 hover:text-white transition cursor-pointer text-[11px] flex items-center gap-1"
+          >
+            <span class="w-1.5 h-1.5 rounded-full bg-rose-400"></span>
+            <span>YESMILANO</span>
+            <span id="src-count-yesmilano" class="text-[10px] text-zinc-400 mono-num">(0)</span>
+          </button>
+          <button
+            type="button"
+            data-source-filter="Mentelocale"
+            class="source-pill shrink-0 px-2.5 py-1 rounded-md font-bold border border-[#23272f] bg-[#131519] text-zinc-300 hover:text-white transition cursor-pointer text-[11px] flex items-center gap-1"
+          >
+            <span class="w-1.5 h-1.5 rounded-full bg-purple-400"></span>
+            <span>MENTELOCALE</span>
+            <span id="src-count-mentelocale" class="text-[10px] text-zinc-400 mono-num">(0)</span>
+          </button>
+          <button
+            type="button"
+            data-source-filter="DICE"
+            class="source-pill shrink-0 px-2.5 py-1 rounded-md font-bold border border-[#23272f] bg-[#131519] text-zinc-300 hover:text-white transition cursor-pointer text-[11px] flex items-center gap-1"
+          >
+            <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
+            <span>DICE</span>
+            <span id="src-count-dice" class="text-[10px] text-zinc-400 mono-num">(0)</span>
+          </button>
+        </div>
+
+        <button
+          id="force-refresh-all-crawlers-btn"
+          type="button"
+          class="shrink-0 px-2.5 py-1 rounded-md bg-[#181b22] hover:bg-[#222731] text-zinc-200 border border-[#2c3240] hover:border-orange-500/50 font-bold transition cursor-pointer flex items-center gap-1.5"
+          title="Forza riscansione live di tutte le 4 fonti + DICE"
+        >
+          <span id="force-crawler-icon">🔄</span>
+          <span id="force-crawler-label">Aggiorna Fonti Live</span>
+        </button>
+      </div>
+
 
       <!-- Row 3: Quick Time-Block Jump Navigation -->
       <div class="flex items-center gap-2 overflow-x-auto no-scrollbar pt-1 border-t border-[#1c2027]">
@@ -1835,6 +1906,8 @@
     let allNormalizedEvents = [];
     let activePriceFilter = 'all'; // 'all' | 'free' | 'paid'
     let activeCategoryFilter = 'all';
+    let activeSourceFilter = 'all'; // 'all' | 'Zero' | 'MilanoToday' | 'YesMilano' | 'Mentelocale' | 'DICE'
+    let liveCrawlerStats = { zero: 0, milanotoday: 0, yesmilano: 0, mentelocale: 0, dice: 0 };
     let disabledCategories = new Set(); // Categorie disattivate tramite X
     let activeCinemaVenueFilter = 'all'; // 'all' | category id
     let activeSearchQuery = '';
@@ -1939,13 +2012,14 @@
      * Filtered through `verifyEventCandidateWithAgent` so recurring tour catalogs or
      * unbookable "In programmazione" pages are automatically excluded.
      */
-    // Feed "live" generato 3 volte al giorno da GitHub Actions (backend/liveFeed.js)
+    // Feed "live" generato automaticamente da GitHub Actions (live-events.json o verified-events-24h.json)
     let LIVE_FEED = null;
     let liveDiceEvents = [];
+    let liveMultiCrawlerEvents = [];
 
     /**
-     * Sorgente eventi: se il feed live è disponibile usa le date/orari reali del feed
-     * (ritagliati sulla finestra esatta), più gli eventi DICE real-time e le segnalazioni utente/admin.
+     * Sorgente eventi: unifica feed multi-crawler (Zero, MilanoToday, YesMilano, Mentelocale, DICE),
+     * liveDiceEvents e segnalazioni utente/admin.
      */
     function getActiveBlueprints(startOfNextHourMs) {
       const persisted = (typeof persistedCommunityEvents !== 'undefined' && Array.isArray(persistedCommunityEvents))
@@ -1956,9 +2030,13 @@
       const seen = new Set();
       const fromFeed = [];
 
-      // 1. Eventi dal feed live principale
-      if (LIVE_FEED && Array.isArray(LIVE_FEED.verifiedEvents)) {
-        LIVE_FEED.verifiedEvents.forEach(fe => {
+      // 1. Eventi dal feed live principale (live-events.json o verified-events-24h.json)
+      const feedEvents = (LIVE_FEED && Array.isArray(LIVE_FEED.events))
+        ? LIVE_FEED.events
+        : (LIVE_FEED && Array.isArray(LIVE_FEED.verifiedEvents) ? LIVE_FEED.verifiedEvents : []);
+
+      if (feedEvents.length > 0) {
+        feedEvents.forEach(fe => {
           const s = Date.parse(fe.startTime);
           const e = Date.parse(fe.endTime);
           if (!(s >= startOfNextHourMs && s < endWindowMs)) return;
@@ -1970,7 +2048,21 @@
         });
       }
 
-      // 2. Eventi live da DICE.fm (crawled in real-time o sincronizzati con Sync DICE 24h)
+      // 2. Eventi live dal multi-crawler client-side (se caricati via sync/fallback)
+      if (Array.isArray(liveMultiCrawlerEvents)) {
+        liveMultiCrawlerEvents.forEach(me => {
+          const s = Date.parse(me.startTime);
+          const e = Date.parse(me.endTime);
+          if (!(s >= startOfNextHourMs && s < endWindowMs)) return;
+          if (e <= startOfNextHourMs) return;
+          const key = `${me.id}|${me.startTime}`;
+          if (seen.has(key)) return;
+          seen.add(key);
+          fromFeed.push({ ...me, id: `${me.id}@${s}`, _fixedStartMs: s, _fixedEndMs: e });
+        });
+      }
+
+      // 3. Eventi live ad-hoc da DICE.fm
       if (Array.isArray(liveDiceEvents)) {
         liveDiceEvents.forEach(de => {
           const s = Date.parse(de.startTime);
@@ -1985,7 +2077,7 @@
             id: `${de.id}@${s}`,
             _fixedStartMs: s,
             _fixedEndMs: e,
-            sourceBadge: 'DICE Live'
+            sourceBadge: de.sourceBadge || 'DICE'
           });
         });
       }
@@ -2011,12 +2103,32 @@
     }
 
     async function loadLiveFeed() {
-      for (const url of ['verified-events-24h.json', 'public/verified-events-24h.json']) {
+      // Prova prima il nuovo feed aggregato multi-crawler live-events.json
+      const candidateUrls = [
+        'live-events.json',
+        'public/live-events.json',
+        'verified-events-24h.json',
+        'public/verified-events-24h.json'
+      ];
+
+      for (const url of candidateUrls) {
         try {
           const res = await fetch(`${url}?t=${Date.now()}`, { cache: 'no-store' });
           if (!res.ok) continue;
           const data = await res.json();
-          if (data && Array.isArray(data.verifiedEvents)) { LIVE_FEED = data; return true; }
+          if (data && (Array.isArray(data.events) || Array.isArray(data.verifiedEvents))) {
+            LIVE_FEED = data;
+            if (data.stats && data.stats.crawlers) {
+              liveCrawlerStats = {
+                zero: data.stats.crawlers.zero?.count || 0,
+                milanotoday: data.stats.crawlers.milanotoday?.count || 0,
+                yesmilano: data.stats.crawlers.yesmilano?.count || 0,
+                mentelocale: data.stats.crawlers.mentelocale?.count || 0,
+                dice: data.stats.crawlers.dice?.count || 0
+              };
+            }
+            return true;
+          }
         } catch { /* prova il percorso successivo */ }
       }
       return false;
@@ -2076,6 +2188,70 @@
           if (syncLabel) syncLabel.textContent = 'Sync DICE 24h';
           if (syncBtn) syncBtn.classList.remove('opacity-75', 'cursor-wait');
         }, 3000);
+      }
+    }
+
+    /**
+     * Real-time client-side force refresh for all 4 Crawlers + DICE
+     */
+    async function forceRefreshAllCrawlers() {
+      const btn = document.getElementById('force-refresh-all-crawlers-btn');
+      const icon = document.getElementById('force-crawler-icon');
+      const label = document.getElementById('force-crawler-label');
+
+      if (icon) icon.textContent = '⏳';
+      if (label) label.textContent = 'Scansione Fonti...';
+      if (btn) btn.classList.add('opacity-75', 'cursor-wait');
+
+      try {
+        // 1. Prova a ricaricare live-events.json
+        const feedOk = await loadLiveFeed();
+
+        // 2. Se in browser e i moduli crawler ES6 sono supportati, prova multiSourceOrchestrator se feedOk è falso
+        if (!feedOk) {
+          try {
+            const orch = await import('./services/crawlers/multiSourceOrchestrator.js');
+            if (orch && orch.runMultiSourceCrawlers) {
+              const res = await orch.runMultiSourceCrawlers({ forceRefresh: true });
+              if (res && Array.isArray(res.events)) {
+                liveMultiCrawlerEvents = res.events;
+                if (res.stats) {
+                  liveCrawlerStats = {
+                    zero: res.stats.zero?.count || 0,
+                    milanotoday: res.stats.milanotoday?.count || 0,
+                    yesmilano: res.stats.yesmilano?.count || 0,
+                    mentelocale: res.stats.mentelocale?.count || 0,
+                    dice: liveCrawlerStats.dice || 0
+                  };
+                }
+              }
+            }
+          } catch (modErr) {
+            console.warn('[forceRefreshAllCrawlers] Client module import fallback:', modErr);
+          }
+        }
+
+        allNormalizedEvents = generateDynamic24hEvents(pageLoadAnchorMs);
+        updateFilterControlsUI();
+        renderTimeline();
+        renderFeedSourcesReport();
+
+        if (icon) icon.textContent = '✅';
+        if (label) label.textContent = 'Fonti Aggiornate';
+        setTimeout(() => {
+          if (icon) icon.textContent = '🔄';
+          if (label) label.textContent = 'Aggiorna Fonti Live';
+          if (btn) btn.classList.remove('opacity-75', 'cursor-wait');
+        }, 2500);
+      } catch (err) {
+        console.warn('[forceRefreshAllCrawlers] Error:', err);
+        if (icon) icon.textContent = '⚠️';
+        if (label) label.textContent = 'Errore Scansione';
+        setTimeout(() => {
+          if (icon) icon.textContent = '🔄';
+          if (label) label.textContent = 'Aggiorna Fonti Live';
+          if (btn) btn.classList.remove('opacity-75', 'cursor-wait');
+        }, 2500);
       }
     }
 
@@ -2200,6 +2376,11 @@
         if (activePriceFilter === 'paid' && ev.isFree) return false;
         if (disabledCategories.has(ev.category)) return false;
         if (activeCategoryFilter !== 'all' && ev.category !== activeCategoryFilter) return false;
+        if (activeSourceFilter !== 'all') {
+          const src = (ev.source || ev.sourceBadge || ev.sourceName || '').toLowerCase();
+          const target = activeSourceFilter.toLowerCase();
+          if (!src.includes(target)) return false;
+        }
         if (activeCinemaVenueFilter !== 'all' && (ev.category === 'cinema' || activeCategoryFilter === 'cinema')) {
           const vName = (ev.venueName || '').toLowerCase();
           if (!vName.includes(activeCinemaVenueFilter.toLowerCase())) return false;
@@ -2372,12 +2553,28 @@
                 <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-semibold border ${catMeta.badgeClass}">
                   ${catMeta.emoji} ${catMeta.shortLabel}
                 </span>
-                ${(ev.sourceBadge === 'DICE Live' || (ev.id && ev.id.startsWith('dice-')) || (ev.sourceUrl && ev.sourceUrl.includes('dice.fm'))) ? `
-                  <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-black tracking-wide bg-amber-500/20 text-amber-300 border border-amber-500/40 uppercase mono-num">
-                    ⚡ DICE LIVE
-                  </span>
-                ` : ''}
-                <span class="text-xs text-zinc-400 mono-num">• Fonte: ${ev.sourceName}</span>
+                ${(() => {
+                  const s = (ev.source || ev.sourceBadge || '').toLowerCase();
+                  const sUrl = (ev.sourceUrl || '').toLowerCase();
+                  const sId = (ev.id || '').toLowerCase();
+                  if (s.includes('zero') || sId.startsWith('zero-') || sUrl.includes('zero.eu')) {
+                    return `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-black tracking-wide bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 uppercase mono-num">🟢 ZERO</span>`;
+                  }
+                  if (s.includes('milanotoday') || sId.startsWith('milanotoday-') || sUrl.includes('milanotoday.it')) {
+                    return `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-black tracking-wide bg-sky-500/20 text-sky-300 border border-sky-500/40 uppercase mono-num">🔵 MILANOTODAY</span>`;
+                  }
+                  if (s.includes('yesmilano') || sId.startsWith('yesmilano-') || sUrl.includes('yesmilano.it')) {
+                    return `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-black tracking-wide bg-rose-500/20 text-rose-300 border border-rose-500/40 uppercase mono-num">🔴 YESMILANO</span>`;
+                  }
+                  if (s.includes('mentelocale') || sId.startsWith('mentelocale-') || sUrl.includes('mentelocale.it')) {
+                    return `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-black tracking-wide bg-purple-500/20 text-purple-300 border border-purple-500/40 uppercase mono-num">🟣 MENTELOCALE</span>`;
+                  }
+                  if (s.includes('dice') || sId.startsWith('dice-') || sUrl.includes('dice.fm')) {
+                    return `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-black tracking-wide bg-amber-500/20 text-amber-300 border border-amber-500/40 uppercase mono-num">⚡ DICE LIVE</span>`;
+                  }
+                  return '';
+                })()}
+                <span class="text-xs text-zinc-400 mono-num">• Fonte: ${ev.sourceName || ev.source || 'Redazione'}</span>
               </div>
               <h3 class="text-base sm:text-lg font-bold text-white leading-snug">
                 <button
@@ -2747,6 +2944,38 @@
           liveBtn.className = 'px-2.5 py-1.5 rounded-lg text-xs font-semibold border border-[#23272f] bg-[#131519] text-zinc-300 hover:border-orange-500/50 hover:text-orange-400 transition flex items-center gap-1.5 cursor-pointer';
         }
       }
+
+      // Update Source Filter Pills (All, ZERO, MILANOTODAY, YESMILANO, MENTELOCALE, DICE)
+      document.querySelectorAll('.source-pill').forEach(pill => {
+        const src = pill.getAttribute('data-source-filter');
+        if (src === activeSourceFilter) {
+          pill.className = 'source-pill shrink-0 px-2.5 py-1 rounded-md font-extrabold border border-zinc-100 bg-zinc-100 text-black shadow transition cursor-pointer text-[11px] flex items-center gap-1';
+        } else {
+          pill.className = 'source-pill shrink-0 px-2.5 py-1 rounded-md font-bold border border-[#23272f] bg-[#131519] text-zinc-300 hover:text-white hover:border-zinc-500 transition cursor-pointer text-[11px] flex items-center gap-1';
+        }
+      });
+
+      // Recalculate event counts per crawler source from allNormalizedEvents
+      let countZero = 0, countMilanoToday = 0, countYesMilano = 0, countMentelocale = 0, countDice = 0;
+      allNormalizedEvents.forEach(ev => {
+        const s = (ev.source || ev.sourceBadge || ev.sourceName || '').toLowerCase();
+        const id = (ev.id || '').toLowerCase();
+        if (s.includes('zero') || id.startsWith('zero-')) countZero++;
+        if (s.includes('milanotoday') || id.startsWith('milanotoday-')) countMilanoToday++;
+        if (s.includes('yesmilano') || id.startsWith('yesmilano-')) countYesMilano++;
+        if (s.includes('mentelocale') || id.startsWith('mentelocale-')) countMentelocale++;
+        if (s.includes('dice') || id.startsWith('dice-')) countDice++;
+      });
+      const elZero = document.getElementById('src-count-zero');
+      const elMilanoToday = document.getElementById('src-count-milanotoday');
+      const elYesMilano = document.getElementById('src-count-yesmilano');
+      const elMentelocale = document.getElementById('src-count-mentelocale');
+      const elDice = document.getElementById('src-count-dice');
+      if (elZero) elZero.textContent = `(${countZero || liveCrawlerStats.zero || 0})`;
+      if (elMilanoToday) elMilanoToday.textContent = `(${countMilanoToday || liveCrawlerStats.milanotoday || 0})`;
+      if (elYesMilano) elYesMilano.textContent = `(${countYesMilano || liveCrawlerStats.yesmilano || 0})`;
+      if (elMentelocale) elMentelocale.textContent = `(${countMentelocale || liveCrawlerStats.mentelocale || 0})`;
+      if (elDice) elDice.textContent = `(${countDice || liveCrawlerStats.dice || 0})`;
     }
 
     function updateActiveFilterBanner() {
@@ -2758,6 +2987,9 @@
       if (activePriceFilter === 'paid') tags.push('A Pagamento');
       if (activeCategoryFilter !== 'all' && CATEGORY_META[activeCategoryFilter]) {
         tags.push(CATEGORY_META[activeCategoryFilter].label);
+      }
+      if (activeSourceFilter !== 'all') {
+        tags.push(`Fonte: ${activeSourceFilter.toUpperCase()}`);
       }
       if (disabledCategories.size > 0) {
         disabledCategories.forEach(catId => {
@@ -2782,6 +3014,7 @@
     function resetAllFilters() {
       activePriceFilter = 'all';
       activeCategoryFilter = 'all';
+      activeSourceFilter = 'all';
       activeSearchQuery = '';
       onlyHappeningNow = false;
       const searchInput = document.getElementById('search-input');
@@ -4651,6 +4884,19 @@
       // Bind Reset Buttons
       document.getElementById('reset-all-filters-btn')?.addEventListener('click', resetAllFilters);
       document.getElementById('empty-reset-btn')?.addEventListener('click', resetAllFilters);
+
+      // Bind Source Filter Pills (ALL, ZERO, MILANOTODAY, YESMILANO, MENTELOCALE, DICE)
+      document.querySelectorAll('.source-pill').forEach(pill => {
+        pill.addEventListener('click', () => {
+          const src = pill.getAttribute('data-source-filter');
+          activeSourceFilter = src;
+          updateFilterControlsUI();
+          renderTimeline();
+        });
+      });
+
+      // Bind Force Refresh All Crawlers Button
+      document.getElementById('force-refresh-all-crawlers-btn')?.addEventListener('click', forceRefreshAllCrawlers);
     }
 
     if (document.readyState === 'loading') {

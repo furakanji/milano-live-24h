@@ -1,0 +1,43 @@
+name: Update Milan Events Feed (Multi-Source Crawlers)
+
+on:
+  schedule:
+    # Run every 2 hours: at minute 15
+    - cron: '15 */2 * * *'
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - 'services/crawlers/**'
+      - 'scripts/crawl-milan-sources.mjs'
+
+permissions:
+  contents: write
+
+jobs:
+  crawl-and-update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Run multi-source Milan event crawlers
+        run: node scripts/crawl-milan-sources.mjs
+
+      - name: Commit updated live-events.json if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add public/live-events.json
+          if ! git diff --staged --quiet; then
+            git commit -m "chore(crawler): update live Milan events feed via multi-source crawlers [skip ci]"
+            git push
+          else
+            echo "No changes in live events."
+          fi
