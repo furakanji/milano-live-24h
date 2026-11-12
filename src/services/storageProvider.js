@@ -15,13 +15,15 @@ const STORAGE_KEYS = {
 
 export class StorageProvider {
   constructor() {
-    this.projectId = typeof import.meta !== 'undefined' && import.meta.env
-      ? (import.meta.env.VITE_FIREBASE_PROJECT_ID || '')
-      : (typeof process !== 'undefined' && process.env ? process.env.VITE_FIREBASE_PROJECT_ID || process.env.FIREBASE_PROJECT_ID : '');
+    this.projectId = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_FIREBASE_PROJECT_ID)
+      || (typeof process !== 'undefined' && process.env && (process.env.VITE_FIREBASE_PROJECT_ID || process.env.FIREBASE_PROJECT_ID))
+      || (typeof window !== 'undefined' && window.__MILANO_CONFIG__ && window.__MILANO_CONFIG__.FIREBASE_PROJECT_ID)
+      || 'milano-live-24h';
 
-    this.apiKey = typeof import.meta !== 'undefined' && import.meta.env
-      ? (import.meta.env.VITE_FIREBASE_API_KEY || '')
-      : (typeof process !== 'undefined' && process.env ? process.env.VITE_FIREBASE_API_KEY : '');
+    this.apiKey = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_FIREBASE_API_KEY)
+      || (typeof process !== 'undefined' && process.env && process.env.VITE_FIREBASE_API_KEY)
+      || (typeof window !== 'undefined' && window.__MILANO_CONFIG__ && window.__MILANO_CONFIG__.FIREBASE_API_KEY)
+      || 'AIzaSyA8JiCzYKZ3MVaJpZ0Mie-xSNIHiKobbDA';
 
     this.firestoreBaseUrl = this.projectId
       ? `https://firestore.googleapis.com/v1/projects/${this.projectId}/databases/(default)/documents`
