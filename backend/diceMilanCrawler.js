@@ -280,6 +280,7 @@ export function normalizeDiceEvent({ rawEvent, targetUrl, enriched }) {
     priceDetails,
     category,
     eventType: 'LIVE_CONCERT',
+    source: 'DICE',
     sourceName: 'DICE.fm Milano',
     sourceUrl,
     mapsUrl,

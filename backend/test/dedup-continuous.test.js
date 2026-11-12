@@ -122,3 +122,56 @@ test('Continuous Exhibitions: checkContinuousExhibitionStatus accurately detects
   const statusMorning = checkContinuousExhibitionStatus(continuousEvent, dateMorning);
   assert.equal(statusMorning.isOpenNow, false);
 });
+
+test('Deduplication 2.0: cross-source duplicate detection across YesMilano, Mentelocale, Zero, DICE', () => {
+  const evZero = {
+    id: 'zero-1',
+    source: 'Zero',
+    sourceBadge: 'ZERO',
+    title: 'BLITZ: La zona nuova',
+    venueName: 'PiM OFF',
+    startTime: '2026-11-12T19:00:00.000Z'
+  };
+
+  const evYesMilano = {
+    id: 'yesmilano-1',
+    source: 'YesMilano',
+    sourceBadge: 'YESMILANO',
+    title: 'La Zona Nuova',
+    venueName: 'PimOff',
+    startTime: '2026-11-12T19:00:00.000Z'
+  };
+
+  assert.equal(areEventsDuplicates(evZero, evYesMilano), true);
+
+  const evMorando1 = {
+    id: 'mt-1',
+    source: 'MilanoToday',
+    title: 'Dal Vivo a Milano, la mostra che racconta la musica rock che ha attraversato la città',
+    venueName: 'Palazzo Morando',
+    startTime: '2026-11-12T09:00:00.000Z',
+    isContinuous: true
+  };
+
+  const evMorando2 = {
+    id: 'mente-1',
+    source: 'Mentelocale',
+    title: 'Dal vivo a Milano, la mostra fotografica che racconta i live in città a Palazzo Morando',
+    venueName: 'Palazzo Morando Costume Moda Immagine',
+    startTime: '2026-11-12T10:30:00.000Z',
+    isContinuous: true
+  };
+
+  assert.equal(areEventsDuplicates(evMorando1, evMorando2), true);
+});
+
+test('Classification: cinema and theater events are not misclassified as mostre/museums', async () => {
+  const { classifyMilanCategory } = await import('../../services/crawlers/crawlerUtils.js');
+
+  assert.equal(classifyMilanCategory('Proiezione del film Dune 2 al Cinema Anteo'), 'cinema');
+  assert.equal(classifyMilanCategory('Rassegna cinematografica di cortometraggi con regista ospite in sala'), 'cinema');
+  assert.equal(classifyMilanCategory('Spettacolo teatrale: La zona nuova al PimOff'), 'teatro');
+  assert.equal(classifyMilanCategory('Commedia e stand-up show al Teatro Carcano'), 'teatro');
+  assert.equal(classifyMilanCategory('Grande mostra d\'arte contemporanea a Palazzo Reale'), 'mostre');
+});
+

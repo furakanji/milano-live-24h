@@ -9,7 +9,7 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { runMultiSourceCrawlers } from '../services/crawlers/multiSourceOrchestrator.js';
+import { runMultiSourceCrawlers, deduplicateEventsList } from '../services/crawlers/multiSourceOrchestrator.js';
 import { crawlDiceMilanEvents } from '../backend/diceMilanCrawler.js';
 import { syncSnapshotToCloud } from '../backend/cloudSync.js';
 
@@ -28,14 +28,17 @@ async function main() {
   let diceEvents = [];
   try {
     const diceResult = await crawlDiceMilanEvents({ nowMs, forceRefresh: true, concurrencyLimit: 5 });
-    diceEvents = diceResult.events || [];
+    diceEvents = (diceResult.events || []).map(e => ({
+      ...e,
+      source: e.source || 'DICE'
+    }));
   } catch (err) {
     console.warn('[crawl-milan-sources] Warning crawling DICE:', err.message);
   }
 
-  // Merge all events
-  const allEvents = [...multiResult.events, ...diceEvents];
-  allEvents.sort((a, b) => Date.parse(a.startTime) - Date.parse(b.startTime));
+  // Merge & Deduplicate all events across all sources (Zero, MilanoToday, YesMilano, Mentelocale, DICE)
+  const combinedRawEvents = [...multiResult.events, ...diceEvents];
+  const allEvents = deduplicateEventsList(combinedRawEvents);
 
   const payload = {
     generatedAt: new Date(nowMs).toISOString(),

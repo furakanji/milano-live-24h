@@ -14,7 +14,9 @@ export const ITALIAN_STOP_WORDS = new Set([
   'concerto', 'concerti', 'live', 'milano', 'spettacolo', 'spettacoli',
   'presentazione', 'rassegna', 'serata', 'ingresso', 'al', 'del', 'con',
   'dei', 'delle', 'della', 'degli', 'sul', 'sulla', 'per', 'tra', 'fra',
-  'nel', 'nella', 'e', 'ed', 'ediz', 'show', 'tour', 'special', 'evento'
+  'nel', 'nella', 'e', 'ed', 'ediz', 'show', 'tour', 'special', 'evento',
+  'eventi', 'città', 'programma', 'blitz', 'quando', 'come', 'dove',
+  'grande', 'grandi', 'nuovo', 'nuova', 'nuovi', 'nuove'
 ]);
 
 /**
@@ -320,10 +322,16 @@ export function resolveCanonicalVenue(venueName = '') {
 
   const clean = venueName.toLowerCase().replace(/['"“”’]/g, '').trim();
 
+  const GENERIC_VENUE_WORDS = new Set(['milano', 'milano mi', 'italia', 'lombardia', 'centro', 'spazio', 'teatro', 'cinema', 'via', 'viale', 'corso', 'piazza', 'club', 'circolo', 'sala', 'bar']);
+
   // 1. Direct alias match in CANONICAL_VENUES
   for (const [key, venue] of Object.entries(CANONICAL_VENUES)) {
     for (const alias of venue.aliases) {
-      if (clean === alias || clean.includes(alias) || alias.includes(clean)) {
+      const isExact = clean === alias;
+      const isCleanContainsAlias = clean.includes(alias) && !GENERIC_VENUE_WORDS.has(alias) && alias.length >= 4;
+      const isAliasContainsClean = alias.includes(clean) && !GENERIC_VENUE_WORDS.has(clean) && clean.length >= 4;
+
+      if (isExact || isCleanContainsAlias || isAliasContainsClean) {
         return {
           canonicalId: venue.id,
           name: venue.name,
@@ -335,9 +343,11 @@ export function resolveCanonicalVenue(venueName = '') {
     }
   }
 
+  const cleanAlpha = clean.replace(/[^a-z0-9]/g, '');
+
   // 2. Fallback normalization
   return {
-    canonicalId: `venue-${hashString(clean)}`,
+    canonicalId: `venue-${hashString(cleanAlpha || clean)}`,
     name: venueName.trim(),
     address: /milano/i.test(venueName) ? venueName.trim() : `${venueName.trim()}, Milano`,
     neighborhood: 'Milano',
@@ -473,25 +483,38 @@ export function computeJaccardSimilarity(setA, setB) {
  */
 export function classifyMilanCategory(haystack = '') {
   const text = haystack.toLowerCase();
-  if (/mostr[ae]|esposizion|vernissage|collezione|padiglione|quadr|scultur|museo|pinacoteca|triennale|mudec|palazzo\s*reale|hangar\s*bicocca/i.test(text)) {
-    return 'mostre';
-  }
-  if (/cinem[ae]|proiezion|film|rassegna\s*cinematografic|cortometraggi|regista|sala\s*cinema/i.test(text)) {
+
+  // 1. Cinema & Screenings (strict priority)
+  if (/\b(?:cinem[ae]|proiezion[ei]|film|rassegna\s*cinematografic[ae]|cortometraggi?|regista|sala\s*cinema|cineforum)\b/i.test(text)) {
     return 'cinema';
   }
-  if (/teatr[oe]|spettacol[oe]|drammaturg|prosa|musical|commedia|stand\s*up|monolog|attore|attrice/i.test(text)) {
+
+  // 2. Theater, Plays & Stand-up
+  if (/\b(?:teatr[oei]|spettacol[oei]|drammaturg(?:ia|ico)?|prosa|musical|commedi[ae]|stand[\s\-]*up|monolog(?:o|hi)|attor[ei]|attric[ei]|palcoscenico)\b/i.test(text)) {
     return 'teatro';
   }
-  if (/libr[oi]|presentazion|incontr[oi]|talk|conferenz|dibattit|dialogo|poesi|autore|autrice|festival\s*letterar/i.test(text)) {
+
+  // 3. Books, Talks & Culture
+  if (/\b(?:libr[oi]|presentazion[ei]|incontr[oi]|talk|conferenz[ae]|dibattit[oi]|dialog[hoi]|poesi[ae]|autor[ei]|autric[ei]|festival\s*letterar[io])\b/i.test(text)) {
     return 'libri';
   }
-  if (/apertur[ae]\s*straordinari|visita\s*guidat|fai|dimora|palazzo\s*aperto|segret[oi]/i.test(text)) {
+
+  // 4. Exhibitions, Museums & Vernissage
+  if (/\b(?:mostr[ae]|esposizion[ei]|vernissage|collezion[ei]|padiglion[ei]|quadr[io]|scultur[ae]|muse[oi]|pinacoteca|triennale|mudec|palazzo\s*reale|hangar\s*bicocca)\b/i.test(text)) {
+    return 'mostre';
+  }
+
+  // 5. Special Openings & Tours
+  if (/\b(?:apertur[ae]\s*straordinari[ae]|visit[ae]\s*guidat[ae]|fai|dimor[ae]|palazz[oi]\s*apert[oi]|segret[oi])\b/i.test(text)) {
     return 'aperture';
   }
-  if (/assemble[ae]|attivismo|cittadin|diritti|sciopero|territorio|politica/i.test(text)) {
+
+  // 6. Politics & Social
+  if (/\b(?:assembl[eae]|attivismo|cittadin|diritti|sciopero|territorio|politica)\b/i.test(text)) {
     return 'politica';
   }
-  // Default to Concerti & Club for music, gigs, live shows
+
+  // 7. Concerts, Clubbing & Music (default for live events)
   return 'concerti';
 }
 

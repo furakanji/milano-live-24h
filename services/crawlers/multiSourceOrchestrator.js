@@ -42,7 +42,7 @@ const CACHE_TTL_MS = 30 * 60 * 1000; // 30 minutes cache
 export function areEventsDuplicates(eventA, eventB) {
   if (!eventA || !eventB) return false;
 
-  // 1. Venue Matching via Canonical resolution
+  // 1. Venue Matching via Canonical resolution + Flexible Venue Name check
   const venueA = resolveCanonicalVenue(eventA.venueName || '');
   const venueB = resolveCanonicalVenue(eventB.venueName || '');
 
@@ -50,36 +50,67 @@ export function areEventsDuplicates(eventA, eventB) {
     ? venueA.canonicalId === venueB.canonicalId
     : false;
 
-  const sameVenueString = (eventA.venueName || '').toLowerCase() === (eventB.venueName || '').toLowerCase();
+  const rawVenA = (eventA.venueName || '').toLowerCase().replace(/['"“”’]/g, '').trim();
+  const rawVenB = (eventB.venueName || '').toLowerCase().replace(/['"“”’]/g, '').trim();
+  const sameVenueString = rawVenA === rawVenB;
 
-  const venueMatches = sameCanonical || sameVenueString;
+  // Substring match between venues (e.g., 'Palazzo Morando' vs 'Palazzo Morando Costume Moda Immagine')
+  let venueSubstringMatch = false;
+  if (!sameCanonical && !sameVenueString && rawVenA && rawVenB) {
+    const minVenLen = Math.min(rawVenA.length, rawVenB.length);
+    if (minVenLen >= 8 && (rawVenA.includes(rawVenB) || rawVenB.includes(rawVenA))) {
+      venueSubstringMatch = true;
+    }
+  }
+
+  const venueMatches = sameCanonical || sameVenueString || venueSubstringMatch;
   if (!venueMatches) {
-    // If venues are completely distinct (e.g. Santeria vs Anteo), they are NOT duplicates
     return false;
   }
 
-  // 2. Elastic Time Window Matching (±90 minutes = 5,400,000 ms)
+  // 2. Elastic Time Window Matching
   const timeA = Date.parse(eventA.startTime);
   const timeB = Date.parse(eventB.startTime);
 
   if (isNaN(timeA) || isNaN(timeB)) return false;
 
   const diffMs = Math.abs(timeA - timeB);
-  if (diffMs > 90 * 60 * 1000) {
-    return false;
+  const isContinuousPair = Boolean(eventA.isContinuous || eventB.isContinuous);
+
+  // If one or both are daytime/continuous exhibitions or daytime museum events, compare the calendar day
+  if (isContinuousPair) {
+    const dayA = new Date(timeA).toISOString().slice(0, 10);
+    const dayB = new Date(timeB).toISOString().slice(0, 10);
+    if (dayA !== dayB) return false;
+  } else {
+    // For punctual shows (movies, theater, concerts), allow ±90 minutes (or up to 120 min for differing crawl slots)
+    if (diffMs > 120 * 60 * 1000) {
+      return false;
+    }
   }
 
-  // 3. Jaccard Token Similarity on Titles (>= 0.60 threshold)
-  const normTitleA = (eventA.title || '').trim().toLowerCase();
-  const normTitleB = (eventB.title || '').trim().toLowerCase();
+  // 3. Title Matching: exact, substring of core title, or Jaccard Token Similarity
+  const normTitleA = (eventA.title || '').trim().toLowerCase().replace(/['"“”’«»]/g, '');
+  const normTitleB = (eventB.title || '').trim().toLowerCase().replace(/['"“”’«»]/g, '');
 
   if (normTitleA === normTitleB) return true;
+
+  // Clean core titles (stripping editorial subtitles, e.g. "BLITZ: La zona nuova" vs "La zona nuova, spettacolo con...")
+  const coreA = normTitleA.replace(/^blitz:\s*/i, '').split(/[,:–—\-]|(\bcon\b)|\b(al teatro|allo spazio|a palazzo)\b/i)[0].trim();
+  const coreB = normTitleB.replace(/^blitz:\s*/i, '').split(/[,:–—\-]|(\bcon\b)|\b(al teatro|allo spazio|a palazzo)\b/i)[0].trim();
+
+  if (coreA && coreB && coreA === coreB && coreA.length >= 6) {
+    return true;
+  }
+  if (coreA.length >= 10 && (coreB.includes(coreA) || coreA.includes(coreB))) {
+    return true;
+  }
 
   const tokensA = tokenizeTitle(eventA.title);
   const tokensB = tokenizeTitle(eventB.title);
   const jaccard = computeJaccardSimilarity(tokensA, tokensB);
 
-  return jaccard >= 0.60;
+  return jaccard >= 0.45;
 }
 
 /**
