@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-12T13:27:54.597Z",
+  "generatedAt": "2026-11-12T14:42:27.230Z",
   "agentVersion": "3.0.0-live-feed",
   "schedule": "3 volte al giorno (05:00, 13:00, 19:00 UTC)",
   "sources": [
@@ -7,35 +7,35 @@
       "id": "dice-milan",
       "venueName": "DICE.fm Milano (Real-Time Crawler)",
       "url": "https://dice.fm/browse/milano-5d68e89f7f285e094f60b00e",
-      "checkedAt": "2026-11-12T13:27:54.597Z",
+      "checkedAt": "2026-11-12T14:42:27.230Z",
       "status": "ok",
-      "found": 22,
-      "published": 22
+      "found": 21,
+      "published": 21
     },
     {
       "id": "cinemino",
       "venueName": "Il Cinemino",
       "url": "https://www.ilcinemino.it/programmazione/",
-      "checkedAt": "2026-11-12T13:27:54.597Z",
+      "checkedAt": "2026-11-12T14:42:27.230Z",
       "status": "ok",
-      "found": 40,
-      "published": 8
+      "found": 42,
+      "published": 7
     },
     {
       "id": "milanocinema",
       "venueName": "Cinema di Milano (milanocinema.com)",
       "url": "https://milanocinema.com/",
-      "checkedAt": "2026-11-12T13:27:54.597Z",
+      "checkedAt": "2026-11-12T14:42:27.230Z",
       "status": "ok",
       "found": 1010,
-      "published": 649,
+      "published": 640,
       "crossCheckOnly": 5
     },
     {
       "id": "verso",
       "venueName": "Libreria Verso",
       "url": "http://www.libreriaverso.com/appuntamenti/",
-      "checkedAt": "2026-11-12T13:27:54.597Z",
+      "checkedAt": "2026-11-12T14:42:27.230Z",
       "status": "ok",
       "found": 16,
       "published": 2
@@ -43,118 +43,27 @@
     {
       "id": "audit-cinemino",
       "venueName": "Controllo incrociato Cinemino (fonte diretta vs milanocinema.com)",
-      "status": "ok",
+      "status": "warning",
       "published": 0,
-      "checkedAt": "2026-11-12T13:27:54.597Z"
+      "checkedAt": "2026-11-12T14:42:27.230Z",
+      "error": "Differenze: solo fonte diretta [2026-11-13T13:30:00.000Z], solo aggregatore []"
     },
     {
       "id": "curated",
       "venueName": "Venue senza adapter (dati curati verificati)",
       "status": "curated",
-      "published": 26,
-      "checkedAt": "2026-11-12T13:27:54.597Z"
+      "published": 28,
+      "checkedAt": "2026-11-12T14:42:27.230Z"
     }
   ],
   "stats": {
-    "approvedCount": 707,
-    "adapterEvents": 659,
-    "curatedEvents": 26,
+    "approvedCount": 698,
+    "adapterEvents": 649,
+    "curatedEvents": 28,
     "soldOutWithBadgeCount": 5,
-    "rejectedCount": 22
+    "rejectedCount": 20
   },
   "verifiedEvents": [
-    {
-      "id": "cine-beltrade-1794483600000-wild-horse-nine",
-      "title": "Wild Horse Nine",
-      "description": "Proiezione al Cinema Beltrade, in italiano. Regia di Martin McDonagh.",
-      "startTime": "2026-11-12T11:40:00.000Z",
-      "endTime": "2026-11-12T13:37:00.000Z",
-      "venueName": "Cinema Beltrade",
-      "neighborhood": "Milano",
-      "address": "Via Oxilia, 10, Milano",
-      "isFree": false,
-      "isSoldOut": false,
-      "priceDetails": "Biglietti in cassa o online",
-      "category": "cinema",
-      "eventType": "CINEMA_SCREENING",
-      "sourceName": "milanocinema.com",
-      "sourceUrl": "https://bandhi.it/bah/beltrade/production/wild-horse-nine/",
-      "instagramUrl": null,
-      "facebookUrl": null,
-      "_cinemaSlug": "beltrade",
-      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=Cinema%20Beltrade%20Via%20Oxilia%2C%2010%2C%20Milano+Milano",
-      "availabilityBadge": "PRENOTABILE • POSTI DISPONIBILI",
-      "origin": "adapter"
-    },
-    {
-      "id": "cine-anteo-1794484800000-l-essere-amato",
-      "title": "L'essere amato",
-      "description": "Proiezione al Anteo Palazzo del Cinema (Abadan), in italiano. Regia di Rodrigo Sorogoyen.",
-      "startTime": "2026-11-12T12:00:00.000Z",
-      "endTime": "2026-11-12T14:16:00.000Z",
-      "venueName": "Anteo Palazzo del Cinema",
-      "neighborhood": "Milano",
-      "address": "Piazza XXV Aprile 8, Milano",
-      "isFree": false,
-      "isSoldOut": false,
-      "priceDetails": "Biglietti in cassa o online",
-      "category": "cinema",
-      "eventType": "CINEMA_SCREENING",
-      "sourceName": "milanocinema.com",
-      "sourceUrl": "https://anteo.spaziocinema.18tickets.it/film/128354/7a77974b-7497-4022-872a-53be12017a5b#theater-init",
-      "instagramUrl": null,
-      "facebookUrl": null,
-      "_cinemaSlug": "anteo",
-      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=Anteo%20Palazzo%20del%20Cinema%20Piazza%20XXV%20Aprile%208%2C%20Milano+Milano",
-      "availabilityBadge": "PRENOTABILE • POSTI DISPONIBILI",
-      "origin": "adapter"
-    },
-    {
-      "id": "cine-anteo-1794486000000-look-back",
-      "title": "Look Back — OV sub ITA",
-      "description": "Proiezione al Anteo Palazzo del Cinema (President), versione originale (OV sub ITA). Regia di Hirokazu Kore-eda.",
-      "startTime": "2026-11-12T12:20:00.000Z",
-      "endTime": "2026-11-12T14:00:00.000Z",
-      "venueName": "Anteo Palazzo del Cinema",
-      "neighborhood": "Milano",
-      "address": "Piazza XXV Aprile 8, Milano",
-      "isFree": false,
-      "isSoldOut": false,
-      "priceDetails": "Biglietti in cassa o online",
-      "category": "cinema",
-      "eventType": "CINEMA_SCREENING",
-      "sourceName": "milanocinema.com",
-      "sourceUrl": "https://anteo.spaziocinema.18tickets.it/film/128683/60e87422-0bce-4771-8832-a634d5470565#theater-init",
-      "instagramUrl": null,
-      "facebookUrl": null,
-      "_cinemaSlug": "anteo",
-      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=Anteo%20Palazzo%20del%20Cinema%20Piazza%20XXV%20Aprile%208%2C%20Milano+Milano",
-      "availabilityBadge": "PRENOTABILE • POSTI DISPONIBILI",
-      "origin": "adapter"
-    },
-    {
-      "id": "cine-citylife-1794486600000-l-estranea",
-      "title": "L'estranea",
-      "description": "Proiezione al City Life Anteo (Mignon), in italiano. Regia di Paolo Strippoli.",
-      "startTime": "2026-11-12T12:30:00.000Z",
-      "endTime": "2026-11-12T14:25:00.000Z",
-      "venueName": "City Life Anteo",
-      "neighborhood": "Milano",
-      "address": "Piazza 3 Torri, Milano",
-      "isFree": false,
-      "isSoldOut": false,
-      "priceDetails": "Biglietti in cassa o online",
-      "category": "cinema",
-      "eventType": "CINEMA_SCREENING",
-      "sourceName": "milanocinema.com",
-      "sourceUrl": "https://citylife.spaziocinema.18tickets.it/film/117399/a4c742cf-f9dc-4ae8-a378-b965e5297c79#theater-init",
-      "instagramUrl": null,
-      "facebookUrl": null,
-      "_cinemaSlug": "citylife",
-      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=City%20Life%20Anteo%20Piazza%203%20Torri%2C%20Milano+Milano",
-      "availabilityBadge": "PRENOTABILE • POSTI DISPONIBILI",
-      "origin": "adapter"
-    },
     {
       "id": "cine-anteo-1794486600000-fjord-orario-da-definire",
       "title": "FJORD - orario da definire — OV sub ITA",
@@ -171,52 +80,6 @@
       "eventType": "CINEMA_SCREENING",
       "sourceName": "milanocinema.com",
       "sourceUrl": "https://anteo.spaziocinema.18tickets.it/film/126739/e9097c23-b153-44c4-a1cc-b5d8edac07f7#theater-init",
-      "instagramUrl": null,
-      "facebookUrl": null,
-      "_cinemaSlug": "anteo",
-      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=Anteo%20Palazzo%20del%20Cinema%20Piazza%20XXV%20Aprile%208%2C%20Milano+Milano",
-      "availabilityBadge": "PRENOTABILE • POSTI DISPONIBILI",
-      "origin": "adapter"
-    },
-    {
-      "id": "cine-arlecchino-1794487500000-una-giornata-particolare",
-      "title": "Una Giornata Particolare",
-      "description": "Proiezione al Cineteca Milano Arlecchino (Sala), in italiano. Regia di Ettore Scola.",
-      "startTime": "2026-11-12T12:45:00.000Z",
-      "endTime": "2026-11-12T14:28:00.000Z",
-      "venueName": "Cineteca Milano Arlecchino",
-      "neighborhood": "Milano",
-      "address": "Via San Pietro All'Orto, 9, Milano",
-      "isFree": false,
-      "isSoldOut": false,
-      "priceDetails": "Biglietti in cassa o online",
-      "category": "cinema",
-      "eventType": "CINEMA_SCREENING",
-      "sourceName": "milanocinema.com",
-      "sourceUrl": "https://arlecchino.cinetecadimilano.18tickets.it/film/118848/0e226bbd-84e8-428a-acbc-579e70ba4b5f#theater-init",
-      "instagramUrl": null,
-      "facebookUrl": null,
-      "_cinemaSlug": "arlecchino",
-      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=Cineteca%20Milano%20Arlecchino%20Via%20San%20Pietro%20All'Orto%2C%209%2C%20Milano+Milano",
-      "availabilityBadge": "PRENOTABILE • POSTI DISPONIBILI",
-      "origin": "adapter"
-    },
-    {
-      "id": "cine-anteo-1794487500000-dio-ride",
-      "title": "Dio ride",
-      "description": "Proiezione al Anteo Palazzo del Cinema (Abanella), in italiano. Regia di Giovanni Veronesi.",
-      "startTime": "2026-11-12T12:45:00.000Z",
-      "endTime": "2026-11-12T14:39:00.000Z",
-      "venueName": "Anteo Palazzo del Cinema",
-      "neighborhood": "Milano",
-      "address": "Piazza XXV Aprile 8, Milano",
-      "isFree": false,
-      "isSoldOut": false,
-      "priceDetails": "Biglietti in cassa o online",
-      "category": "cinema",
-      "eventType": "CINEMA_SCREENING",
-      "sourceName": "milanocinema.com",
-      "sourceUrl": "https://anteo.spaziocinema.18tickets.it/film/123931/e8831728-f109-4ebd-b563-cc0eaaaab20a#theater-init",
       "instagramUrl": null,
       "facebookUrl": null,
       "_cinemaSlug": "anteo",
@@ -267,29 +130,6 @@
       "facebookUrl": null,
       "_cinemaSlug": "citylife",
       "mapsUrl": "https://www.google.com/maps/search/?api=1&query=City%20Life%20Anteo%20Piazza%203%20Torri%2C%20Milano+Milano",
-      "availabilityBadge": "PRENOTABILE • POSTI DISPONIBILI",
-      "origin": "adapter"
-    },
-    {
-      "id": "cine-uci-bicocca-1794488400000-shaun-vita-da-pecora-ope",
-      "title": "Shaun, vita da pecora - Operazione Z.U.C.",
-      "description": "Proiezione al UCI Cinemas Bicocca (16), in italiano. Regia di Steve Cox.",
-      "startTime": "2026-11-12T13:00:00.000Z",
-      "endTime": "2026-11-12T14:28:00.000Z",
-      "venueName": "UCI Cinemas Bicocca",
-      "neighborhood": "Milano",
-      "address": "Viale Sarca, n. 336 angolo Via Chiese, Milano",
-      "isFree": false,
-      "isSoldOut": false,
-      "priceDetails": "Biglietti in cassa o online",
-      "category": "cinema",
-      "eventType": "CINEMA_SCREENING",
-      "sourceName": "milanocinema.com",
-      "sourceUrl": "https://ucicinemas.it/movies/shaun-vita-da-pecora-operazione-zucca/acquista/5068/10023/1012944",
-      "instagramUrl": null,
-      "facebookUrl": null,
-      "_cinemaSlug": "uci-bicocca",
-      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=UCI%20Cinemas%20Bicocca%20Viale%20Sarca%2C%20n.%20336%20angolo%20Via%20Chiese%2C%20Milano+Milano",
       "availabilityBadge": "PRENOTABILE • POSTI DISPONIBILI",
       "origin": "adapter"
     },
@@ -401,52 +241,6 @@
       "eventType": "CINEMA_SCREENING",
       "sourceName": "milanocinema.com",
       "sourceUrl": "https://citylife.spaziocinema.18tickets.it/film/121884/49bbe203-b4d5-461f-bea8-78c3550efb20#theater-init",
-      "instagramUrl": null,
-      "facebookUrl": null,
-      "_cinemaSlug": "citylife",
-      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=City%20Life%20Anteo%20Piazza%203%20Torri%2C%20Milano+Milano",
-      "availabilityBadge": "PRENOTABILE • POSTI DISPONIBILI",
-      "origin": "adapter"
-    },
-    {
-      "id": "cine-anteo-1794488400000-minotaur-nel-labirinto-d",
-      "title": "Minotaur - Nel labirinto del potere — OV sub ITA",
-      "description": "Proiezione al Anteo Palazzo del Cinema (Obraz), versione originale (OV sub ITA). Regia di Loris Curci.",
-      "startTime": "2026-11-12T13:00:00.000Z",
-      "endTime": "2026-11-12T14:30:00.000Z",
-      "venueName": "Anteo Palazzo del Cinema",
-      "neighborhood": "Milano",
-      "address": "Piazza XXV Aprile 8, Milano",
-      "isFree": false,
-      "isSoldOut": false,
-      "priceDetails": "Biglietti in cassa o online",
-      "category": "cinema",
-      "eventType": "CINEMA_SCREENING",
-      "sourceName": "milanocinema.com",
-      "sourceUrl": "https://anteo.spaziocinema.18tickets.it/film/123998/730b01bb-9e79-4458-960f-fefdd5a2e828#theater-init",
-      "instagramUrl": null,
-      "facebookUrl": null,
-      "_cinemaSlug": "anteo",
-      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=Anteo%20Palazzo%20del%20Cinema%20Piazza%20XXV%20Aprile%208%2C%20Milano+Milano",
-      "availabilityBadge": "PRENOTABILE • POSTI DISPONIBILI",
-      "origin": "adapter"
-    },
-    {
-      "id": "cine-citylife-1794488400000-un-tranquillo-funerale-d",
-      "title": "Un tranquillo funerale di famiglia",
-      "description": "Proiezione al City Life Anteo (Capitol), in italiano. Regia di Massimiliano Bruno.",
-      "startTime": "2026-11-12T13:00:00.000Z",
-      "endTime": "2026-11-12T14:38:00.000Z",
-      "venueName": "City Life Anteo",
-      "neighborhood": "Milano",
-      "address": "Piazza 3 Torri, Milano",
-      "isFree": false,
-      "isSoldOut": false,
-      "priceDetails": "Biglietti in cassa o online",
-      "category": "cinema",
-      "eventType": "CINEMA_SCREENING",
-      "sourceName": "milanocinema.com",
-      "sourceUrl": "https://citylife.spaziocinema.18tickets.it/film/122115/ba90c9c1-85bf-4d20-b94f-ff808970b113#theater-init",
       "instagramUrl": null,
       "facebookUrl": null,
       "_cinemaSlug": "citylife",
@@ -984,29 +778,6 @@
       "origin": "adapter"
     },
     {
-      "id": "dice-6af1f4a4ba72b00001421cef",
-      "title": "L'essere amato",
-      "description": "Evento dal vivo in programma a Milano presso Cinema Beltrade. Biglietti e dettagli ufficiali su DICE.fm.",
-      "startTime": "2026-11-12T13:50:00.000Z",
-      "endTime": "2026-11-12T16:15:00.000Z",
-      "venueName": "Cinema Beltrade",
-      "neighborhood": "Milano",
-      "address": "Via Nino Oxilia, 10, 20127 Milano MI, Italy",
-      "isFree": false,
-      "isSoldOut": false,
-      "priceDetails": "€€ / Biglietti su DICE",
-      "category": "cinema",
-      "eventType": "LIVE_CONCERT",
-      "sourceName": "DICE.fm Milano",
-      "sourceUrl": "https://dice.fm/event/r32p55-lessere-amato-12th-nov-cinema-beltrade-milano-tickets",
-      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=Cinema%20Beltrade%20Via%20Nino%20Oxilia%2C%2010%2C%2020127%20Milano%20MI%2C%20Italy",
-      "instagramUrl": "https://www.instagram.com/cinemabeltrade/",
-      "facebookUrl": null,
-      "origin": "dice_crawler",
-      "sourceBadge": "DICE Live",
-      "availabilityBadge": "PRENOTABILE • POSTI DISPONIBILI"
-    },
-    {
       "id": "cine-beltrade-1794491400000-l-essere-amato",
       "title": "L'essere amato",
       "description": "Proiezione al Cinema Beltrade, in italiano. Regia di Rodrigo Sorogoyen.",
@@ -1233,28 +1004,6 @@
       "facebookUrl": null,
       "_cinemaSlug": "orfeo",
       "mapsUrl": "https://www.google.com/maps/search/?api=1&query=Orfeo%20Multisala%20Viale%20Coni%20Zugna%2C%2050%2C%20Milano+Milano",
-      "availabilityBadge": "PRENOTABILE • POSTI DISPONIBILI",
-      "origin": "adapter"
-    },
-    {
-      "id": "cinemino-20261112-1500-je-so-pazzo",
-      "title": "Je So' Pazzo",
-      "description": "Proiezione al Cinemino (Via Seneca 6, Milano) — doppiato ITA • Cinebau (ammessi i cani).",
-      "startTime": "2026-11-12T14:00:00.000Z",
-      "endTime": "2026-11-12T15:40:00.000Z",
-      "venueName": "Il Cinemino",
-      "neighborhood": "Porta Romana / Via Seneca",
-      "address": "Via Seneca 6, Milano",
-      "isFree": false,
-      "priceDetails": "€9,00 Intero / €7,00 Ridotto + Tessera",
-      "category": "cinema",
-      "eventType": "CINEMA_SCREENING",
-      "sourceName": "ilcinemino.it/programmazione",
-      "sourceUrl": "https://www.ilcinemino.it/programmazione/",
-      "instagramUrl": null,
-      "facebookUrl": null,
-      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=Il%20Cinemino%20Via%20Seneca%206%2C%20Milano+Milano",
-      "isSoldOut": false,
       "availabilityBadge": "PRENOTABILE • POSTI DISPONIBILI",
       "origin": "adapter"
     },
@@ -2948,6 +2697,7 @@
       "priceDetails": "€€ / Biglietti su DICE",
       "category": "cinema",
       "eventType": "LIVE_CONCERT",
+      "source": "DICE",
       "sourceName": "DICE.fm Milano",
       "sourceUrl": "https://dice.fm/event/pgoekl-wildwood-i-segreti-del-bosco-proibito-12th-nov-cinema-beltrade-milano-tickets",
       "mapsUrl": "https://www.google.com/maps/search/?api=1&query=Cinema%20Beltrade%20Via%20Nino%20Oxilia%2C%2010%2C%2020127%20Milano%20MI%2C%20Italy",
@@ -3372,6 +3122,28 @@
       "origin": "adapter"
     },
     {
+      "id": "evt-lafeltrinelli-duomo",
+      "title": "Stagione Culturale 2026 alla Camera del Lavoro: Libri, Lavoro & Diritti",
+      "description": "Rassegna di presentazioni editoriali, concerti, mostre e tavole rotonde promossa dalla Camera del Lavoro Metropolitana di Milano in Corso di Porta Vittoria.",
+      "startTime": "2026-11-12T16:30:00.000Z",
+      "endTime": "2026-11-12T18:00:00.000Z",
+      "venueName": "Camera del Lavoro di Milano",
+      "neighborhood": "Porta Vittoria / Cinque Giornate",
+      "address": "Corso di Porta Vittoria 43, Milano",
+      "isFree": true,
+      "priceDetails": "GRATIS • Ingresso libero",
+      "category": "politica",
+      "eventType": "PUBLIC_TALK",
+      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=Camera%20del%20Lavoro%20di%20Milano%20Corso%20di%20Porta%20Vittoria%2043+Milano",
+      "sourceName": "cgil.milano.it — Stagione Culturale 2026",
+      "sourceUrl": "https://www.cgil.milano.it/stagione-culturale-2026/",
+      "instagramUrl": null,
+      "facebookUrl": null,
+      "isSoldOut": false,
+      "availabilityBadge": "INGRESSO LIBERO • DISPONIBILE",
+      "origin": "curated"
+    },
+    {
       "id": "cine-uci-bicocca-1794501300000-shaun-vita-da-pecora-ope",
       "title": "Shaun, vita da pecora - Operazione Z.U.C.",
       "description": "Proiezione al UCI Cinemas Bicocca (12), in italiano. Regia di Steve Cox.",
@@ -3454,6 +3226,7 @@
       "priceDetails": "€12.00",
       "category": "concerti",
       "eventType": "LIVE_CONCERT",
+      "source": "DICE",
       "sourceName": "DICE.fm Milano",
       "sourceUrl": "https://dice.fm/event/bvlaeg-spaghetti-unplugged-12-novembre-milano-12th-nov-apollo-club-milano-milano-tickets",
       "mapsUrl": "https://www.google.com/maps/search/?api=1&query=APOLLO%20CLUB%20MILANO%20Via%20Giosu%C3%A8%20Borsi%2C%209%2F2%2C%2020143%20Milano%20MI%2C%20Italy",
@@ -4072,6 +3845,7 @@
       "priceDetails": "GRATIS",
       "category": "libri",
       "eventType": "LIVE_CONCERT",
+      "source": "DICE",
       "sourceName": "DICE.fm Milano",
       "sourceUrl": "https://dice.fm/event/x9v9ba-tiny-library-w-il-cairo-12th-nov-mondadori-bookstore-occasioni-dinchiostro-milano-tickets",
       "mapsUrl": "https://www.google.com/maps/search/?api=1&query=MONDADORI%20BOOKSTORE%20-%20OCCASIONI%20D'INCHIOSTRO%20Via%20Ettore%20Ponti%2021%2C%2020143%20Milano%20citt%C3%A0%20metropolitana%20di%20Milano%2C%20Italia",
@@ -4095,6 +3869,7 @@
       "priceDetails": "GRATIS",
       "category": "concerti",
       "eventType": "LIVE_CONCERT",
+      "source": "DICE",
       "sourceName": "DICE.fm Milano",
       "sourceUrl": "https://dice.fm/event/3kqq9x-south-freequency-x-club-gioved-12th-nov-club-giovanile-milano-milano-tickets",
       "mapsUrl": "https://www.google.com/maps/search/?api=1&query=Club%20Giovanile%20Milano%20Via%20Antonio%20Raimondi%2015%2C%2020156%20Milano%20citt%C3%A0%20metropolitana%20di%20Milano%2C%20Italia",
@@ -4988,6 +4763,7 @@
       "priceDetails": "€€ / Biglietti su DICE",
       "category": "cinema",
       "eventType": "LIVE_CONCERT",
+      "source": "DICE",
       "sourceName": "DICE.fm Milano",
       "sourceUrl": "https://dice.fm/event/3kqdlx-look-back-12th-nov-cinema-beltrade-milano-tickets",
       "mapsUrl": "https://www.google.com/maps/search/?api=1&query=Cinema%20Beltrade%20Via%20Nino%20Oxilia%2C%2010%2C%2020127%20Milano%20MI%2C%20Italy",
@@ -5172,6 +4948,7 @@
       "priceDetails": "€25.99",
       "category": "concerti",
       "eventType": "LIVE_CONCERT",
+      "source": "DICE",
       "sourceName": "DICE.fm Milano",
       "sourceUrl": "https://dice.fm/event/eo83a2-thylacine-live-a-magnolia-roads-vol-3-12th-nov-circolo-magnolia-indoor-segrate-tickets",
       "mapsUrl": "https://www.google.com/maps/search/?api=1&query=Circolo%20Magnolia%20(Indoor)%20Via%20Circonvallazione%20Idroscalo%2C%2041%2C%2020090%20Novegro-Tregarezzo%20MI%2C%20Italy%2C%20Milano",
@@ -5195,6 +4972,7 @@
       "priceDetails": "€12.00",
       "category": "concerti",
       "eventType": "LIVE_CONCERT",
+      "source": "DICE",
       "sourceName": "DICE.fm Milano",
       "sourceUrl": "https://dice.fm/event/8edng2-henna-persone-e-sognatori-12th-nov-apollo-club-milano-milano-tickets",
       "mapsUrl": "https://www.google.com/maps/search/?api=1&query=APOLLO%20CLUB%20MILANO%20Via%20Giosu%C3%A8%20Borsi%2C%209%2F2%2C%2020143%20Milano%20MI%2C%20Italy",
@@ -5563,6 +5341,7 @@
       "priceDetails": "GRATIS",
       "category": "concerti",
       "eventType": "LIVE_CONCERT",
+      "source": "DICE",
       "sourceName": "DICE.fm Milano",
       "sourceUrl": "https://dice.fm/event/kxpwrq-bello-unplugged-annibale-livemusic-12th-nov-ostello-bello-milano-centrale-milano-tickets",
       "mapsUrl": "https://www.google.com/maps/search/?api=1&query=Ostello%20Bello%20Milano%20Centrale%20Via%20Roberto%20Lepetit%2033%2C%2020124%20Milano%20citt%C3%A0%20metropolitana%20di%20Milano%2C%20Italia",
@@ -5586,6 +5365,7 @@
       "priceDetails": "€€ / Biglietti su DICE",
       "category": "concerti",
       "eventType": "LIVE_CONCERT",
+      "source": "DICE",
       "sourceName": "DICE.fm Milano",
       "sourceUrl": "https://dice.fm/event/7db6bp-deary-12th-nov-arci-bellezza-milano-tickets",
       "mapsUrl": "https://www.google.com/maps/search/?api=1&query=ARCI%20Bellezza%20Via%20Giovanni%20Bellezza%2C%2016a%2C%2020136%20Milano%20MI%2C%20Italy",
@@ -5609,6 +5389,7 @@
       "priceDetails": "€€ / Biglietti su DICE",
       "category": "teatro",
       "eventType": "LIVE_CONCERT",
+      "source": "DICE",
       "sourceName": "DICE.fm Milano",
       "sourceUrl": "https://dice.fm/event/nv9v8q-nessi-gomes-12th-nov-spazio-teatro-89-milan-tickets",
       "mapsUrl": "https://www.google.com/maps/search/?api=1&query=Spazio%20Teatro%2089%20Via%20Fratelli%20Zoia%2089%2C%2020153%20Milan%20Milan%2C%20Italy%2C%20Milano",
@@ -6054,29 +5835,6 @@
       "origin": "curated"
     },
     {
-      "id": "dice-6a47e7f1cbff2c0001acc5ab",
-      "title": "Pierluca Mariti - Abbi Pazienza",
-      "description": "Evento dal vivo in programma a Milano presso Teatro Santuccio. Biglietti e dettagli ufficiali su DICE.fm.",
-      "startTime": "2026-11-12T20:00:00.000Z",
-      "endTime": "2026-11-12T22:45:00.000Z",
-      "venueName": "Teatro Santuccio",
-      "neighborhood": "Milano",
-      "address": "Via Luigi Sacco 10, 21100 Varese Varese, Italy, Milano",
-      "isFree": false,
-      "isSoldOut": true,
-      "priceDetails": "€19.66",
-      "category": "teatro",
-      "eventType": "LIVE_CONCERT",
-      "sourceName": "DICE.fm Milano",
-      "sourceUrl": "https://dice.fm/event/3o7va8-pierluca-mariti-abbi-pazienza-12th-nov-teatro-santuccio-varese-tickets",
-      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=Teatro%20Santuccio%20Via%20Luigi%20Sacco%2010%2C%2021100%20Varese%20Varese%2C%20Italy%2C%20Milano",
-      "instagramUrl": "https://www.instagram.com/explore/tags/teatrosantuccio/",
-      "facebookUrl": null,
-      "origin": "dice_crawler",
-      "sourceBadge": "DICE Live",
-      "availabilityBadge": "SOLD OUT • POSTI ESAURITI"
-    },
-    {
       "id": "dice-6aec6a8af4c4fb000157a4d0",
       "title": "Cantautori // Cesare Blanc + Pietro Bombardelli",
       "description": "Cesare Blanc Una voce graffiata, un pianoforte essenziale e una chitarra. Cesare Blanc porta sul palco un live acustico intimo e senza filtri. I suoi brani inediti si alternano alle canzoni che hanno ispirato il suo percorso artistico, in un racconto...",
@@ -6090,6 +5848,7 @@
       "priceDetails": "GRATIS",
       "category": "concerti",
       "eventType": "LIVE_CONCERT",
+      "source": "DICE",
       "sourceName": "DICE.fm Milano",
       "sourceUrl": "https://dice.fm/event/5woeb8-cantautori-cesare-blanc-pietro-bombardelli-12th-nov-bachelite-clab-milano-tickets",
       "mapsUrl": "https://www.google.com/maps/search/?api=1&query=Bachelite%20cLab%20Via%20Vertoiba%2C%203%2C%2020137%20Milano%20MI%2C%20Italy",
@@ -6113,6 +5872,7 @@
       "priceDetails": "GRATIS",
       "category": "concerti",
       "eventType": "LIVE_CONCERT",
+      "source": "DICE",
       "sourceName": "DICE.fm Milano",
       "sourceUrl": "https://dice.fm/event/aababx-elena-cazzulo-jam-session-12th-nov-gipsy-milano-tickets",
       "mapsUrl": "https://www.google.com/maps/search/?api=1&query=GIPSY%20Via%20Carlo%20Valvassori%20Peroni%2056%2C%2020133%20Milano%20citt%C3%A0%20metropolitana%20di%20Milano%2C%20Italia",
@@ -6121,29 +5881,6 @@
       "origin": "dice_crawler",
       "sourceBadge": "DICE Live",
       "availabilityBadge": "INGRESSO LIBERO • DISPONIBILE"
-    },
-    {
-      "id": "dice-6ae0c95cbdb58d00014dd4a5",
-      "title": "A Modino / Stand Up di Giacomo Pietrini",
-      "description": "Evento dal vivo in programma a Milano presso Alveare Culturale Studio. Biglietti e dettagli ufficiali su DICE.fm.",
-      "startTime": "2026-11-12T20:00:00.000Z",
-      "endTime": "2026-11-12T21:30:00.000Z",
-      "venueName": "Alveare Culturale Studio",
-      "neighborhood": "Milano",
-      "address": "Via Carlo Imbonati 12, 20159 Milan Milan, Italy, Milano",
-      "isFree": false,
-      "isSoldOut": false,
-      "priceDetails": "€€ / Biglietti su DICE",
-      "category": "teatro",
-      "eventType": "LIVE_CONCERT",
-      "sourceName": "DICE.fm Milano",
-      "sourceUrl": "https://dice.fm/event/q23dqy-a-modino-stand-up-di-giacomo-pietrini-12th-nov-alveare-culturale-studio-milan-tickets",
-      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=Alveare%20Culturale%20Studio%20Via%20Carlo%20Imbonati%2012%2C%2020159%20Milan%20Milan%2C%20Italy%2C%20Milano",
-      "instagramUrl": "https://www.instagram.com/explore/tags/alveareculturalestudio/",
-      "facebookUrl": null,
-      "origin": "dice_crawler",
-      "sourceBadge": "DICE Live",
-      "availabilityBadge": "PRENOTABILE • POSTI DISPONIBILI"
     },
     {
       "id": "dice-6ab0f33d40665d0001550c11",
@@ -6159,6 +5896,7 @@
       "priceDetails": "€14.00",
       "category": "concerti",
       "eventType": "LIVE_CONCERT",
+      "source": "DICE",
       "sourceName": "DICE.fm Milano",
       "sourceUrl": "https://dice.fm/event/2wa5w7-daykoda-ze-in-the-clouds-sup-nasa-12th-nov-biko-milano-tickets",
       "mapsUrl": "https://www.google.com/maps/search/?api=1&query=BIKO%20Via%20Ettore%20Ponti%2C%2040%2C%2020143%20Milano%20MI%2C%20Italy",
@@ -6182,10 +5920,59 @@
       "priceDetails": "€15.00",
       "category": "mostre",
       "eventType": "LIVE_CONCERT",
+      "source": "DICE",
       "sourceName": "DICE.fm Milano",
       "sourceUrl": "https://dice.fm/event/v3lwl7-lunacorp-presents-stuart-mckenzie-12th-nov-combo-milano-tickets",
       "mapsUrl": "https://www.google.com/maps/search/?api=1&query=Combo%20Ripa%20di%20Porta%20Ticinese%2C%2083%2C%2020143%20Milano%20MI%2C%20Italy",
       "instagramUrl": "https://www.instagram.com/explore/tags/combo/",
+      "facebookUrl": null,
+      "origin": "dice_crawler",
+      "sourceBadge": "DICE Live",
+      "availabilityBadge": "PRENOTABILE • POSTI DISPONIBILI"
+    },
+    {
+      "id": "dice-6a47e7f1cbff2c0001acc5ab",
+      "title": "Pierluca Mariti - Abbi Pazienza",
+      "description": "Evento dal vivo in programma a Milano presso Teatro Santuccio. Biglietti e dettagli ufficiali su DICE.fm.",
+      "startTime": "2026-11-12T20:00:00.000Z",
+      "endTime": "2026-11-12T22:45:00.000Z",
+      "venueName": "Teatro Santuccio",
+      "neighborhood": "Milano",
+      "address": "Via Luigi Sacco 10, 21100 Varese Varese, Italy, Milano",
+      "isFree": false,
+      "isSoldOut": true,
+      "priceDetails": "€19.66",
+      "category": "teatro",
+      "eventType": "LIVE_CONCERT",
+      "source": "DICE",
+      "sourceName": "DICE.fm Milano",
+      "sourceUrl": "https://dice.fm/event/3o7va8-pierluca-mariti-abbi-pazienza-12th-nov-teatro-santuccio-varese-tickets",
+      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=Teatro%20Santuccio%20Via%20Luigi%20Sacco%2010%2C%2021100%20Varese%20Varese%2C%20Italy%2C%20Milano",
+      "instagramUrl": "https://www.instagram.com/explore/tags/teatrosantuccio/",
+      "facebookUrl": null,
+      "origin": "dice_crawler",
+      "sourceBadge": "DICE Live",
+      "availabilityBadge": "SOLD OUT • POSTI ESAURITI"
+    },
+    {
+      "id": "dice-6ae0c95cbdb58d00014dd4a5",
+      "title": "A Modino / Stand Up di Giacomo Pietrini",
+      "description": "Evento dal vivo in programma a Milano presso Alveare Culturale Studio. Biglietti e dettagli ufficiali su DICE.fm.",
+      "startTime": "2026-11-12T20:00:00.000Z",
+      "endTime": "2026-11-12T21:30:00.000Z",
+      "venueName": "Alveare Culturale Studio",
+      "neighborhood": "Milano",
+      "address": "Via Carlo Imbonati 12, 20159 Milan Milan, Italy, Milano",
+      "isFree": false,
+      "isSoldOut": false,
+      "priceDetails": "€€ / Biglietti su DICE",
+      "category": "teatro",
+      "eventType": "LIVE_CONCERT",
+      "source": "DICE",
+      "sourceName": "DICE.fm Milano",
+      "sourceUrl": "https://dice.fm/event/q23dqy-a-modino-stand-up-di-giacomo-pietrini-12th-nov-alveare-culturale-studio-milan-tickets",
+      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=Alveare%20Culturale%20Studio%20Via%20Carlo%20Imbonati%2012%2C%2020159%20Milan%20Milan%2C%20Italy%2C%20Milano",
+      "instagramUrl": "https://www.instagram.com/explore/tags/alveareculturalestudio/",
       "facebookUrl": null,
       "origin": "dice_crawler",
       "sourceBadge": "DICE Live",
@@ -6205,6 +5992,7 @@
       "priceDetails": "€29.77",
       "category": "concerti",
       "eventType": "LIVE_CONCERT",
+      "source": "DICE",
       "sourceName": "DICE.fm Milano",
       "sourceUrl": "https://dice.fm/event/eox7dw-francesco-fanucchi-tutto-sbagliato-bergamo-12th-nov-nxt-station-bergamo-tickets",
       "mapsUrl": "https://www.google.com/maps/search/?api=1&query=NXT%20STATION%20Piazzale%20degli%20Alpini%2C%2024121%20Bergamo%20BG%2C%20Italy%2C%20Milano",
@@ -6376,6 +6164,30 @@
       "origin": "adapter"
     },
     {
+      "id": "dice-6ab0fe02cd2a0400014f7dce",
+      "title": "Roberto Colella",
+      "description": "Dopo i concerti estivi, parte il primo club tour italiano di Roberto Colella, da Maggio in giro con le canzoni di sempre e con quelle del nuovo disco, Ce Sta Sempe Na Via. Autore, compositore e polistrumentista, per 12 anni frontman de La Maschera, C...",
+      "startTime": "2026-11-12T20:30:00.000Z",
+      "endTime": "2026-11-12T22:45:00.000Z",
+      "venueName": "Santeria Toscana 31",
+      "neighborhood": "Milano",
+      "address": "Viale Toscana, 31, 20136 Milano MI, Italy",
+      "isFree": false,
+      "isSoldOut": false,
+      "priceDetails": "€20.00",
+      "category": "concerti",
+      "eventType": "LIVE_CONCERT",
+      "source": "DICE",
+      "sourceName": "DICE.fm Milano",
+      "sourceUrl": "https://dice.fm/event/avkrav-roberto-colella-12th-nov-santeria-toscana-31-milano-tickets",
+      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=Santeria%20Toscana%2031%20Viale%20Toscana%2C%2031%2C%2020136%20Milano%20MI%2C%20Italy",
+      "instagramUrl": "https://www.instagram.com/santeriamilano/",
+      "facebookUrl": null,
+      "origin": "dice_crawler",
+      "sourceBadge": "DICE Live",
+      "availabilityBadge": "PRENOTABILE • POSTI DISPONIBILI"
+    },
+    {
       "id": "dice-6ae8e8b7814cb70001a32217",
       "title": "Ferine - regista in sala",
       "description": "Evento dal vivo in programma a Milano presso Cinema Beltrade. Biglietti e dettagli ufficiali su DICE.fm.",
@@ -6389,6 +6201,7 @@
       "priceDetails": "€€ / Biglietti su DICE",
       "category": "cinema",
       "eventType": "LIVE_CONCERT",
+      "source": "DICE",
       "sourceName": "DICE.fm Milano",
       "sourceUrl": "https://dice.fm/event/w838dn-ferine-regista-in-sala-12th-nov-cinema-beltrade-milano-tickets",
       "mapsUrl": "https://www.google.com/maps/search/?api=1&query=Cinema%20Beltrade%20Via%20Nino%20Oxilia%2C%2010%2C%2020127%20Milano%20MI%2C%20Italy",
@@ -6412,33 +6225,11 @@
       "priceDetails": "€€ / Biglietti su DICE",
       "category": "teatro",
       "eventType": "LIVE_CONCERT",
+      "source": "DICE",
       "sourceName": "DICE.fm Milano",
       "sourceUrl": "https://dice.fm/event/bbqqoo-comedy-files-002-stand-up-sketch-crowdwork-salsa-rosa-12th-nov-arci-bellezza-milano-tickets",
       "mapsUrl": "https://www.google.com/maps/search/?api=1&query=ARCI%20Bellezza%20Via%20Giovanni%20Bellezza%2C%2016a%2C%2020136%20Milano%20MI%2C%20Italy",
       "instagramUrl": "https://www.instagram.com/arcibellezza/",
-      "facebookUrl": null,
-      "origin": "dice_crawler",
-      "sourceBadge": "DICE Live",
-      "availabilityBadge": "PRENOTABILE • POSTI DISPONIBILI"
-    },
-    {
-      "id": "dice-6ab0fe02cd2a0400014f7dce",
-      "title": "Roberto Colella",
-      "description": "Dopo i concerti estivi, parte il primo club tour italiano di Roberto Colella, da Maggio in giro con le canzoni di sempre e con quelle del nuovo disco, Ce Sta Sempe Na Via. Autore, compositore e polistrumentista, per 12 anni frontman de La Maschera, C...",
-      "startTime": "2026-11-12T20:30:00.000Z",
-      "endTime": "2026-11-12T22:45:00.000Z",
-      "venueName": "Santeria Toscana 31",
-      "neighborhood": "Milano",
-      "address": "Viale Toscana, 31, 20136 Milano MI, Italy",
-      "isFree": false,
-      "isSoldOut": false,
-      "priceDetails": "€20.00",
-      "category": "concerti",
-      "eventType": "LIVE_CONCERT",
-      "sourceName": "DICE.fm Milano",
-      "sourceUrl": "https://dice.fm/event/avkrav-roberto-colella-12th-nov-santeria-toscana-31-milano-tickets",
-      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=Santeria%20Toscana%2031%20Viale%20Toscana%2C%2031%2C%2020136%20Milano%20MI%2C%20Italy",
-      "instagramUrl": "https://www.instagram.com/santeriamilano/",
       "facebookUrl": null,
       "origin": "dice_crawler",
       "sourceBadge": "DICE Live",
@@ -7147,6 +6938,7 @@
       "priceDetails": "€5.00",
       "category": "concerti",
       "eventType": "LIVE_CONCERT",
+      "source": "DICE",
       "sourceName": "DICE.fm Milano",
       "sourceUrl": "https://dice.fm/event/yoqpkr-blue-nights-pres-nomads-quartet-live-12th-nov-bluesquare-milano-milan-tickets",
       "mapsUrl": "https://www.google.com/maps/search/?api=1&query=Bluesquare%20Milano%20Via%20Tortona%2033%2C%2020144%20Milan%20Milan%2C%20Italy%2C%20Milano",
@@ -12117,6 +11909,28 @@
       "origin": "adapter"
     },
     {
+      "id": "evt-lafeltrinelli-duomo",
+      "title": "Stagione Culturale 2026 alla Camera del Lavoro: Libri, Lavoro & Diritti",
+      "description": "Rassegna di presentazioni editoriali, concerti, mostre e tavole rotonde promossa dalla Camera del Lavoro Metropolitana di Milano in Corso di Porta Vittoria.",
+      "startTime": "2026-11-13T16:30:00.000Z",
+      "endTime": "2026-11-13T18:00:00.000Z",
+      "venueName": "Camera del Lavoro di Milano",
+      "neighborhood": "Porta Vittoria / Cinque Giornate",
+      "address": "Corso di Porta Vittoria 43, Milano",
+      "isFree": true,
+      "priceDetails": "GRATIS • Ingresso libero",
+      "category": "politica",
+      "eventType": "PUBLIC_TALK",
+      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=Camera%20del%20Lavoro%20di%20Milano%20Corso%20di%20Porta%20Vittoria%2043+Milano",
+      "sourceName": "cgil.milano.it — Stagione Culturale 2026",
+      "sourceUrl": "https://www.cgil.milano.it/stagione-culturale-2026/",
+      "instagramUrl": null,
+      "facebookUrl": null,
+      "isSoldOut": false,
+      "availabilityBadge": "INGRESSO LIBERO • DISPONIBILE",
+      "origin": "curated"
+    },
+    {
       "id": "cine-merlata-1794587700000-scrooge-e-gli-spiriti-de",
       "title": "Scrooge e gli spiriti del Natale",
       "description": "Proiezione al Notorious Merlata Bloom (SALA 5), in italiano. Regia di Ti West.",
@@ -16345,17 +16159,6 @@
       "checkedAt": "2026-11-09T08:30:00Z"
     },
     {
-      "id": "evt-mudec-dialogo-arti",
-      "title": "Mostre Temporanee in Corso al MUDEC — Museo delle Culture",
-      "venueName": "MUDEC — Museo delle Culture",
-      "sourceUrl": "https://www.mudec.it/mostre-in-corso-2/",
-      "verdict": "REJECTED_UNFAITHFUL_LINK",
-      "rejectionReasons": [
-        "Gate 4 (Fedeltà Link Sorgente): La pagina sorgente ha risposto con errore HTTP 403"
-      ],
-      "checkedAt": "2026-11-12T13:27:54.597Z"
-    },
-    {
       "id": "evt-palazzo-reale-brueghel",
       "title": "Mostra Temporanea \"I Brueghel. Le dinastie del talento\" a Palazzo Reale",
       "venueName": "Palazzo Reale Milano",
@@ -16364,18 +16167,7 @@
       "rejectionReasons": [
         "Gate 4 (Fedeltà Link Sorgente): La pagina sorgente ha risposto con errore HTTP 403"
       ],
-      "checkedAt": "2026-11-12T13:27:54.597Z"
-    },
-    {
-      "id": "evt-lafeltrinelli-duomo",
-      "title": "Stagione Culturale 2026 alla Camera del Lavoro: Libri, Lavoro & Diritti",
-      "venueName": "Camera del Lavoro di Milano",
-      "sourceUrl": "https://www.cgil.milano.it/stagione-culturale-2026/",
-      "verdict": "REJECTED_UNFAITHFUL_LINK",
-      "rejectionReasons": [
-        "Gate 4 (Fedeltà Link Sorgente): Impossibile raggiungere l'URL sorgente: The operation was aborted due to timeout"
-      ],
-      "checkedAt": "2026-11-12T13:27:54.597Z"
+      "checkedAt": "2026-11-12T14:42:27.230Z"
     },
     {
       "id": "evt-elfo-puccini-contemp",
@@ -16386,7 +16178,7 @@
       "rejectionReasons": [
         "Gate 4 (Fedeltà Link Sorgente): L'URL associato (https://www.elfo.org/) è una homepage generica e non riporta il permalink con i dettagli specifici dell'evento \"Stagione Teatro Contemporaneo — Sala Shakespeare, Bausch e Fassbinder\"."
       ],
-      "checkedAt": "2026-11-12T13:27:54.597Z"
+      "checkedAt": "2026-11-12T14:42:27.230Z"
     },
     {
       "id": "evt-blue-note-jazz",
@@ -16397,7 +16189,7 @@
       "rejectionReasons": [
         "Gate 4 (Fedeltà Link Sorgente): L'URL associato (https://www.bluenotemilano.com/) è una homepage generica e non riporta il permalink con i dettagli specifici dell'evento \"Live Jazz, Soul & Blues — First Set (Ore 21:00) in Via Borsieri\"."
       ],
-      "checkedAt": "2026-11-12T13:27:54.597Z"
+      "checkedAt": "2026-11-12T14:42:27.230Z"
     },
     {
       "id": "evt-magnolia-clubnight",
@@ -16408,7 +16200,7 @@
       "rejectionReasons": [
         "Gate 4 (Fedeltà Link Sorgente): L'URL associato (https://www.circolomagnolia.it/) è una homepage generica e non riporta il permalink con i dettagli specifici dell'evento \"Live Tour & Club Night al Circolo Magnolia — Idroscalo\"."
       ],
-      "checkedAt": "2026-11-12T13:27:54.597Z"
+      "checkedAt": "2026-11-12T14:42:27.230Z"
     },
     {
       "id": "evt-palazzo-reale-dali",
@@ -16419,7 +16211,7 @@
       "rejectionReasons": [
         "Gate 4 (Fedeltà Link Sorgente): La pagina sorgente ha risposto con errore HTTP 403"
       ],
-      "checkedAt": "2026-11-12T13:27:54.597Z"
+      "checkedAt": "2026-11-12T14:42:27.230Z"
     },
     {
       "id": "evt-gam-pellizza-volpedo",
@@ -16430,7 +16222,7 @@
       "rejectionReasons": [
         "Gate 4 (Fedeltà Link Sorgente): La pagina sorgente ha risposto con errore HTTP 403"
       ],
-      "checkedAt": "2026-11-12T13:27:54.597Z"
+      "checkedAt": "2026-11-12T14:42:27.230Z"
     },
     {
       "id": "evt-fondazione-prada-torre",
@@ -16441,7 +16233,7 @@
       "rejectionReasons": [
         "Gate 4 (Fedeltà Link Sorgente): La pagina sorgente ha risposto con errore HTTP 403"
       ],
-      "checkedAt": "2026-11-12T13:27:54.597Z"
+      "checkedAt": "2026-11-12T14:42:27.230Z"
     },
     {
       "id": "evt-mudec-dialogo-arti",
@@ -16452,7 +16244,7 @@
       "rejectionReasons": [
         "Gate 4 (Fedeltà Link Sorgente): La pagina sorgente ha risposto con errore HTTP 403"
       ],
-      "checkedAt": "2026-11-12T13:27:54.597Z"
+      "checkedAt": "2026-11-12T14:42:27.230Z"
     },
     {
       "id": "evt-palazzo-reale-brueghel",
@@ -16463,18 +16255,7 @@
       "rejectionReasons": [
         "Gate 4 (Fedeltà Link Sorgente): La pagina sorgente ha risposto con errore HTTP 403"
       ],
-      "checkedAt": "2026-11-12T13:27:54.597Z"
-    },
-    {
-      "id": "evt-lafeltrinelli-duomo",
-      "title": "Stagione Culturale 2026 alla Camera del Lavoro: Libri, Lavoro & Diritti",
-      "venueName": "Camera del Lavoro di Milano",
-      "sourceUrl": "https://www.cgil.milano.it/stagione-culturale-2026/",
-      "verdict": "REJECTED_UNFAITHFUL_LINK",
-      "rejectionReasons": [
-        "Gate 4 (Fedeltà Link Sorgente): Impossibile raggiungere l'URL sorgente: The operation was aborted due to timeout"
-      ],
-      "checkedAt": "2026-11-12T13:27:54.597Z"
+      "checkedAt": "2026-11-12T14:42:27.230Z"
     },
     {
       "id": "evt-elfo-puccini-contemp",
@@ -16485,7 +16266,7 @@
       "rejectionReasons": [
         "Gate 4 (Fedeltà Link Sorgente): L'URL associato (https://www.elfo.org/) è una homepage generica e non riporta il permalink con i dettagli specifici dell'evento \"Stagione Teatro Contemporaneo — Sala Shakespeare, Bausch e Fassbinder\"."
       ],
-      "checkedAt": "2026-11-12T13:27:54.597Z"
+      "checkedAt": "2026-11-12T14:42:27.230Z"
     },
     {
       "id": "evt-blue-note-jazz",
@@ -16496,7 +16277,7 @@
       "rejectionReasons": [
         "Gate 4 (Fedeltà Link Sorgente): L'URL associato (https://www.bluenotemilano.com/) è una homepage generica e non riporta il permalink con i dettagli specifici dell'evento \"Live Jazz, Soul & Blues — First Set (Ore 21:00) in Via Borsieri\"."
       ],
-      "checkedAt": "2026-11-12T13:27:54.597Z"
+      "checkedAt": "2026-11-12T14:42:27.230Z"
     },
     {
       "id": "evt-magnolia-clubnight",
@@ -16507,7 +16288,7 @@
       "rejectionReasons": [
         "Gate 4 (Fedeltà Link Sorgente): L'URL associato (https://www.circolomagnolia.it/) è una homepage generica e non riporta il permalink con i dettagli specifici dell'evento \"Live Tour & Club Night al Circolo Magnolia — Idroscalo\"."
       ],
-      "checkedAt": "2026-11-12T13:27:54.597Z"
+      "checkedAt": "2026-11-12T14:42:27.230Z"
     },
     {
       "id": "evt-palazzo-reale-dali",
@@ -16518,7 +16299,7 @@
       "rejectionReasons": [
         "Gate 4 (Fedeltà Link Sorgente): La pagina sorgente ha risposto con errore HTTP 403"
       ],
-      "checkedAt": "2026-11-12T13:27:54.597Z"
+      "checkedAt": "2026-11-12T14:42:27.230Z"
     },
     {
       "id": "evt-gam-pellizza-volpedo",
@@ -16529,7 +16310,7 @@
       "rejectionReasons": [
         "Gate 4 (Fedeltà Link Sorgente): La pagina sorgente ha risposto con errore HTTP 403"
       ],
-      "checkedAt": "2026-11-12T13:27:54.597Z"
+      "checkedAt": "2026-11-12T14:42:27.230Z"
     },
     {
       "id": "evt-fondazione-prada-torre",
@@ -16540,7 +16321,18 @@
       "rejectionReasons": [
         "Gate 4 (Fedeltà Link Sorgente): La pagina sorgente ha risposto con errore HTTP 403"
       ],
-      "checkedAt": "2026-11-12T13:27:54.597Z"
+      "checkedAt": "2026-11-12T14:42:27.230Z"
+    },
+    {
+      "id": "evt-mudec-dialogo-arti",
+      "title": "Mostre Temporanee in Corso al MUDEC — Museo delle Culture",
+      "venueName": "MUDEC — Museo delle Culture",
+      "sourceUrl": "https://www.mudec.it/mostre-in-corso-2/",
+      "verdict": "REJECTED_UNFAITHFUL_LINK",
+      "rejectionReasons": [
+        "Gate 4 (Fedeltà Link Sorgente): La pagina sorgente ha risposto con errore HTTP 403"
+      ],
+      "checkedAt": "2026-11-12T14:42:27.230Z"
     }
   ]
 }
