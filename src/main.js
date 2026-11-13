@@ -211,6 +211,48 @@ function setupAdminShortcuts() {
   window.addEventListener('popstate', syncAdminRoute);
 }
 
+// Deep linking & Permalink handler (?event=<id> or #event-<id>)
+function handleEventPermalink() {
+  const urlParams = new URLSearchParams(window.location.search);
+  let targetEventId = urlParams.get('event');
+
+  if (!targetEventId && window.location.hash.startsWith('#event-')) {
+    targetEventId = window.location.hash.replace('#event-', '');
+  }
+
+  if (!targetEventId) return;
+
+  // Let DOM settle after store.setEvents
+  setTimeout(() => {
+    // If the event exists in state
+    const allEvents = store.getState().allEvents || [];
+    const targetEvent = allEvents.find(e => e.id === targetEventId);
+
+    if (!targetEvent) return;
+
+    // Reset filters to ensure the event isn't hidden
+    store.setFilter('price', 'all');
+    store.setFilter('category', 'all');
+    store.setFilter('source', 'all');
+    store.setFilter('search', '');
+
+    // Expand the card drawer
+    store.state.expandedEventIds.add(targetEventId);
+    store.notify('card:expand');
+
+    // Scroll card into view
+    const cardEl = document.getElementById(`card-${targetEventId}`);
+    if (cardEl) {
+      cardEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      // Visual pulse highlight
+      cardEl.classList.add('ring-2', 'ring-orange-500', 'shadow-[0_0_25px_rgba(249,115,22,0.4)]');
+      setTimeout(() => {
+        cardEl.classList.remove('ring-2', 'ring-orange-500', 'shadow-[0_0_25px_rgba(249,115,22,0.4)]');
+      }, 3500);
+    }
+  }, 100);
+}
+
 // Main App Initialization
 export async function initApp() {
   // 1. Initial Timeline & FilterBar
@@ -234,7 +276,10 @@ export async function initApp() {
 
   store.setEvents(events);
 
-  // 5. Check if loaded with Admin hash or query
+  // 5. Handle Event Deep-link / Permalink
+  handleEventPermalink();
+
+  // 6. Check if loaded with Admin hash or query
   syncAdminRoute();
 }
 
@@ -243,3 +288,4 @@ if (document.readyState === 'loading') {
 } else {
   initApp();
 }
+

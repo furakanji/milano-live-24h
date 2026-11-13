@@ -240,6 +240,26 @@ export function renderEventCard(ev, isExpanded = false) {
             </svg>
             Fonte Ufficiale
           </a>
+
+          <!-- Social Share & Permalink Button -->
+          <button
+            type="button"
+            data-share-event="${ev.id}"
+            data-event-title="${ev.title.replace(/"/g, '&quot;')}"
+            data-event-venue="${(ev.venueName || '').replace(/"/g, '&quot;')}"
+            data-event-time="${ev._startHM || ''}"
+            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-orange-500/15 hover:bg-orange-500/25 text-orange-300 border border-orange-500/30 text-xs font-bold transition cursor-pointer"
+            title="Condividi evento o copia permalink"
+          >
+            <svg class="w-3.5 h-3.5 text-orange-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="18" cy="5" r="3"></circle>
+              <circle cx="6" cy="12" r="3"></circle>
+              <circle cx="18" cy="19" r="3"></circle>
+              <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+              <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+            </svg>
+            <span>Condividi</span>
+          </button>
         </div>
 
         <div class="flex items-center gap-1.5">
