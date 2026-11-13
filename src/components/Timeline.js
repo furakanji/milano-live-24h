@@ -226,6 +226,7 @@ export class Timeline {
       const cat = card.getAttribute('data-category');
       const isFree = card.getAttribute('data-is-free') === 'true';
       const isSoldOut = card.getAttribute('data-is-sold-out') === 'true';
+      const isOutOfTown = card.getAttribute('data-is-out-of-town') === 'true';
       const source = (card.getAttribute('data-source') || '').toLowerCase();
       const searchable = card.getAttribute('data-searchable-text') || '';
 
@@ -234,6 +235,10 @@ export class Timeline {
       // Price filter
       if (s.activePriceFilter === 'free' && !isFree) visible = false;
       if (s.activePriceFilter === 'paid' && isFree) visible = false;
+
+      // Location filter ('all' | 'milano' | 'fuori-porta')
+      if (s.activeLocationFilter === 'milano' && isOutOfTown) visible = false;
+      if (s.activeLocationFilter === 'fuori-porta' && !isOutOfTown) visible = false;
 
       // Category filter & disabled categories
       if (s.disabledCategories.has(cat)) visible = false;

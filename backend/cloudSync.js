@@ -68,6 +68,8 @@ export async function syncSnapshotToCloud(payload, options = {}) {
                     mapsUrl: { stringValue: ev.mapsUrl || '' },
                     instagramUrl: { stringValue: ev.instagramUrl || '' },
                     isSoldOut: { booleanValue: Boolean(ev.isSoldOut) },
+                    isOutOfTown: { booleanValue: Boolean(ev.isOutOfTown) },
+                    outOfTownLocation: { stringValue: ev.outOfTownLocation || '' },
                     isContinuous: { booleanValue: Boolean(ev.isContinuous) },
                     openHour: { stringValue: ev.openHour || '' },
                     closeHour: { stringValue: ev.closeHour || '' }

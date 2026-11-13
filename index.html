@@ -73,18 +73,35 @@
     <section id="sticky-filter-bar" class="sticky top-0 z-30 editorial-header border-b border-[#23272f] px-4 py-3 shadow-xl">
       <div class="max-w-5xl mx-auto space-y-2.5">
         <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-2.5">
-          <div class="flex items-center gap-1.5 bg-[#131519] p-1 rounded-lg border border-[#23272f] self-start" role="group">
-            <button type="button" data-price-filter="all" class="price-filter-btn px-3 py-1.5 rounded-md text-xs font-bold tracking-wide transition cursor-pointer bg-white text-black">
-              Tutti <span id="count-price-all" class="ml-1 opacity-75 mono-num"></span>
-            </button>
-            <button type="button" data-price-filter="free" class="price-filter-btn px-3 py-1.5 rounded-md text-xs font-bold tracking-wide transition cursor-pointer text-zinc-300 hover:text-white flex items-center gap-1.5">
-              <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
-              Gratis / Ingresso Libero <span id="count-price-free" class="opacity-75 mono-num"></span>
-            </button>
-            <button type="button" data-price-filter="paid" class="price-filter-btn px-3 py-1.5 rounded-md text-xs font-bold tracking-wide transition cursor-pointer text-zinc-300 hover:text-white">
-              A Pagamento <span id="count-price-paid" class="ml-1 opacity-75 mono-num"></span>
-            </button>
+          <div class="flex flex-wrap items-center gap-2">
+            <!-- Price Group -->
+            <div class="flex items-center gap-1 bg-[#131519] p-1 rounded-lg border border-[#23272f]" role="group">
+              <button type="button" data-price-filter="all" class="price-filter-btn px-2.5 py-1.5 rounded-md text-xs font-bold tracking-wide transition cursor-pointer bg-white text-black">
+                Tutti <span id="count-price-all" class="ml-1 opacity-75 mono-num"></span>
+              </button>
+              <button type="button" data-price-filter="free" class="price-filter-btn px-2.5 py-1.5 rounded-md text-xs font-bold tracking-wide transition cursor-pointer text-zinc-300 hover:text-white flex items-center gap-1">
+                <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                Gratis <span id="count-price-free" class="opacity-75 mono-num"></span>
+              </button>
+              <button type="button" data-price-filter="paid" class="price-filter-btn px-2.5 py-1.5 rounded-md text-xs font-bold tracking-wide transition cursor-pointer text-zinc-300 hover:text-white">
+                A Pagamento <span id="count-price-paid" class="ml-1 opacity-75 mono-num"></span>
+              </button>
+            </div>
+
+            <!-- Territorio / Fuori Porta Group -->
+            <div class="flex items-center gap-1 bg-[#131519] p-1 rounded-lg border border-[#23272f]" role="group">
+              <button type="button" data-location-filter="all" class="location-filter-btn px-2.5 py-1.5 rounded-md text-xs font-bold tracking-wide transition cursor-pointer bg-white text-black">
+                Tutto <span id="count-loc-all" class="ml-1 opacity-75 mono-num"></span>
+              </button>
+              <button type="button" data-location-filter="milano" class="location-filter-btn px-2.5 py-1.5 rounded-md text-xs font-bold tracking-wide transition cursor-pointer text-zinc-300 hover:text-white">
+                Milano Città <span id="count-loc-milano" class="ml-1 opacity-75 mono-num"></span>
+              </button>
+              <button type="button" data-location-filter="fuori-porta" class="location-filter-btn px-2.5 py-1.5 rounded-md text-xs font-bold tracking-wide transition cursor-pointer text-indigo-300 hover:text-white flex items-center gap-1">
+                <span>🚗 Fuori Porta</span> <span id="count-loc-fuori" class="ml-1 px-1.5 py-0.2 bg-indigo-500/20 text-indigo-300 rounded font-bold mono-num text-[11px]"></span>
+              </button>
+            </div>
           </div>
+
           <div class="flex flex-wrap items-center gap-2">
             <div class="relative flex-1 sm:flex-initial sm:w-56">
               <svg class="w-3.5 h-3.5 text-zinc-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>

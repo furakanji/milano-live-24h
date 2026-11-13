@@ -26,6 +26,14 @@ export class FilterBar {
       });
     });
 
+    // 1b. Location Filter Buttons (Tutto, Milano Città, Fuori Porta)
+    document.querySelectorAll('.location-filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const val = btn.getAttribute('data-location-filter');
+        this.store.setLocationFilter(val);
+      });
+    });
+
     // 2. Category Pills & Exclusion (x) Buttons
     document.querySelectorAll('.category-pill').forEach(pill => {
       pill.addEventListener('click', (e) => {
@@ -107,22 +115,47 @@ export class FilterBar {
     document.querySelectorAll('.price-filter-btn').forEach(btn => {
       const val = btn.getAttribute('data-price-filter');
       if (val === state.activePriceFilter) {
-        btn.className = 'price-filter-btn px-3 py-1.5 rounded-md text-xs font-bold tracking-wide transition cursor-pointer bg-white text-black flex items-center gap-1.5';
+        btn.className = 'price-filter-btn px-2.5 py-1.5 rounded-md text-xs font-bold tracking-wide transition cursor-pointer bg-white text-black flex items-center gap-1';
       } else {
-        btn.className = 'price-filter-btn px-3 py-1.5 rounded-md text-xs font-bold tracking-wide transition cursor-pointer text-zinc-300 hover:text-white flex items-center gap-1.5';
+        btn.className = 'price-filter-btn px-2.5 py-1.5 rounded-md text-xs font-bold tracking-wide transition cursor-pointer text-zinc-300 hover:text-white flex items-center gap-1';
       }
     });
 
-    // Update price counts if elements exist
+    // 1b. Update Location Buttons (Fuori Porta)
+    document.querySelectorAll('.location-filter-btn').forEach(btn => {
+      const val = btn.getAttribute('data-location-filter');
+      const isAct = val === state.activeLocationFilter;
+      if (val === 'fuori-porta') {
+        btn.className = isAct
+          ? 'location-filter-btn px-2.5 py-1.5 rounded-md text-xs font-bold tracking-wide transition cursor-pointer bg-indigo-600 text-white flex items-center gap-1 shadow-sm'
+          : 'location-filter-btn px-2.5 py-1.5 rounded-md text-xs font-bold tracking-wide transition cursor-pointer text-indigo-300 hover:text-white flex items-center gap-1';
+      } else {
+        btn.className = isAct
+          ? 'location-filter-btn px-2.5 py-1.5 rounded-md text-xs font-bold tracking-wide transition cursor-pointer bg-white text-black flex items-center gap-1'
+          : 'location-filter-btn px-2.5 py-1.5 rounded-md text-xs font-bold tracking-wide transition cursor-pointer text-zinc-300 hover:text-white flex items-center gap-1';
+      }
+    });
+
+    // Update counts
     const countAll = state.allEvents.length;
     const countFree = state.allEvents.filter(e => e.isFree).length;
     const countPaid = countAll - countFree;
+    const countFuoriPorta = state.allEvents.filter(e => e.isOutOfTown).length;
+    const countMilano = countAll - countFuoriPorta;
+
     const elAll = document.getElementById('count-price-all');
     const elFree = document.getElementById('count-price-free');
     const elPaid = document.getElementById('count-price-paid');
     if (elAll) elAll.textContent = `(${countAll})`;
     if (elFree) elFree.textContent = `(${countFree})`;
     if (elPaid) elPaid.textContent = `(${countPaid})`;
+
+    const elLocAll = document.getElementById('count-loc-all');
+    const elLocMilano = document.getElementById('count-loc-milano');
+    const elLocFuori = document.getElementById('count-loc-fuori');
+    if (elLocAll) elLocAll.textContent = `(${countAll})`;
+    if (elLocMilano) elLocMilano.textContent = `(${countMilano})`;
+    if (elLocFuori) elLocFuori.textContent = `${countFuoriPorta}`;
 
     // Header Quick Stats
     const elHappeningNow = document.getElementById('stat-happening-now');
@@ -287,6 +320,8 @@ export class FilterBar {
     const tags = [];
     if (state.activePriceFilter === 'free') tags.push('Gratis / Ingresso Libero');
     if (state.activePriceFilter === 'paid') tags.push('A Pagamento');
+    if (state.activeLocationFilter === 'milano') tags.push('Territorio: Solo Milano');
+    if (state.activeLocationFilter === 'fuori-porta') tags.push('🚗 Raccolta: Fuori Porta (Fuori Milano)');
     if (state.activeCategoryFilter !== 'all') {
       tags.push(`Categoria: ${state.activeCategoryFilter.toUpperCase()}`);
     }

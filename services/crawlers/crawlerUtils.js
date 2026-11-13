@@ -633,6 +633,81 @@ export function checkContinuousExhibitionStatus(event, nowMs = Date.now()) {
 }
 
 /**
+ * Detects whether an event is located outside Milan ("Fuori Porta" / Fuori Milano)
+ * Identifies events in other provinces or towns (e.g. Bergamo, Brescia, Monza, Como, Varese, Busto Arsizio, Pavia, etc.)
+ *
+ * @param {Object} event
+ * @returns {{ isOutOfTown: boolean, locationName: string | null }}
+ */
+export function detectOutofTownMilanEvent(event = {}) {
+  if (!event) return { isOutOfTown: false, locationName: null };
+
+  const OUT_OF_TOWN_PROVINCES = [
+    { name: 'Bergamo', cityRegex: /\b(?:bergamo)\b/i, venueRegex: /\b(?:spazio\s+volta)\b/i },
+    { name: 'Brescia', cityRegex: /\b(?:brescia)\b/i, venueRegex: /\b(?:c\.ar\.m\.e\.?)\b/i },
+    { name: 'Monza & Brianza', cityRegex: /\b(?:monza|lissone|seregno|desio)\b/i, venueRegex: /\b(?:autodromo\s+di\s+monza)\b/i },
+    { name: 'Como', cityRegex: /\b(?:como|cant[uù]|cernobbio)\b/i, venueRegex: /\b(?:villa\s+erba)\b/i },
+    { name: 'Varese & Busto Arsizio', cityRegex: /\b(?:busto\s+arsizio|varese|gallarate)\b/i, venueRegex: /\b(?:circolo\s+gagarin)\b/i },
+    { name: 'Pavia', cityRegex: /\b(?:pavia|vigevano|voghera)\b/i, venueRegex: null },
+    { name: 'Lecco', cityRegex: /\b(?:lecco)\b/i, venueRegex: null },
+    { name: 'Cremona', cityRegex: /\b(?:cremona|crema)\b/i, venueRegex: null },
+    { name: 'Mantova', cityRegex: /\b(?:mantova)\b/i, venueRegex: null },
+    { name: 'Lodi', cityRegex: /\b(?:lodi|codogno)\b/i, venueRegex: null },
+    { name: 'Sondrio', cityRegex: /\b(?:sondrio|bormio)\b/i, venueRegex: null }
+  ];
+
+  // 1. Check URL slug (e.g. zero.eu/it/eventi/...-...,bergamo/ or dice.fm/...-busto-arsizio-tickets)
+  const url = (event.sourceUrl || '').toLowerCase();
+  for (const prov of OUT_OF_TOWN_PROVINCES) {
+    const slugKey = prov.name.toLowerCase().split(/[\s&]+/)[0];
+    const urlPattern = new RegExp(`(?:[,/_\\-]${slugKey}(?:[,/_\\-]|\\/|$)|${slugKey}-tickets)`, 'i');
+    if (urlPattern.test(url)) {
+      return { isOutOfTown: true, locationName: prov.name };
+    }
+  }
+
+  // 2. Check verified out-of-town venues
+  const venueLower = (event.venueName || '').toLowerCase();
+  for (const prov of OUT_OF_TOWN_PROVINCES) {
+    if (prov.venueRegex && prov.venueRegex.test(venueLower)) {
+      return { isOutOfTown: true, locationName: prov.name };
+    }
+  }
+
+  // 3. Check address: strip street names named after cities (e.g. "Via Varese", "Corso Como", "Via Bergamo")
+  const rawAddress = (event.address || '');
+  const cleanAddress = rawAddress.replace(/\b(?:via|viale|corso|piazza|largo|vicolo|strada)\s+(?:bergamo|como|monza|varese|brescia|pavia|cremona|mantova|lodi)\b/gi, '');
+
+  for (const prov of OUT_OF_TOWN_PROVINCES) {
+    // Check province code in address e.g. "(VA)", "(BG)", "(BS)"
+    const provCodePattern = new RegExp(`\\(${prov.name.toLowerCase().split(/[\s&]+/)[0]}\\)|\\b${prov.name.toLowerCase().split(/[\s&]+/)[0]}\\s+(?:VA|BG|BS|CO|MB|PV|LC|CR|MN|LO|SO)\\b`, 'i');
+    if (provCodePattern.test(rawAddress) || provCodePattern.test(cleanAddress)) {
+      return { isOutOfTown: true, locationName: prov.name };
+    }
+
+    // Check city in address if not in Milan
+    if (prov.cityRegex.test(cleanAddress)) {
+      const withoutMilan = cleanAddress.replace(/\bmilano\b/gi, '').trim();
+      if (prov.cityRegex.test(withoutMilan) || !/milano/i.test(rawAddress)) {
+        return { isOutOfTown: true, locationName: prov.name };
+      }
+    }
+  }
+
+  // 4. Check description only if explicitly mentioning "Arriva a Bergamo", "A Brescia", "A Monza", etc.
+  const cleanDesc = (event.description || '').replace(/\b(?:via|viale|corso|piazza|largo|vicolo|strada)\s+(?:bergamo|como|monza|varese|brescia|pavia|cremona|mantova|lodi)\b/gi, '');
+  for (const prov of OUT_OF_TOWN_PROVINCES) {
+    const cityName = prov.name.split(/[\s&]+/)[0];
+    const descPattern = new RegExp(`\\b(?:arriva a|si tiene a|ospitato a|presso .+ a|al teatro .+ a)\\s+${cityName}\\b`, 'i');
+    if (descPattern.test(cleanDesc)) {
+      return { isOutOfTown: true, locationName: prov.name };
+    }
+  }
+
+  return { isOutOfTown: false, locationName: null };
+}
+
+/**
  * Gate 5: Temporal Consistency & Weekday Verification (`verifyEventTemporalConsistency`)
  * Analyzes event title, description, and source text to verify:
  * 1. Specific day recurrence (e.g. "Ogni mercoledì", "Tutti i giovedì", "Solo il martedì")

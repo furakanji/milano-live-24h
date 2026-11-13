@@ -15,7 +15,8 @@ import {
   classifyMilanCategory,
   detectFreeEntry,
   resolveVenueInstagram,
-  getRomeDateStrings
+  getRomeDateStrings,
+  detectOutofTownMilanEvent
 } from './crawlerUtils.js';
 
 export async function crawlZeroMilano({ nowMs = Date.now(), fetcher = universalFetch } = {}) {
@@ -68,7 +69,6 @@ export async function crawlZeroMilano({ nowMs = Date.now(), fetcher = universalF
           if (endMs <= nowMs || startMs > windowEndMs) continue;
 
           const venueName = decodeHtml(item.venue_name || 'Milano').trim();
-          const address = decodeHtml(item.venue_coords ? `${venueName}, Milano` : `${venueName}, Milano`).trim();
           const descRaw = item.excerpt?.plain || item.excerpt?.rendered || item.content?.plain || item.content?.rendered || '';
           const description = cleanDescription(descRaw, 240) || `Evento selezionato da Zero Milano presso ${venueName}.`;
           const sourceUrl = item.link || (item.slug ? `https://zero.eu/it/eventi/${item.id}-${item.slug},milano/` : 'https://zero.eu/it/milano/eventi/');
@@ -78,6 +78,18 @@ export async function crawlZeroMilano({ nowMs = Date.now(), fetcher = universalF
 
           const categoryArray = Array.isArray(item.category) ? item.category.join(' ') : '';
           const category = classifyMilanCategory(`${title} ${descRaw} ${categoryArray}`);
+
+          // Detect Out-of-town ("Fuori Porta")
+          const outOfTownCheck = detectOutofTownMilanEvent({ title, description, venueName, sourceUrl });
+          const isOutOfTown = outOfTownCheck.isOutOfTown;
+          const locationName = outOfTownCheck.locationName || 'Milano';
+
+          let address = venueName;
+          if (isOutOfTown) {
+            address = `${venueName}, ${locationName}`;
+          } else {
+            address = /milano/i.test(venueName) ? venueName : `${venueName}, Milano`;
+          }
 
           const id = `zero-${item.id || hashString(sourceUrl + title)}`;
           if (seenIds.has(id)) continue;
@@ -92,14 +104,16 @@ export async function crawlZeroMilano({ nowMs = Date.now(), fetcher = universalF
             startTime: new Date(startMs).toISOString(),
             endTime: new Date(endMs).toISOString(),
             venueName,
-            address: /milano/i.test(address) ? address : `${address}, Milano`,
-            neighborhood: 'Milano',
+            address,
+            neighborhood: isOutOfTown ? locationName : 'Milano',
+            isOutOfTown,
+            outOfTownLocation: isOutOfTown ? locationName : null,
             isFree,
             isSoldOut: false,
             priceDetails,
             category,
             eventType: 'SPECIAL_EVENT',
-            mapsUrl: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(venueName + ' Milano')}`,
+            mapsUrl: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(venueName + ' ' + (isOutOfTown ? locationName : 'Milano'))}`,
             instagramUrl: resolveVenueInstagram(venueName),
             facebookUrl: null,
             sourceUrl,
@@ -149,12 +163,24 @@ export async function crawlZeroMilano({ nowMs = Date.now(), fetcher = universalF
               if (endMs <= nowMs || startMs > windowEndMs) continue;
 
               const venueName = decodeHtml(item.location?.name || 'Milano').trim();
-              const address = decodeHtml(item.location?.address?.streetAddress || item.location?.address || `${venueName}, Milano`).trim();
+              const rawAddress = decodeHtml(item.location?.address?.streetAddress || item.location?.address || venueName).trim();
               const descRaw = item.description || '';
               const description = cleanDescription(descRaw, 240) || `Evento segnalato da Zero Milano presso ${venueName}.`;
               const sourceUrl = item.url || targetUrl;
               const isFree = detectFreeEntry(`${title} ${descRaw}`);
               const category = classifyMilanCategory(`${title} ${descRaw}`);
+
+              const outOfTownCheck = detectOutofTownMilanEvent({ title, description, venueName, address: rawAddress, sourceUrl });
+              const isOutOfTown = outOfTownCheck.isOutOfTown;
+              const locationName = outOfTownCheck.locationName || 'Milano';
+
+              let address = rawAddress;
+              if (isOutOfTown) {
+                address = `${rawAddress}, ${locationName}`;
+              } else {
+                address = /milano/i.test(rawAddress) ? rawAddress : `${rawAddress}, Milano`;
+              }
+
               const id = `zero-${hashString(sourceUrl + title)}`;
 
               if (seenIds.has(id)) continue;
@@ -169,14 +195,16 @@ export async function crawlZeroMilano({ nowMs = Date.now(), fetcher = universalF
                 startTime: new Date(startMs).toISOString(),
                 endTime: new Date(endMs).toISOString(),
                 venueName,
-                address: /milano/i.test(address) ? address : `${address}, Milano`,
-                neighborhood: 'Milano',
+                address,
+                neighborhood: isOutOfTown ? locationName : 'Milano',
+                isOutOfTown,
+                outOfTownLocation: isOutOfTown ? locationName : null,
                 isFree,
                 isSoldOut: false,
                 priceDetails: isFree ? 'GRATIS' : 'Verifica su Zero.eu',
                 category,
                 eventType: 'SPECIAL_EVENT',
-                mapsUrl: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(venueName + ' Milano')}`,
+                mapsUrl: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(venueName + ' ' + (isOutOfTown ? locationName : 'Milano'))}`,
                 instagramUrl: resolveVenueInstagram(venueName),
                 facebookUrl: null,
                 sourceUrl,

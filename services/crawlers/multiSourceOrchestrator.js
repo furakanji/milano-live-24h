@@ -21,7 +21,8 @@ import {
   resolveCanonicalVenue,
   tokenizeTitle,
   computeJaccardSimilarity,
-  verifyEventTemporalConsistency
+  verifyEventTemporalConsistency,
+  detectOutofTownMilanEvent
 } from './crawlerUtils.js';
 
 export const CRAWLER_MODULES = [
@@ -139,6 +140,8 @@ export function mergeDuplicateEvents(primary, secondary) {
   const preferredDescription = descB.length > descA.length && !descB.includes('segnalato da') ? descB : descA;
 
   const preferredInstagram = primary.instagramUrl || secondary.instagramUrl;
+  const isOutOfTown = Boolean(primary.isOutOfTown || secondary.isOutOfTown);
+  const outOfTownLocation = primary.outOfTownLocation || secondary.outOfTownLocation || null;
 
   return {
     ...primary,
@@ -146,6 +149,8 @@ export function mergeDuplicateEvents(primary, secondary) {
     priceDetails: preferredPriceDetails,
     isFree: preferredIsFree,
     isSoldOut: preferredIsSoldOut,
+    isOutOfTown,
+    outOfTownLocation,
     instagramUrl: preferredInstagram,
     sourceBadge: combinedBadge,
     secondarySourceUrl: secondary.sourceUrl || null,
@@ -169,7 +174,24 @@ export function deduplicateEventsList(rawEvents = [], { nowMs = Date.now() } = {
       continue;
     }
 
-    const verifiedEv = temporalCheck.event || rawEv;
+    let verifiedEv = temporalCheck.event || rawEv;
+
+    // Detect Fuori Porta (Out of town)
+    const outCheck = detectOutofTownMilanEvent(verifiedEv);
+    if (outCheck.isOutOfTown) {
+      verifiedEv = {
+        ...verifiedEv,
+        isOutOfTown: true,
+        outOfTownLocation: outCheck.locationName || 'Fuori Porta',
+        neighborhood: verifiedEv.neighborhood === 'Milano' ? (outCheck.locationName || 'Fuori Porta') : verifiedEv.neighborhood
+      };
+    } else if (verifiedEv.isOutOfTown === undefined) {
+      verifiedEv = {
+        ...verifiedEv,
+        isOutOfTown: false,
+        outOfTownLocation: null
+      };
+    }
 
     const existingIndex = deduplicated.findIndex(item => areEventsDuplicates(item, verifiedEv));
     if (existingIndex !== -1) {

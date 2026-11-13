@@ -25,7 +25,7 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { verifyEventTemporalConsistency } from '../services/crawlers/crawlerUtils.js';
+import { verifyEventTemporalConsistency, detectOutofTownMilanEvent } from '../services/crawlers/crawlerUtils.js';
 
 /**
  * Pattern che identificano pagine promozionali di tour a catalogo, collezioni permanenti
@@ -204,10 +204,17 @@ export function verifyEventCandidateWithAgent(candidate = {}) {
     SPECIAL_EVENT: 'Appuntamento Speciale Verificato'
   };
 
+  // Detect Out-of-town location
+  const outCheck = detectOutofTownMilanEvent(candidate);
+  const isOutOfTown = Boolean(candidate.isOutOfTown || outCheck.isOutOfTown);
+  const outOfTownLocation = candidate.outOfTownLocation || outCheck.locationName || null;
+
   return {
     isValidEvent: true,
     verdict: isSoldOut ? 'APPROVED_SOLD_OUT_BADGE' : 'APPROVED_AVAILABLE',
     isSoldOut,
+    isOutOfTown,
+    outOfTownLocation,
     availabilityBadge: isSoldOut
       ? 'SOLD OUT • POSTI ESAURITI'
       : candidate.isFree

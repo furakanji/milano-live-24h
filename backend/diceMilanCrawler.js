@@ -17,6 +17,7 @@
  */
 
 import { romeParts } from './romeTime.js';
+import { detectOutofTownMilanEvent } from '../services/crawlers/crawlerUtils.js';
 
 export const MILAN_DICE_CITY_SLUG = 'milano-5d68e89f7f285e094f60b00e';
 const DEFAULT_USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36';
@@ -231,17 +232,28 @@ export function normalizeDiceEvent({ rawEvent, targetUrl, enriched }) {
   const primaryVenue = Array.isArray(rawEvent.venues) && rawEvent.venues[0] ? rawEvent.venues[0] : null;
   const venueName = (enriched?.location?.name || primaryVenue?.name || 'Milano Live Club').trim();
 
-  let address = (enriched?.location?.address?.streetAddress || primaryVenue?.address || '').trim();
-  if (!address) {
-    address = `${venueName}, Milano`;
-  }
-  if (!/milano/i.test(address)) {
-    address = `${address}, Milano`;
-  }
-
-  // Description
+  let rawAddress = (enriched?.location?.address?.streetAddress || primaryVenue?.address || '').trim();
   const rawDesc = enriched?.description || rawEvent.about || rawEvent.reasoning || '';
   const description = cleanText(rawDesc, 250) || `Evento dal vivo in programma a Milano presso ${venueName}. Biglietti e dettagli ufficiali su DICE.fm.`;
+  const sourceUrl = targetUrl || `https://dice.fm/event/${rawEvent.id}`;
+
+  const outOfTownCheck = detectOutofTownMilanEvent({
+    title,
+    description,
+    venueName,
+    address: rawAddress,
+    sourceUrl
+  });
+
+  const isOutOfTown = outOfTownCheck.isOutOfTown;
+  const locationName = outOfTownCheck.locationName || 'Milano';
+
+  let address = rawAddress;
+  if (!address) {
+    address = isOutOfTown ? `${venueName}, ${locationName}` : `${venueName}, Milano`;
+  } else if (!isOutOfTown && !/milano/i.test(address)) {
+    address = `${address}, Milano`;
+  }
 
   // Pricing & Sold out
   const isSoldOut = rawEvent.status === 'sold-out' || Boolean(rawEvent.is_sold_out);
@@ -262,9 +274,8 @@ export function normalizeDiceEvent({ rawEvent, targetUrl, enriched }) {
   }
 
   const category = mapDiceCategory(rawEvent, targetUrl);
-  const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(venueName + ' ' + address)}`;
+  const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(venueName + ' ' + (isOutOfTown ? locationName : address))}`;
   const instagramUrl = resolveVenueInstagram(venueName);
-  const sourceUrl = targetUrl || `https://dice.fm/event/${rawEvent.id}`;
 
   return {
     id,
@@ -273,8 +284,10 @@ export function normalizeDiceEvent({ rawEvent, targetUrl, enriched }) {
     startTime,
     endTime,
     venueName,
-    neighborhood: primaryVenue?.space_name || 'Milano',
+    neighborhood: isOutOfTown ? locationName : (primaryVenue?.space_name || 'Milano'),
     address,
+    isOutOfTown,
+    outOfTownLocation: isOutOfTown ? locationName : null,
     isFree,
     isSoldOut,
     priceDetails,

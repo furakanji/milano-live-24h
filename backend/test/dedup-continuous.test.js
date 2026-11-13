@@ -212,4 +212,52 @@ test('Gate 5: verifyEventTemporalConsistency rejects weekday mismatch and correc
   assert.equal(checkCorrectDay.event.startTime, '2026-11-11T19:30:00.000Z');
 });
 
+test('Fuori Porta: detectOutofTownMilanEvent identifies out-of-town events (Bergamo, Brescia, Busto) without false positives on Milan streets', async () => {
+  const { detectOutofTownMilanEvent } = await import('../../services/crawlers/crawlerUtils.js');
+
+  // 1. Spazio Volta, Bergamo
+  const bergamoEv = {
+    title: 'Helena Hladilová + Leonor Fini: Il filo della metamorfosi',
+    description: 'Arriva a Bergamo una mostra che intreccia i disegni di Leonor Fini e le sculture di Helena Hladilová.',
+    venueName: 'Spazio Volta',
+    sourceUrl: 'https://zero.eu/it/eventi/383915-helena-hladilova-leonor-fini-il-filo-della-metamorfosi,bergamo/'
+  };
+  const checkBergamo = detectOutofTownMilanEvent(bergamoEv);
+  assert.equal(checkBergamo.isOutOfTown, true);
+  assert.equal(checkBergamo.locationName, 'Bergamo');
+
+  // 2. C.AR.M.E., Brescia
+  const bresciaEv = {
+    title: 'Ivan Macera + Belia Winnewisser',
+    venueName: 'C.AR.M.E.',
+    sourceUrl: 'https://zero.eu/it/eventi/383777-ivan-macera-belia-winnewisser,brescia/'
+  };
+  const checkBrescia = detectOutofTownMilanEvent(bresciaEv);
+  assert.equal(checkBrescia.isOutOfTown, true);
+  assert.equal(checkBrescia.locationName, 'Brescia');
+
+  // 3. Circolo Gagarin, Busto Arsizio
+  const bustoEv = {
+    title: 'Brigade Loco + Azione Diretta',
+    venueName: 'Circolo Gagarin',
+    address: 'Via Luigi Galvani, 2, 21052 Busto Arsizio VA, Italy',
+    sourceUrl: 'https://dice.fm/event/g5qem5-brigade-loco-azione-diretta-13th-nov-circolo-gagarin-busto-arsizio-tickets'
+  };
+  const checkBusto = detectOutofTownMilanEvent(bustoEv);
+  assert.equal(checkBusto.isOutOfTown, true);
+  assert.equal(checkBusto.locationName, 'Varese & Busto Arsizio');
+
+  // 4. False positive protection: Via Bergamo in Milan, Corso Como in Milan, Via Varese in Milan
+  const milanStreetEv = {
+    title: 'Aperitivo Elettronico',
+    venueName: 'Bar Varese',
+    address: 'Via Varese 13, Milano',
+    description: 'Serata cocktail e musica in via Varese a Milano.',
+    sourceUrl: 'https://zero.eu/it/milano/eventi/aperitivo/'
+  };
+  const checkMilanStreet = detectOutofTownMilanEvent(milanStreetEv);
+  assert.equal(checkMilanStreet.isOutOfTown, false);
+});
+
+
 

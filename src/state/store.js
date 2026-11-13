@@ -12,6 +12,7 @@ class Store {
       disabledCategories: new Set(),
       activeSourceFilter: 'all',
       activeCinemaVenueFilter: 'all',
+      activeLocationFilter: 'all', // 'all' | 'milano' | 'fuori-porta'
       activeSearchQuery: '',
       onlyHappeningNow: false,
       expandedEventIds: new Set(['evt-mexico-qa', 'evt-base-vernissage']),
@@ -48,6 +49,13 @@ class Store {
     this.state.activePriceFilter = price;
     this.recomputeFilteredEvents();
     this.notify('filter:price');
+  }
+
+  setLocationFilter(location) {
+    if (this.state.activeLocationFilter === location) return;
+    this.state.activeLocationFilter = location;
+    this.recomputeFilteredEvents();
+    this.notify('filter:location');
   }
 
   setCategoryFilter(category) {
@@ -112,6 +120,7 @@ class Store {
     this.state.activeCategoryFilter = 'all';
     this.state.activeSourceFilter = 'all';
     this.state.activeCinemaVenueFilter = 'all';
+    this.state.activeLocationFilter = 'all';
     this.state.activeSearchQuery = '';
     this.state.onlyHappeningNow = false;
     this.state.disabledCategories.clear();
@@ -124,6 +133,8 @@ class Store {
     s.filteredEvents = s.allEvents.filter(ev => {
       if (s.activePriceFilter === 'free' && !ev.isFree) return false;
       if (s.activePriceFilter === 'paid' && ev.isFree) return false;
+      if (s.activeLocationFilter === 'milano' && ev.isOutOfTown) return false;
+      if (s.activeLocationFilter === 'fuori-porta' && !ev.isOutOfTown) return false;
       if (s.disabledCategories.has(ev.category)) return false;
       if (s.activeCategoryFilter !== 'all' && ev.category !== s.activeCategoryFilter) return false;
       if (s.activeSourceFilter !== 'all') {
@@ -138,7 +149,7 @@ class Store {
       if (s.onlyHappeningNow && !ev._isHappeningNow) return false;
       if (s.activeSearchQuery !== '') {
         const q = s.activeSearchQuery.toLowerCase();
-        const haystack = `${ev.title} ${ev.venueName} ${ev.neighborhood} ${ev.address} ${ev.description} ${ev.sourceName}`.toLowerCase();
+        const haystack = `${ev.title} ${ev.venueName} ${ev.neighborhood} ${ev.address} ${ev.description} ${ev.sourceName} ${ev.outOfTownLocation || ''}`.toLowerCase();
         if (!haystack.includes(q)) return false;
       }
       return true;

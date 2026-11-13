@@ -112,7 +112,13 @@ export function renderEventCard(ev, isExpanded = false) {
          €€ / Biglietto • ${ev.priceDetails}
        </span>`;
 
-  const searchableText = `${ev.title} ${ev.venueName} ${ev.neighborhood} ${ev.address} ${ev.description} ${ev.sourceName}`.toLowerCase();
+  const searchableText = `${ev.title} ${ev.venueName} ${ev.neighborhood} ${ev.address} ${ev.description} ${ev.sourceName} ${ev.outOfTownLocation || ''}`.toLowerCase();
+
+  const fuoriPortaBadgeHtml = ev.isOutOfTown
+    ? `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-xs font-extrabold tracking-wider bg-indigo-500/25 text-indigo-200 border border-indigo-500/40 uppercase mono-num">
+         🚗 FUORI PORTA • ${ev.outOfTownLocation || 'Fuori Milano'}
+       </span>`
+    : '';
 
   return `
     <article
@@ -121,6 +127,7 @@ export function renderEventCard(ev, isExpanded = false) {
       data-category="${ev.category}"
       data-is-free="${ev.isFree ? 'true' : 'false'}"
       data-is-sold-out="${ev.isSoldOut ? 'true' : 'false'}"
+      data-is-out-of-town="${ev.isOutOfTown ? 'true' : 'false'}"
       data-source="${ev.source || ''}"
       data-searchable-text="${searchableText.replace(/"/g, '&quot;')}"
       class="event-card-item ${ev._isHappeningNow ? 'editorial-card-live' : 'editorial-card'} rounded-xl p-4 sm:p-5 transition"
@@ -137,6 +144,7 @@ export function renderEventCard(ev, isExpanded = false) {
           </span>
           ${liveStatusBadgeHtml}
           ${soldOutBadgeHtml}
+          ${fuoriPortaBadgeHtml}
         </div>
         <div class="flex items-center gap-2">
           ${priceBadgeHtml}
