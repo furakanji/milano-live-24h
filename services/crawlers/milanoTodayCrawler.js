@@ -14,7 +14,8 @@ import {
   getRomeDateStrings,
   classifyMilanCategory,
   detectFreeEntry,
-  resolveVenueInstagram
+  resolveVenueInstagram,
+  verifyEventTemporalConsistency
 } from './crawlerUtils.js';
 
 export async function crawlMilanoToday({ nowMs = Date.now(), fetcher = universalFetch } = {}) {
@@ -26,6 +27,7 @@ export async function crawlMilanoToday({ nowMs = Date.now(), fetcher = universal
   ];
 
   const events = [];
+  const candidateCards = [];
   const seenIds = new Set();
   const windowEndMs = nowMs + 24 * 3600 * 1000;
 
@@ -83,37 +85,95 @@ export async function crawlMilanoToday({ nowMs = Date.now(), fetcher = universal
         const durationHours = category === 'mostre' ? 8 : 2.5;
         const endMs = startMs + durationHours * 3600 * 1000;
 
-        // Strict 24h rolling window check
-        if (endMs <= nowMs || startMs > windowEndMs) continue;
+        const isInterval = calText && (calText.includes('dal') || calText.includes('al'));
 
-        const description = `Evento a Milano (${calText || 'oggi/domani'}) segnalato da MilanoToday presso ${venueName}.`;
-
-        events.push({
+        candidateCards.push({
           id,
-          source: 'MilanoToday',
-          sourceName: 'MilanoToday Eventi',
+          sourceUrl,
           title,
-          description,
-          startTime: new Date(startMs).toISOString(),
-          endTime: new Date(endMs).toISOString(),
+          chunk,
           venueName,
-          address: /milano/i.test(venueName) ? venueName : `${venueName}, Milano`,
-          neighborhood: 'Milano',
+          calText,
           isFree,
-          isSoldOut: false,
           priceDetails,
           category,
-          eventType: 'SPECIAL_EVENT',
-          mapsUrl: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(venueName + ' Milano')}`,
-          instagramUrl: resolveVenueInstagram(venueName),
-          facebookUrl: null,
-          sourceUrl,
-          origin: 'milanotoday_crawler',
-          sourceBadge: 'MILANOTODAY'
+          startHour,
+          startMin,
+          targetDate,
+          startMs,
+          endMs,
+          isInterval
         });
       }
     } catch {
       // Continue to next URL
+    }
+  }
+
+  // Fetch detail pages in batches for events (prioritizing interval/recurring ones)
+  const batchSize = 5;
+  for (let i = 0; i < candidateCards.length; i += batchSize) {
+    const batch = candidateCards.slice(i, i + batchSize);
+    const detailResults = await Promise.allSettled(
+      batch.map(async card => {
+        // Fetch article detail page if it has an interval date or title suggests recurrence
+        if (card.sourceUrl && (card.isInterval || /comedy|openmic|rassegna|corso|laboratorio|serata|tutti/i.test(card.title))) {
+          try {
+            const detailHtml = await fetcher(card.sourceUrl);
+            return { card, detailHtml };
+          } catch {
+            return { card, detailHtml: '' };
+          }
+        }
+        return { card, detailHtml: '' };
+      })
+    );
+
+    for (const res of detailResults) {
+      if (res.status !== 'fulfilled') continue;
+      const { card, detailHtml } = res.value;
+
+      // Extract description or body text from detail page
+      let detailSnippet = '';
+      if (detailHtml) {
+        const bodyMatch = detailHtml.match(/class="[^"]*(?:entry-content|article-body|c-entry__content|body)[^"]*"[^>]*>([\s\S]*?)<\/div>/i);
+        detailSnippet = (bodyMatch ? bodyMatch[1] : detailHtml.slice(0, 4000)).replace(/<[^>]+>/g, ' ');
+      }
+
+      const description = `Evento a Milano (${card.calText || 'oggi/domani'}) segnalato da MilanoToday presso ${card.venueName}.`;
+
+      const candidateEvent = {
+        id: card.id,
+        source: 'MilanoToday',
+        sourceName: 'MilanoToday Eventi',
+        title: card.title,
+        description,
+        pageText: `${card.chunk} ${detailSnippet}`,
+        startTime: new Date(card.startMs).toISOString(),
+        endTime: new Date(card.endMs).toISOString(),
+        venueName: card.venueName,
+        address: /milano/i.test(card.venueName) ? card.venueName : `${card.venueName}, Milano`,
+        neighborhood: 'Milano',
+        isFree: card.isFree,
+        isSoldOut: false,
+        priceDetails: card.priceDetails,
+        category: card.category,
+        eventType: 'SPECIAL_EVENT',
+        mapsUrl: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(card.venueName + ' Milano')}`,
+        instagramUrl: resolveVenueInstagram(card.venueName),
+        facebookUrl: null,
+        sourceUrl: card.sourceUrl,
+        origin: 'milanotoday_crawler',
+        sourceBadge: 'MILANOTODAY'
+      };
+
+      const consistency = verifyEventTemporalConsistency(candidateEvent, nowMs);
+      if (!consistency.isValidForScheduledDate) {
+        // Exclude events explicitly scheduled for a different weekday (e.g. Wednesday comedy show on Friday)
+        continue;
+      }
+
+      events.push(consistency.event || candidateEvent);
     }
   }
 

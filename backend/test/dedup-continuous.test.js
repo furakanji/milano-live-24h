@@ -175,3 +175,41 @@ test('Classification: cinema and theater events are not misclassified as mostre/
   assert.equal(classifyMilanCategory('Grande mostra d\'arte contemporanea a Palazzo Reale'), 'mostre');
 });
 
+test('Gate 5: verifyEventTemporalConsistency rejects weekday mismatch and corrects explicit showtime', async () => {
+  const { verifyEventTemporalConsistency } = await import('../../services/crawlers/crawlerUtils.js');
+  const { verifyEventCandidateWithAgent } = await import('../eventVerifierAgent.js');
+
+  // Event held only on Wednesdays, but ingested for a Thursday (2026-11-12)
+  const wrongDayEvent = {
+    title: 'L\'Ambrata rooftop comedy: openmic di stand up comedy a Milano',
+    description: 'Ogni mercoledì a Milano, nel cuore di Lambrate... Inizio show dalle 20:30',
+    startTime: '2026-11-12T18:00:00.000Z', // Thursday
+    venueName: 'L\'Ambrata'
+  };
+
+  const checkWrongDay = verifyEventTemporalConsistency(wrongDayEvent);
+  assert.equal(checkWrongDay.isValidForScheduledDate, false);
+  assert.ok(checkWrongDay.issues.some(i => i.includes('Giorno della settimana non corrispondente')));
+
+  // Agent rejection
+  const agentVerdict = verifyEventCandidateWithAgent(wrongDayEvent);
+  assert.equal(agentVerdict.isValidEvent, false);
+  assert.equal(agentVerdict.verdict, 'REJECTED');
+  assert.ok(agentVerdict.rejectionReasons.some(r => r.includes('Gate 5 (Consistenza Temporale)')));
+
+  // Event on correct Wednesday (2026-11-11) with explicit showtime "dalle 20:30"
+  const correctDayEvent = {
+    title: 'L\'Ambrata rooftop comedy: openmic di stand up comedy a Milano',
+    description: 'Ogni mercoledì a Milano, nel cuore di Lambrate... Inizio show dalle 20:30',
+    startTime: '2026-11-11T18:00:00.000Z', // Wednesday (19:00 Rome)
+    endTime: '2026-11-11T20:30:00.000Z',
+    venueName: 'L\'Ambrata'
+  };
+
+  const checkCorrectDay = verifyEventTemporalConsistency(correctDayEvent);
+  assert.equal(checkCorrectDay.isValidForScheduledDate, true);
+  // Corrected to 20:30 Rome (= 19:30 UTC)
+  assert.equal(checkCorrectDay.event.startTime, '2026-11-11T19:30:00.000Z');
+});
+
+

@@ -25,6 +25,7 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { verifyEventTemporalConsistency } from '../services/crawlers/crawlerUtils.js';
 
 /**
  * Pattern che identificano pagine promozionali di tour a catalogo, collezioni permanenti
@@ -170,6 +171,12 @@ export function verifyEventCandidateWithAgent(candidate = {}) {
     if (rule.regex.test(combinedText)) {
       rejectionReasons.push(`Gate 2 (Disponibilità): ${rule.reason}`);
     }
+  }
+
+  // Gate 5: Verifica di Consistenza Temporale e Giorno della Settimana (es. eventi "solo il mercoledì" programmati in altri giorni)
+  const temporalCheck = verifyEventTemporalConsistency(candidate);
+  if (!temporalCheck.isValidForScheduledDate) {
+    temporalCheck.issues.forEach(issue => rejectionReasons.push(`Gate 5 (Consistenza Temporale): ${issue}`));
   }
 
   if (rejectionReasons.length > 0) {

@@ -631,3 +631,86 @@ export function checkContinuousExhibitionStatus(event, nowMs = Date.now()) {
       : `Domani ore ${event.openHour || '10:00'}`
   };
 }
+
+/**
+ * Gate 5: Temporal Consistency & Weekday Verification (`verifyEventTemporalConsistency`)
+ * Analyzes event title, description, and source text to verify:
+ * 1. Specific day recurrence (e.g. "Ogni mercoledì", "Tutti i giovedì", "Solo il martedì")
+ *    If an event is only held on Wednesday but scheduled for Thursday, it is flagged/excluded.
+ * 2. Explicit showtime extraction (e.g. "inizio show dalle 20:30", "dalle 21:00", "ore 19:30")
+ *    Corrects default/approximate start time (e.g. 18:00 or 19:00) with the verified explicit hour.
+ */
+export function verifyEventTemporalConsistency(event = {}, nowMs = Date.now()) {
+  if (!event || !event.startTime) {
+    return { isValidForScheduledDate: true, event, issues: [] };
+  }
+
+  const text = `${event.title || ''} ${event.description || ''} ${event.pageText || ''}`;
+  const norm = text.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+
+  const WEEKDAYS = {
+    'lunedi': 1, 'martedi': 2, 'mercoledi': 3, 'giovedi': 4, 'venerdi': 5, 'sabato': 6, 'domenica': 0
+  };
+
+  const issues = [];
+  let isValidForScheduledDate = true;
+  let updatedEvent = { ...event };
+
+  const startMs = Date.parse(event.startTime);
+  if (isNaN(startMs)) {
+    return { isValidForScheduledDate: true, event: updatedEvent, issues };
+  }
+
+  const eventDate = new Date(startMs);
+
+  // Determine day of week in Europe/Rome fuso
+  const fmt = new Intl.DateTimeFormat('en-US', { timeZone: 'Europe/Rome', weekday: 'short' });
+  const weekdayMap = { 'Sun': 0, 'Mon': 1, 'Tue': 2, 'Wed': 3, 'Thu': 4, 'Fri': 5, 'Sat': 6 };
+  const eventRomeDay = weekdayMap[fmt.format(eventDate)];
+
+  // 1. Check for specific weekday recurrence (e.g. "Ogni mercoledì", "Tutti i lunedì", "Solo la domenica")
+  const recurrenceMatch = norm.match(/\b(?:ogni|tutti\s+i|tutte\s+le|solo\s+il|solo\s+la|il|la)\s+(lunedi|martedi|mercoledi|giovedi|venerdi|sabato|domenica)(?:\s+sera|\s+notte|\s+pomeriggio)?\b/i);
+
+  if (recurrenceMatch) {
+    const requiredDayName = recurrenceMatch[1];
+    const requiredDayOfWeek = WEEKDAYS[requiredDayName];
+
+    if (typeof requiredDayOfWeek === 'number' && eventRomeDay !== requiredDayOfWeek) {
+      isValidForScheduledDate = false;
+      issues.push(`Giorno della settimana non corrispondente: evento previsto solo il ${requiredDayName} (la data analizzata corrisponde a ${fmt.format(eventDate)}).`);
+    }
+  }
+
+  // 2. Check for explicit showtime extraction
+  const hourMatch = norm.match(/(?:inizio\s+(?:show|spettacolo|concerto|live)?\s*(?:dalle|ore)?|dalle\s+ore|dalle|ore|h)\s*([0-2]?[0-9])[:.]([0-5][0-9])/i);
+
+  if (hourMatch) {
+    const explicitHour = parseInt(hourMatch[1], 10);
+    const explicitMin = parseInt(hourMatch[2], 10);
+
+    const fmtHour = new Intl.DateTimeFormat('en-US', { timeZone: 'Europe/Rome', hour: 'numeric', minute: 'numeric', hour12: false });
+    const parts = fmtHour.formatToParts(eventDate);
+    const currentRomeHour = parseInt(parts.find(p => p.type === 'hour')?.value || '0', 10);
+    const currentRomeMin = parseInt(parts.find(p => p.type === 'minute')?.value || '0', 10);
+
+    // If explicit hour differs from current hour by 1+ hours or min by 15+ minutes
+    if (Math.abs(currentRomeHour - explicitHour) >= 1 || Math.abs(currentRomeMin - explicitMin) >= 15) {
+      const diffHours = explicitHour - currentRomeHour;
+      const diffMin = explicitMin - currentRomeMin;
+      const correctedStartMs = startMs + (diffHours * 3600000) + (diffMin * 60000);
+      const originalDurationMs = event.endTime ? (Date.parse(event.endTime) - startMs) : (2 * 3600000);
+      const correctedDuration = isNaN(originalDurationMs) || originalDurationMs <= 0 ? 2 * 3600000 : originalDurationMs;
+
+      updatedEvent.startTime = new Date(correctedStartMs).toISOString();
+      updatedEvent.endTime = new Date(correctedStartMs + correctedDuration).toISOString();
+      issues.push(`Orario di inizio corretto in base al testo: impostato alle ${String(explicitHour).padStart(2, '0')}:${String(explicitMin).padStart(2, '0')} (era ${String(currentRomeHour).padStart(2, '0')}:${String(currentRomeMin).padStart(2, '0')}).`);
+    }
+  }
+
+  return {
+    isValidForScheduledDate,
+    event: updatedEvent,
+    issues
+  };
+}
+

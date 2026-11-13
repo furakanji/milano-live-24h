@@ -20,7 +20,8 @@ import { crawlMentelocale } from './mentelocaleCrawler.js';
 import {
   resolveCanonicalVenue,
   tokenizeTitle,
-  computeJaccardSimilarity
+  computeJaccardSimilarity,
+  verifyEventTemporalConsistency
 } from './crawlerUtils.js';
 
 export const CRAWLER_MODULES = [
@@ -153,17 +154,28 @@ export function mergeDuplicateEvents(primary, secondary) {
 }
 
 /**
- * Deduplicates an array of events using Deduplication 2.0 and Smart Merge
+ * Deduplicates an array of events using Deduplication 2.0 and Smart Merge,
+ * and validates temporal consistency (Gate 5: weekday recurrence & showtimes)
  */
-export function deduplicateEventsList(rawEvents = []) {
+export function deduplicateEventsList(rawEvents = [], { nowMs = Date.now() } = {}) {
   const deduplicated = [];
   for (const rawEv of rawEvents) {
     if (!rawEv || !rawEv.title) continue;
-    const existingIndex = deduplicated.findIndex(item => areEventsDuplicates(item, rawEv));
+
+    // Gate 5: Temporal Consistency & Weekday Recurrence Check
+    const temporalCheck = verifyEventTemporalConsistency(rawEv, nowMs);
+    if (!temporalCheck.isValidForScheduledDate) {
+      // Event is explicitly scheduled for a different weekday (e.g., "Ogni mercoledì" on a Thursday)
+      continue;
+    }
+
+    const verifiedEv = temporalCheck.event || rawEv;
+
+    const existingIndex = deduplicated.findIndex(item => areEventsDuplicates(item, verifiedEv));
     if (existingIndex !== -1) {
-      deduplicated[existingIndex] = mergeDuplicateEvents(deduplicated[existingIndex], rawEv);
+      deduplicated[existingIndex] = mergeDuplicateEvents(deduplicated[existingIndex], verifiedEv);
     } else {
-      deduplicated.push(rawEv);
+      deduplicated.push(verifiedEv);
     }
   }
   deduplicated.sort((a, b) => Date.parse(a.startTime) - Date.parse(b.startTime));
