@@ -79,6 +79,9 @@ export function renderSourceBadgeHtml(ev) {
   if (s.includes('dice') || sId.startsWith('dice-') || sUrl.includes('dice.fm')) {
     return `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-black tracking-wide bg-amber-500/20 text-amber-300 border border-amber-500/40 uppercase mono-num">⚡ DICE LIVE</span>`;
   }
+  if (s.includes('vivimilano') || sId.startsWith('vivimilano-') || sUrl.includes('vivimilano.corriere.it')) {
+    return `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-black tracking-wide bg-red-500/20 text-red-300 border border-red-500/40 uppercase mono-num">🔴 VIVIMILANO</span>`;
+  }
   return '';
 }
 
