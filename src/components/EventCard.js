@@ -128,7 +128,7 @@ export function renderEventCard(ev, isExpanded = false) {
       data-is-free="${ev.isFree ? 'true' : 'false'}"
       data-is-sold-out="${ev.isSoldOut ? 'true' : 'false'}"
       data-is-out-of-town="${ev.isOutOfTown ? 'true' : 'false'}"
-      data-source="${ev.source || ''}"
+      data-source="${[ev.source, ev.sourceName, ev.sourceBadge, ev.sourceUrl].filter(Boolean).join(' ')}"
       data-searchable-text="${searchableText.replace(/"/g, '&quot;')}"
       class="event-card-item ${ev._isHappeningNow ? 'editorial-card-live' : 'editorial-card'} rounded-xl p-4 sm:p-5 transition"
     >

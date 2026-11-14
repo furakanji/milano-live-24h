@@ -716,6 +716,48 @@ export const MILAN_EVENT_TEMPLATES = [
     instagramUrl: null,
     facebookUrl: null,
     sourceUrl: 'https://zero.eu/it/luoghi/103058-tempio-del-futuro-perduto,milano/'
+  },
+  {
+    id: 'evt-vivimilano-teatro-carcano',
+    scheduledHour: 20,
+    scheduledMinute: 30,
+    durationMinutes: 120,
+    eventType: 'THEATER_PERFORMANCE',
+    isSoldOut: false,
+    title: 'Stagione Teatrale & Spettacolo Serale al Teatro Carcano — ViviMilano Corriere',
+    description: 'La selezione spettacoli di ViviMilano Corriere della Sera sul palcoscenico del Teatro Carcano di Corso di Porta Romana: prosa d’autore e produzioni contemporanee.',
+    venueName: 'Teatro Carcano',
+    neighborhood: 'Porta Romana',
+    address: 'Corso di Porta Romana 63',
+    isFree: false,
+    priceDetails: '€18,00 - €38,00 Biglietteria Carcano / ViviMilano',
+    category: 'teatro',
+    sourceName: 'vivimilano.corriere.it — Agenda Eventi',
+    sourceBadge: 'VIVIMILANO',
+    instagramUrl: null,
+    facebookUrl: null,
+    sourceUrl: 'https://vivimilano.corriere.it/cosa-fare/teatro/'
+  },
+  {
+    id: 'evt-vivimilano-cinema-rassegna',
+    scheduledHour: 21,
+    scheduledMinute: 15,
+    durationMinutes: 110,
+    eventType: 'CINEMA_SCREENING',
+    isSoldOut: false,
+    title: 'Cineforum d’Autore & Proiezione della Settimana — Selezione ViviMilano',
+    description: 'Rassegna cinematografica segnalata nella guida settimanale di ViviMilano: pellicola d’autore in lingua originale con dibattito e introduzione critica in sala.',
+    venueName: 'Cineteca Milano Arlecchino',
+    neighborhood: 'Centro Storico / San Babila',
+    address: 'Via San Pietro all’Orto 9',
+    isFree: false,
+    priceDetails: '€7,00 Intero / €5,00 Cinetessera',
+    category: 'cinema',
+    sourceName: 'vivimilano.corriere.it — Cinema Milano',
+    sourceBadge: 'VIVIMILANO',
+    instagramUrl: null,
+    facebookUrl: null,
+    sourceUrl: 'https://vivimilano.corriere.it/cinema/'
   }
 ];
 
@@ -877,6 +919,8 @@ export function generateRolling24hFeed(nowTimestampMs = Date.now()) {
         facebookUrl: tpl.facebookUrl,
         sourceUrl: tpl.sourceUrl,
         sourceName: tpl.sourceName,
+        source: tpl.sourceBadge || tpl.source || tpl.sourceName,
+        sourceBadge: tpl.sourceBadge || 'EDITORIALE',
         // Computed UI metadata
         startHM: startRome.hm,
         endHM: endRome.hm,

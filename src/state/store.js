@@ -156,8 +156,10 @@ class Store {
       if (s.activeCategoryFilter !== 'all' && ev.category !== s.activeCategoryFilter) return false;
       if (s.activeSourceFilter !== 'all') {
         const src = (ev.source || ev.sourceBadge || ev.sourceName || '').toLowerCase();
+        const sUrl = (ev.sourceUrl || '').toLowerCase();
+        const evId = (ev.id || '').toLowerCase();
         const target = s.activeSourceFilter.toLowerCase();
-        if (!src.includes(target)) return false;
+        if (!src.includes(target) && !sUrl.includes(target) && !evId.includes(target)) return false;
       }
       if (s.activeCinemaVenueFilter !== 'all' && (ev.category === 'cinema' || s.activeCategoryFilter === 'cinema')) {
         const vName = (ev.venueName || '').toLowerCase();

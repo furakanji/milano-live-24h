@@ -218,26 +218,30 @@ export class FilterBar {
     });
 
     // Update Source counts
-    let countZero = 0, countMilanoToday = 0, countYesMilano = 0, countMentelocale = 0, countDice = 0;
+    let countZero = 0, countMilanoToday = 0, countYesMilano = 0, countMentelocale = 0, countDice = 0, countViviMilano = 0;
     state.allEvents.forEach(ev => {
       const s = (ev.source || ev.sourceBadge || ev.sourceName || '').toLowerCase();
       const id = (ev.id || '').toLowerCase();
+      const sUrl = (ev.sourceUrl || '').toLowerCase();
       if (s.includes('zero') || id.startsWith('zero-')) countZero++;
       if (s.includes('milanotoday') || id.startsWith('milanotoday-')) countMilanoToday++;
       if (s.includes('yesmilano') || id.startsWith('yesmilano-')) countYesMilano++;
       if (s.includes('mentelocale') || id.startsWith('mentelocale-')) countMentelocale++;
       if (s.includes('dice') || id.startsWith('dice-')) countDice++;
+      if (s.includes('vivimilano') || id.startsWith('vivimilano-') || sUrl.includes('vivimilano.corriere.it')) countViviMilano++;
     });
     const elZero = document.getElementById('src-count-zero');
     const elMilanoToday = document.getElementById('src-count-milanotoday');
     const elYesMilano = document.getElementById('src-count-yesmilano');
     const elMentelocale = document.getElementById('src-count-mentelocale');
     const elDice = document.getElementById('src-count-dice');
+    const elViviMilano = document.getElementById('src-count-vivimilano');
     if (elZero) elZero.textContent = `(${countZero})`;
     if (elMilanoToday) elMilanoToday.textContent = `(${countMilanoToday})`;
     if (elYesMilano) elYesMilano.textContent = `(${countYesMilano})`;
     if (elMentelocale) elMentelocale.textContent = `(${countMentelocale})`;
     if (elDice) elDice.textContent = `(${countDice})`;
+    if (elViviMilano) elViviMilano.textContent = `(${countViviMilano})`;
 
     // 5. Happening Now Button
     const liveBtn = document.getElementById('toggle-live-only-btn');
