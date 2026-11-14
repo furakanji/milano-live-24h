@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-14T14:19:40.525Z",
+  "generatedAt": "2026-11-14T14:34:01.448Z",
   "agentVersion": "3.0.0-live-feed",
   "schedule": "3 volte al giorno (05:00, 13:00, 19:00 UTC)",
   "sources": [
@@ -7,16 +7,16 @@
       "id": "dice-milan",
       "venueName": "DICE.fm Milano (Real-Time Crawler)",
       "url": "https://dice.fm/browse/milano-5d68e89f7f285e094f60b00e",
-      "checkedAt": "2026-11-14T14:19:40.525Z",
+      "checkedAt": "2026-11-14T14:34:01.448Z",
       "status": "ok",
-      "found": 27,
-      "published": 27
+      "found": 25,
+      "published": 25
     },
     {
       "id": "cinemino",
       "venueName": "Il Cinemino",
       "url": "https://www.ilcinemino.it/programmazione/",
-      "checkedAt": "2026-11-14T14:19:40.525Z",
+      "checkedAt": "2026-11-14T14:34:01.448Z",
       "status": "ok",
       "found": 34,
       "published": 7
@@ -25,17 +25,17 @@
       "id": "milanocinema",
       "venueName": "Cinema di Milano (milanocinema.com)",
       "url": "https://milanocinema.com/",
-      "checkedAt": "2026-11-14T14:19:40.525Z",
+      "checkedAt": "2026-11-14T14:34:01.448Z",
       "status": "ok",
       "found": 1054,
-      "published": 699,
+      "published": 695,
       "crossCheckOnly": 6
     },
     {
       "id": "verso",
       "venueName": "Libreria Verso",
       "url": "http://www.libreriaverso.com/appuntamenti/",
-      "checkedAt": "2026-11-14T14:19:40.525Z",
+      "checkedAt": "2026-11-14T14:34:01.448Z",
       "status": "ok",
       "found": 14,
       "published": 0
@@ -45,47 +45,24 @@
       "venueName": "Controllo incrociato Cinemino (fonte diretta vs milanocinema.com)",
       "status": "ok",
       "published": 0,
-      "checkedAt": "2026-11-14T14:19:40.525Z"
+      "checkedAt": "2026-11-14T14:34:01.448Z"
     },
     {
       "id": "curated",
       "venueName": "Venue senza adapter (dati curati verificati)",
       "status": "curated",
-      "published": 26,
-      "checkedAt": "2026-11-14T14:19:40.525Z"
+      "published": 28,
+      "checkedAt": "2026-11-14T14:34:01.448Z"
     }
   ],
   "stats": {
-    "approvedCount": 759,
-    "adapterEvents": 706,
-    "curatedEvents": 26,
+    "approvedCount": 755,
+    "adapterEvents": 702,
+    "curatedEvents": 28,
     "soldOutWithBadgeCount": 2,
     "rejectedCount": 22
   },
   "verifiedEvents": [
-    {
-      "id": "cine-anteo-1794658500000-l-essere-amato",
-      "title": "L'essere amato",
-      "description": "Proiezione al Anteo Palazzo del Cinema (Rubino), in italiano. Regia di Rodrigo Sorogoyen.",
-      "startTime": "2026-11-14T12:15:00.000Z",
-      "endTime": "2026-11-14T14:31:00.000Z",
-      "venueName": "Anteo Palazzo del Cinema",
-      "neighborhood": "Milano",
-      "address": "Piazza XXV Aprile 8, Milano",
-      "isFree": false,
-      "isSoldOut": false,
-      "priceDetails": "Biglietti in cassa o online",
-      "category": "cinema",
-      "eventType": "CINEMA_SCREENING",
-      "sourceName": "milanocinema.com",
-      "sourceUrl": "https://anteo.spaziocinema.18tickets.it/film/128354/ca61cdf9-3056-441f-bc86-c48310d77d26#theater-init",
-      "instagramUrl": null,
-      "facebookUrl": null,
-      "_cinemaSlug": "anteo",
-      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=Anteo%20Palazzo%20del%20Cinema%20Piazza%20XXV%20Aprile%208%2C%20Milano+Milano",
-      "availabilityBadge": "PRENOTABILE • POSTI DISPONIBILI",
-      "origin": "adapter"
-    },
     {
       "id": "cine-anteo-1794660300000-wild-horse-nine",
       "title": "Wild Horse Nine",
@@ -148,29 +125,6 @@
       "eventType": "CINEMA_SCREENING",
       "sourceName": "milanocinema.com",
       "sourceUrl": "https://citylife.spaziocinema.18tickets.it/film/121884/1171ba4b-bec3-409b-a704-1c76d862e6bc#theater-init",
-      "instagramUrl": null,
-      "facebookUrl": null,
-      "_cinemaSlug": "citylife",
-      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=City%20Life%20Anteo%20Piazza%203%20Torri%2C%20Milano+Milano",
-      "availabilityBadge": "PRENOTABILE • POSTI DISPONIBILI",
-      "origin": "adapter"
-    },
-    {
-      "id": "cine-citylife-1794661200000-shaun-vita-da-pecora-ope",
-      "title": "Shaun, vita da pecora - Operazione Z.U.C.",
-      "description": "Proiezione al City Life Anteo (Zenit), in italiano. Regia di Steve Cox.",
-      "startTime": "2026-11-14T13:00:00.000Z",
-      "endTime": "2026-11-14T14:28:00.000Z",
-      "venueName": "City Life Anteo",
-      "neighborhood": "Milano",
-      "address": "Piazza 3 Torri, Milano",
-      "isFree": false,
-      "isSoldOut": false,
-      "priceDetails": "Biglietti in cassa o online",
-      "category": "cinema",
-      "eventType": "CINEMA_SCREENING",
-      "sourceName": "milanocinema.com",
-      "sourceUrl": "https://citylife.spaziocinema.18tickets.it/film/121693/e0c8e201-7399-42d1-b0e7-d56a144e831d#theater-init",
       "instagramUrl": null,
       "facebookUrl": null,
       "_cinemaSlug": "citylife",
@@ -294,29 +248,6 @@
       "origin": "adapter"
     },
     {
-      "id": "cine-uci-bicocca-1794661200000-shaun-vita-da-pecora-ope",
-      "title": "Shaun, vita da pecora - Operazione Z.U.C.",
-      "description": "Proiezione al UCI Cinemas Bicocca (16), in italiano. Regia di Steve Cox.",
-      "startTime": "2026-11-14T13:00:00.000Z",
-      "endTime": "2026-11-14T14:28:00.000Z",
-      "venueName": "UCI Cinemas Bicocca",
-      "neighborhood": "Milano",
-      "address": "Viale Sarca, n. 336 angolo Via Chiese, Milano",
-      "isFree": false,
-      "isSoldOut": false,
-      "priceDetails": "Biglietti in cassa o online",
-      "category": "cinema",
-      "eventType": "CINEMA_SCREENING",
-      "sourceName": "milanocinema.com",
-      "sourceUrl": "https://ucicinemas.it/movies/shaun-vita-da-pecora-operazione-zucca/acquista/5068/10023/1012941",
-      "instagramUrl": null,
-      "facebookUrl": null,
-      "_cinemaSlug": "uci-bicocca",
-      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=UCI%20Cinemas%20Bicocca%20Viale%20Sarca%2C%20n.%20336%20angolo%20Via%20Chiese%2C%20Milano+Milano",
-      "availabilityBadge": "PRENOTABILE • POSTI DISPONIBILI",
-      "origin": "adapter"
-    },
-    {
       "id": "cine-anteo-1794661200000-l-estranea",
       "title": "L'estranea",
       "description": "Proiezione al Anteo Palazzo del Cinema (Astoria), in italiano. Regia di Paolo Strippoli.",
@@ -332,29 +263,6 @@
       "eventType": "CINEMA_SCREENING",
       "sourceName": "milanocinema.com",
       "sourceUrl": "https://anteo.spaziocinema.18tickets.it/film/117399/debbc429-3199-4439-97a1-b31059d8f747#theater-init",
-      "instagramUrl": null,
-      "facebookUrl": null,
-      "_cinemaSlug": "anteo",
-      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=Anteo%20Palazzo%20del%20Cinema%20Piazza%20XXV%20Aprile%208%2C%20Milano+Milano",
-      "availabilityBadge": "PRENOTABILE • POSTI DISPONIBILI",
-      "origin": "adapter"
-    },
-    {
-      "id": "cine-anteo-1794661200000-fatherland",
-      "title": "Fatherland",
-      "description": "Proiezione al Anteo Palazzo del Cinema (Abanella), in italiano. Regia di Paweł Pawlikowski.",
-      "startTime": "2026-11-14T13:00:00.000Z",
-      "endTime": "2026-11-14T14:22:00.000Z",
-      "venueName": "Anteo Palazzo del Cinema",
-      "neighborhood": "Milano",
-      "address": "Piazza XXV Aprile 8, Milano",
-      "isFree": false,
-      "isSoldOut": false,
-      "priceDetails": "Biglietti in cassa o online",
-      "category": "cinema",
-      "eventType": "CINEMA_SCREENING",
-      "sourceName": "milanocinema.com",
-      "sourceUrl": "https://anteo.spaziocinema.18tickets.it/film/119607/a3fea944-95e3-4630-a0e3-5ac336bfcd66#theater-init",
       "instagramUrl": null,
       "facebookUrl": null,
       "_cinemaSlug": "anteo",
@@ -637,32 +545,6 @@
       "mapsUrl": "https://www.google.com/maps/search/?api=1&query=Notorious%20Merlata%20Bloom%20Via%20Gottlieb%20Wilhelm%20Daimler%2C%20Milano+Milano",
       "availabilityBadge": "PRENOTABILE • POSTI DISPONIBILI",
       "origin": "adapter"
-    },
-    {
-      "id": "dice-6aec58963908760001dfeb85",
-      "title": "MEET Digital Culture Center",
-      "description": "🟠Il biglietto d'ingresso dà accesso a tutta la programmazione in corso di MEET 🌟 The Shape of Human Values (dal 29 ottobre a gennaio 2027) | Da giovedì a domenica – Lounge, Gallery, Immersive Room La mostra nasce per trasformare i nostri pensieri e...",
-      "startTime": "2026-11-14T13:30:00.000Z",
-      "endTime": "2026-11-14T18:30:00.000Z",
-      "venueName": "MEET Digital Culture Center",
-      "neighborhood": "Milano",
-      "address": "Viale Vittorio Veneto 2, 20124 Milano città metropolitana di Milano, Italia",
-      "isOutOfTown": false,
-      "outOfTownLocation": null,
-      "isFree": false,
-      "isSoldOut": false,
-      "priceDetails": "€€ / Biglietti su DICE",
-      "category": "concerti",
-      "eventType": "LIVE_CONCERT",
-      "source": "DICE",
-      "sourceName": "DICE.fm Milano",
-      "sourceUrl": "https://dice.fm/event/vvp8y6-meet-digital-culture-center-14th-nov-meet-digital-culture-center-milano-tickets",
-      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=MEET%20Digital%20Culture%20Center%20Viale%20Vittorio%20Veneto%202%2C%2020124%20Milano%20citt%C3%A0%20metropolitana%20di%20Milano%2C%20Italia",
-      "instagramUrl": "https://www.instagram.com/explore/tags/meetdigitalculturecenter/",
-      "facebookUrl": null,
-      "origin": "dice_crawler",
-      "sourceBadge": "DICE Live",
-      "availabilityBadge": "PRENOTABILE • POSTI DISPONIBILI"
     },
     {
       "id": "cine-centrale-1794663000000-la-gradiva",
@@ -1008,32 +890,6 @@
       "mapsUrl": "https://www.google.com/maps/search/?api=1&query=Cinelandia%20Via%20Giovanni%20Gentile%2C%203%2C%20Milano+Milano",
       "availabilityBadge": "PRENOTABILE • POSTI DISPONIBILI",
       "origin": "adapter"
-    },
-    {
-      "id": "dice-6af20e7b95b1fa0001f765df",
-      "title": "Minotaur",
-      "description": "Evento dal vivo in programma a Milano presso Cinema Beltrade. Biglietti e dettagli ufficiali su DICE.fm.",
-      "startTime": "2026-11-14T13:50:00.000Z",
-      "endTime": "2026-11-14T16:10:00.000Z",
-      "venueName": "Cinema Beltrade",
-      "neighborhood": "Milano",
-      "address": "Via Nino Oxilia, 10, 20127 Milano MI, Italy",
-      "isOutOfTown": false,
-      "outOfTownLocation": null,
-      "isFree": false,
-      "isSoldOut": false,
-      "priceDetails": "€€ / Biglietti su DICE",
-      "category": "cinema",
-      "eventType": "LIVE_CONCERT",
-      "source": "DICE",
-      "sourceName": "DICE.fm Milano",
-      "sourceUrl": "https://dice.fm/event/kxpqk8-minotaur-14th-nov-cinema-beltrade-milano-tickets",
-      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=Cinema%20Beltrade%20Via%20Nino%20Oxilia%2C%2010%2C%2020127%20Milano%20MI%2C%20Italy",
-      "instagramUrl": "https://www.instagram.com/cinemabeltrade/",
-      "facebookUrl": null,
-      "origin": "dice_crawler",
-      "sourceBadge": "DICE Live",
-      "availabilityBadge": "PRENOTABILE • POSTI DISPONIBILI"
     },
     {
       "id": "cine-cinelandia-1794664200000-il-rumore-delle-cose-nuo",
@@ -2141,6 +1997,28 @@
       "mapsUrl": "https://www.google.com/maps/search/?api=1&query=Anteo%20Palazzo%20del%20Cinema%20Piazza%20XXV%20Aprile%208%2C%20Milano+Milano",
       "availabilityBadge": "PRENOTABILE • POSTI DISPONIBILI",
       "origin": "adapter"
+    },
+    {
+      "id": "evt-torre-branca-sunset",
+      "title": "Rassegna Eventi, Talk & Installazioni Immersive al MEET",
+      "description": "Appuntamento pomeridiano dedicato alla cultura digitale, alle arti generative e alle installazioni immersive nella sede MEET di Porta Venezia.",
+      "startTime": "2026-11-14T15:00:00.000Z",
+      "endTime": "2026-11-14T16:30:00.000Z",
+      "venueName": "MEET Digital Culture Center",
+      "neighborhood": "Porta Venezia / Oberdan",
+      "address": "Viale Vittorio Veneto 2, Milano",
+      "isFree": true,
+      "priceDetails": "GRATIS • Ingresso gratuito agli incontri su registrazione",
+      "category": "libri",
+      "eventType": "PUBLIC_TALK",
+      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=MEET%20Digital%20Culture%20Center%20Viale%20Vittorio%20Veneto%202+Milano",
+      "sourceName": "meetcenter.it — Tutti gli Eventi",
+      "sourceUrl": "https://www.meetcenter.it/it/tutti-gli-eventi/",
+      "instagramUrl": null,
+      "facebookUrl": null,
+      "isSoldOut": false,
+      "availabilityBadge": "INGRESSO LIBERO • DISPONIBILE",
+      "origin": "curated"
     },
     {
       "id": "cine-uci-bicocca-1794669000000-il-gatto-col-cappello",
@@ -8331,32 +8209,6 @@
       "origin": "adapter"
     },
     {
-      "id": "dice-6abbcf0a88b5d600016fd025",
-      "title": "Febbre a 90",
-      "description": "Sabato 14 novembre al Fabrique di Milano torna Febbre a 90! Il party dedicato al meglio della musica ANNI 90 e non solo… Durante la serata faremo anche qualche salto nei mitici anni 2000 per i più giovani e nei coloratissimi anni 80 per i più grandi!...",
-      "startTime": "2026-11-14T22:30:00.000Z",
-      "endTime": "2026-11-15T03:00:00.000Z",
-      "venueName": "Fabrique",
-      "neighborhood": "Milano",
-      "address": "Via Gaudenzio Fantoli, 9, 20138 Milano MI, Italy",
-      "isOutOfTown": false,
-      "outOfTownLocation": null,
-      "isFree": false,
-      "isSoldOut": false,
-      "priceDetails": "€15.93",
-      "category": "concerti",
-      "eventType": "LIVE_CONCERT",
-      "source": "DICE",
-      "sourceName": "DICE.fm Milano",
-      "sourceUrl": "https://dice.fm/event/xe893m-febbre-a-90-14th-nov-fabrique-milano-tickets",
-      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=Fabrique%20Via%20Gaudenzio%20Fantoli%2C%209%2C%2020138%20Milano%20MI%2C%20Italy",
-      "instagramUrl": "https://www.instagram.com/explore/tags/fabrique/",
-      "facebookUrl": null,
-      "origin": "dice_crawler",
-      "sourceBadge": "DICE Live",
-      "availabilityBadge": "PRENOTABILE • POSTI DISPONIBILI"
-    },
-    {
       "id": "dice-6af1da00106ce500018e924a",
       "title": "MUSIC MATCH | A Blind Karaoke Experience",
       "description": "🎤 MUSIC MATCH | A Blind Karaoke Experience Il karaoke lo sappiamo fare bene, ma anche come Cupido non siamo niente male. Music Match arriva a rendere il vostro sabato sera spicy e stonato, in un evento gratuito che unisce il blind dating alla musica...",
@@ -8407,6 +8259,32 @@
       "origin": "dice_crawler",
       "sourceBadge": "DICE Live",
       "availabilityBadge": "SOLD OUT • POSTI ESAURITI"
+    },
+    {
+      "id": "dice-6abbcf0a88b5d600016fd025",
+      "title": "Febbre a 90",
+      "description": "Sabato 14 novembre al Fabrique di Milano torna Febbre a 90! Il party dedicato al meglio della musica ANNI 90 e non solo… Durante la serata faremo anche qualche salto nei mitici anni 2000 per i più giovani e nei coloratissimi anni 80 per i più grandi!...",
+      "startTime": "2026-11-14T22:30:00.000Z",
+      "endTime": "2026-11-15T03:00:00.000Z",
+      "venueName": "Fabrique",
+      "neighborhood": "Milano",
+      "address": "Via Gaudenzio Fantoli, 9, 20138 Milano MI, Italy",
+      "isOutOfTown": false,
+      "outOfTownLocation": null,
+      "isFree": false,
+      "isSoldOut": false,
+      "priceDetails": "€15.93",
+      "category": "concerti",
+      "eventType": "LIVE_CONCERT",
+      "source": "DICE",
+      "sourceName": "DICE.fm Milano",
+      "sourceUrl": "https://dice.fm/event/xe893m-febbre-a-90-14th-nov-fabrique-milano-tickets",
+      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=Fabrique%20Via%20Gaudenzio%20Fantoli%2C%209%2C%2020138%20Milano%20MI%2C%20Italy",
+      "instagramUrl": "https://www.instagram.com/explore/tags/fabrique/",
+      "facebookUrl": null,
+      "origin": "dice_crawler",
+      "sourceBadge": "DICE Live",
+      "availabilityBadge": "PRENOTABILE • POSTI DISPONIBILI"
     },
     {
       "id": "evt-tempio-futuro-perduto",
@@ -11902,6 +11780,28 @@
       "mapsUrl": "https://www.google.com/maps/search/?api=1&query=City%20Life%20Anteo%20Piazza%203%20Torri%2C%20Milano+Milano",
       "availabilityBadge": "PRENOTABILE • POSTI DISPONIBILI",
       "origin": "adapter"
+    },
+    {
+      "id": "evt-torre-branca-sunset",
+      "title": "Rassegna Eventi, Talk & Installazioni Immersive al MEET",
+      "description": "Appuntamento pomeridiano dedicato alla cultura digitale, alle arti generative e alle installazioni immersive nella sede MEET di Porta Venezia.",
+      "startTime": "2026-11-15T15:00:00.000Z",
+      "endTime": "2026-11-15T16:30:00.000Z",
+      "venueName": "MEET Digital Culture Center",
+      "neighborhood": "Porta Venezia / Oberdan",
+      "address": "Viale Vittorio Veneto 2, Milano",
+      "isFree": true,
+      "priceDetails": "GRATIS • Ingresso gratuito agli incontri su registrazione",
+      "category": "libri",
+      "eventType": "PUBLIC_TALK",
+      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=MEET%20Digital%20Culture%20Center%20Viale%20Vittorio%20Veneto%202+Milano",
+      "sourceName": "meetcenter.it — Tutti gli Eventi",
+      "sourceUrl": "https://www.meetcenter.it/it/tutti-gli-eventi/",
+      "instagramUrl": null,
+      "facebookUrl": null,
+      "isSoldOut": false,
+      "availabilityBadge": "INGRESSO LIBERO • DISPONIBILE",
+      "origin": "curated"
     },
     {
       "id": "cine-uci-bicocca-1794755400000-il-gatto-col-cappello",
@@ -17633,7 +17533,7 @@
       "rejectionReasons": [
         "Gate 4 (Fedeltà Link Sorgente): La pagina sorgente ha risposto con errore HTTP 403"
       ],
-      "checkedAt": "2026-11-14T14:19:40.525Z"
+      "checkedAt": "2026-11-14T14:34:01.448Z"
     },
     {
       "id": "evt-lafeltrinelli-duomo",
@@ -17644,7 +17544,7 @@
       "rejectionReasons": [
         "Gate 4 (Fedeltà Link Sorgente): Impossibile raggiungere l'URL sorgente: The operation was aborted due to timeout"
       ],
-      "checkedAt": "2026-11-14T14:19:40.525Z"
+      "checkedAt": "2026-11-14T14:34:01.448Z"
     },
     {
       "id": "evt-elfo-puccini-contemp",
@@ -17655,7 +17555,7 @@
       "rejectionReasons": [
         "Gate 4 (Fedeltà Link Sorgente): L'URL associato (https://www.elfo.org/) è una homepage generica e non riporta il permalink con i dettagli specifici dell'evento \"Stagione Teatro Contemporaneo — Sala Shakespeare, Bausch e Fassbinder\"."
       ],
-      "checkedAt": "2026-11-14T14:19:40.525Z"
+      "checkedAt": "2026-11-14T14:34:01.448Z"
     },
     {
       "id": "evt-blue-note-jazz",
@@ -17666,7 +17566,7 @@
       "rejectionReasons": [
         "Gate 4 (Fedeltà Link Sorgente): L'URL associato (https://www.bluenotemilano.com/) è una homepage generica e non riporta il permalink con i dettagli specifici dell'evento \"Live Jazz, Soul & Blues — First Set (Ore 21:00) in Via Borsieri\"."
       ],
-      "checkedAt": "2026-11-14T14:19:40.525Z"
+      "checkedAt": "2026-11-14T14:34:01.448Z"
     },
     {
       "id": "evt-magnolia-clubnight",
@@ -17677,7 +17577,7 @@
       "rejectionReasons": [
         "Gate 4 (Fedeltà Link Sorgente): L'URL associato (https://www.circolomagnolia.it/) è una homepage generica e non riporta il permalink con i dettagli specifici dell'evento \"Live Tour & Club Night al Circolo Magnolia — Idroscalo\"."
       ],
-      "checkedAt": "2026-11-14T14:19:40.525Z"
+      "checkedAt": "2026-11-14T14:34:01.448Z"
     },
     {
       "id": "evt-palazzo-reale-dali",
@@ -17688,7 +17588,7 @@
       "rejectionReasons": [
         "Gate 4 (Fedeltà Link Sorgente): La pagina sorgente ha risposto con errore HTTP 403"
       ],
-      "checkedAt": "2026-11-14T14:19:40.525Z"
+      "checkedAt": "2026-11-14T14:34:01.448Z"
     },
     {
       "id": "evt-gam-pellizza-volpedo",
@@ -17699,7 +17599,7 @@
       "rejectionReasons": [
         "Gate 4 (Fedeltà Link Sorgente): La pagina sorgente ha risposto con errore HTTP 403"
       ],
-      "checkedAt": "2026-11-14T14:19:40.525Z"
+      "checkedAt": "2026-11-14T14:34:01.448Z"
     },
     {
       "id": "evt-fondazione-prada-torre",
@@ -17710,7 +17610,7 @@
       "rejectionReasons": [
         "Gate 4 (Fedeltà Link Sorgente): La pagina sorgente ha risposto con errore HTTP 403"
       ],
-      "checkedAt": "2026-11-14T14:19:40.525Z"
+      "checkedAt": "2026-11-14T14:34:01.448Z"
     },
     {
       "id": "evt-mudec-dialogo-arti",
@@ -17721,7 +17621,7 @@
       "rejectionReasons": [
         "Gate 4 (Fedeltà Link Sorgente): La pagina sorgente ha risposto con errore HTTP 403"
       ],
-      "checkedAt": "2026-11-14T14:19:40.525Z"
+      "checkedAt": "2026-11-14T14:34:01.448Z"
     },
     {
       "id": "evt-palazzo-reale-brueghel",
@@ -17732,7 +17632,7 @@
       "rejectionReasons": [
         "Gate 4 (Fedeltà Link Sorgente): La pagina sorgente ha risposto con errore HTTP 403"
       ],
-      "checkedAt": "2026-11-14T14:19:40.525Z"
+      "checkedAt": "2026-11-14T14:34:01.448Z"
     },
     {
       "id": "evt-lafeltrinelli-duomo",
@@ -17743,7 +17643,7 @@
       "rejectionReasons": [
         "Gate 4 (Fedeltà Link Sorgente): Impossibile raggiungere l'URL sorgente: The operation was aborted due to timeout"
       ],
-      "checkedAt": "2026-11-14T14:19:40.525Z"
+      "checkedAt": "2026-11-14T14:34:01.448Z"
     },
     {
       "id": "evt-elfo-puccini-contemp",
@@ -17754,7 +17654,7 @@
       "rejectionReasons": [
         "Gate 4 (Fedeltà Link Sorgente): L'URL associato (https://www.elfo.org/) è una homepage generica e non riporta il permalink con i dettagli specifici dell'evento \"Stagione Teatro Contemporaneo — Sala Shakespeare, Bausch e Fassbinder\"."
       ],
-      "checkedAt": "2026-11-14T14:19:40.525Z"
+      "checkedAt": "2026-11-14T14:34:01.448Z"
     },
     {
       "id": "evt-blue-note-jazz",
@@ -17765,7 +17665,7 @@
       "rejectionReasons": [
         "Gate 4 (Fedeltà Link Sorgente): L'URL associato (https://www.bluenotemilano.com/) è una homepage generica e non riporta il permalink con i dettagli specifici dell'evento \"Live Jazz, Soul & Blues — First Set (Ore 21:00) in Via Borsieri\"."
       ],
-      "checkedAt": "2026-11-14T14:19:40.525Z"
+      "checkedAt": "2026-11-14T14:34:01.448Z"
     },
     {
       "id": "evt-magnolia-clubnight",
@@ -17776,7 +17676,7 @@
       "rejectionReasons": [
         "Gate 4 (Fedeltà Link Sorgente): L'URL associato (https://www.circolomagnolia.it/) è una homepage generica e non riporta il permalink con i dettagli specifici dell'evento \"Live Tour & Club Night al Circolo Magnolia — Idroscalo\"."
       ],
-      "checkedAt": "2026-11-14T14:19:40.525Z"
+      "checkedAt": "2026-11-14T14:34:01.448Z"
     },
     {
       "id": "evt-palazzo-reale-dali",
@@ -17787,7 +17687,7 @@
       "rejectionReasons": [
         "Gate 4 (Fedeltà Link Sorgente): La pagina sorgente ha risposto con errore HTTP 403"
       ],
-      "checkedAt": "2026-11-14T14:19:40.525Z"
+      "checkedAt": "2026-11-14T14:34:01.448Z"
     },
     {
       "id": "evt-gam-pellizza-volpedo",
@@ -17798,7 +17698,7 @@
       "rejectionReasons": [
         "Gate 4 (Fedeltà Link Sorgente): La pagina sorgente ha risposto con errore HTTP 403"
       ],
-      "checkedAt": "2026-11-14T14:19:40.525Z"
+      "checkedAt": "2026-11-14T14:34:01.448Z"
     },
     {
       "id": "evt-fondazione-prada-torre",
@@ -17809,7 +17709,7 @@
       "rejectionReasons": [
         "Gate 4 (Fedeltà Link Sorgente): La pagina sorgente ha risposto con errore HTTP 403"
       ],
-      "checkedAt": "2026-11-14T14:19:40.525Z"
+      "checkedAt": "2026-11-14T14:34:01.448Z"
     },
     {
       "id": "evt-mudec-dialogo-arti",
@@ -17820,7 +17720,7 @@
       "rejectionReasons": [
         "Gate 4 (Fedeltà Link Sorgente): La pagina sorgente ha risposto con errore HTTP 403"
       ],
-      "checkedAt": "2026-11-14T14:19:40.525Z"
+      "checkedAt": "2026-11-14T14:34:01.448Z"
     }
   ]
 }
