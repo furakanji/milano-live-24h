@@ -36,8 +36,8 @@ export const MILAN_SOURCES_REGISTRY = [
   { name: 'Casa delle Donne di Milano — Calendario Eventi', category: 'Politica, Attivismo & Sociale', method: 'WP Calendar Parser', url: 'https://www.casadonnemilano.it/calendario-eventi-nella-casa/' },
   { name: 'Fondazione Giangiacomo Feltrinelli — Partecipa', category: 'Libri, Talk & Conferenze', method: 'WP REST API', url: 'https://fondazionefeltrinelli.it/partecipa-home/' },
   { name: 'Libreria Verso — Calendario Appuntamenti', category: 'Libri, Talk & Conferenze', method: 'WP Events Parser', url: 'http://www.libreriaverso.com/appuntamenti/' },
-  { name: 'MEET Digital Culture Center — Tutti gli Eventi', category: 'Libri, Talk & Digital Art', method: 'WP REST API', url: 'https://www.meetcenter.it/it/tutti-gli-eventi/' },
-  { name: 'Triennale Milano — Scheda & Programmazione Zero.eu', category: 'Libri, Talk & Mostre', method: 'Zero.eu Structured Feed', url: 'https://zero.eu/it/luoghi/4032-triennale-di-milano,milano/' }
+  { name: 'Triennale Milano — Scheda & Programmazione Zero.eu', category: 'Libri, Talk & Mostre', method: 'Zero.eu Structured Feed', url: 'https://zero.eu/it/luoghi/4032-triennale-di-milano,milano/' },
+  { name: 'ViviMilano Corriere della Sera — Agenda Eventi & Locali', category: 'Agenda Cittadina, Spettacoli & Cinema', method: 'Editorial Agenda & Daily Listing', url: 'https://vivimilano.corriere.it/' }
 ];
 
 export function verifyEventCandidateWithAgent(candidate = {}) {
@@ -625,17 +625,35 @@ export class AdminStudio {
 
   renderOverview() {
     const sourcesGrid = document.getElementById('sources-grid');
+    const sourcesCountLabel = document.getElementById('sources-count-btn-label');
+
+    // Combine verified registry and custom domains
+    const allActiveSources = [
+      ...this.customDomains.map(cd => ({
+        name: `${cd.venueName || cd.domain} [Dominio Ricerca Attivo]`,
+        category: cd.category || 'Eventi & Programmazione',
+        method: 'DOMINIO RICERCA ATTIVO (Auto-Ingestion)',
+        url: cd.url || `https://${cd.domain}`,
+        isCustom: true
+      })),
+      ...MILAN_SOURCES_REGISTRY
+    ];
+
+    if (sourcesCountLabel) {
+      sourcesCountLabel.textContent = String(allActiveSources.length);
+    }
+
     if (sourcesGrid) {
-      sourcesGrid.innerHTML = MILAN_SOURCES_REGISTRY.map((src, idx) => `
+      sourcesGrid.innerHTML = allActiveSources.map((src, idx) => `
         <a
           href="${src.url}"
           target="_blank"
           rel="noopener noreferrer"
-          class="p-3 rounded-lg bg-[#161920] hover:bg-[#1c2029] border border-[#252a34] hover:border-emerald-500/40 transition flex flex-col justify-between gap-1.5"
+          class="p-3 rounded-lg bg-[#161920] hover:bg-[#1c2029] border ${src.isCustom ? 'border-orange-500/50' : 'border-[#252a34]'} hover:border-emerald-500/40 transition flex flex-col justify-between gap-1.5"
         >
           <div class="flex items-start justify-between gap-2">
             <span class="font-bold text-white text-xs leading-snug">${idx + 1}. ${src.name}</span>
-            <span class="px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-300 text-[10px] font-bold mono-num shrink-0">ATTIVA</span>
+            <span class="px-1.5 py-0.5 rounded ${src.isCustom ? 'bg-orange-500/20 text-orange-300' : 'bg-emerald-500/15 text-emerald-300'} text-[10px] font-bold mono-num shrink-0">${src.isCustom ? 'PERSONALIZZATA' : 'ATTIVA'}</span>
           </div>
           <div class="text-zinc-400 text-[11px]">${src.category} • <span class="text-zinc-300">${src.method}</span></div>
           <div class="text-[11px] text-orange-400 mono-num truncate pt-1 border-t border-[#222731]">
