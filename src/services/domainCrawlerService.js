@@ -89,26 +89,28 @@ export function extractHtmlEvents(html = '', baseUrl = '') {
   }
 
   for (const block of rawBlocks) {
-    // Extract link first (must be a valid http link, not javascript: or empty)
+    // Extract link: from <a> tag, or fallback to baseUrl if this is a dedicated single event page
     const linkMatch = block.match(/<a\b[^>]*href=["']([^"']+)["'][^>]*>/i);
-    if (!linkMatch) continue;
+    let eventUrl = baseUrl;
 
-    let eventUrl = linkMatch[1].trim();
-    if (/^javascript:|^#|mailto:/i.test(eventUrl)) continue;
-
-    try {
-      eventUrl = new URL(eventUrl, baseUrl).href;
-    } catch {
-      continue;
+    if (linkMatch) {
+      let rawLink = linkMatch[1].trim();
+      if (!/^javascript:|^#|mailto:/i.test(rawLink)) {
+        try {
+          rawLink = new URL(rawLink, baseUrl).href;
+          if (!/(?:privacy|cookie|login|register|tag\/|categoria\/|author\/|archivio\.corriere|video\.corriere|trovocasa|lavoro\.corriere)/i.test(rawLink)) {
+            eventUrl = rawLink;
+          }
+        } catch {
+          // Keep fallback
+        }
+      }
     }
 
-    // Skip generic navigation/utility links
-    if (/(?:privacy|cookie|login|register|tag\/|categoria\/|author\/|archivio\.corriere|video\.corriere|trovocasa|lavoro\.corriere)/i.test(eventUrl)) {
-      continue;
-    }
-
-    // Extract title (h1-h4, or element with title class, or strong)
-    const titleMatch = block.match(/<(?:h[1-4]|div|span)[^>]*class=["'][^"']*title[^"']*["'][^>]*>([\s\S]*?)<\/(?:h[1-4]|div|span)>/i) ||
+    // Extract title (h1-h4, or element with title/tappo class, or strong)
+    const titleMatch = block.match(/<h1[^>]*class=["'][^"']*(?:tappoTitle|title|entry-title)[^"']*["'][^>]*>([\s\S]*?)<\/h1>/i) ||
+                       block.match(/<h1[^>]*itemprop=["']name["'][^>]*>([\s\S]*?)<\/h1>/i) ||
+                       block.match(/<(?:h[1-4]|div|span)[^>]*class=["'][^"']*title[^"']*["'][^>]*>([\s\S]*?)<\/(?:h[1-4]|div|span)>/i) ||
                        block.match(/<(?:h[1-4])[^>]*>([\s\S]*?)<\/(?:h[1-4])>/i) ||
                        block.match(/<strong[^>]*>([\s\S]*?)<\/strong>/i);
 
@@ -118,7 +120,7 @@ export function extractHtmlEvents(html = '', baseUrl = '') {
 
     // Ignore generic navigation words
     if (!title || title.length < 5 || title.length > 150) continue;
-    if (/^(?:sezioni|edizioni locali|servizi|cerca|login|home|archivio)$/i.test(title)) continue;
+    if (/^(?:sezioni|edizioni locali|servizi|cerca|login|home|archivio|date e orari|info e contatti|orari e date|indirizzo e contatti)$/i.test(title)) continue;
     if (seenTitles.has(title.toLowerCase())) continue;
     seenTitles.add(title.toLowerCase());
 
@@ -127,19 +129,45 @@ export function extractHtmlEvents(html = '', baseUrl = '') {
                      block.match(/\b(202[4-9]-[0-1][0-9]-[0-3][0-9](?:T[0-2][0-9]:[0-5][0-9])?)\b/) ||
                      block.match(/(?:dal\s+)?([0-3]?[0-9][\/.][0-1]?[0-9][\/.](?:20)?2[4-9])/i);
 
+    // Extract explicit hours if available (e.g. "dalle 10 alle 19" or "dalle 10:00 alle 19:00" or "ore 21:00")
+    const hourRangeMatch = block.match(/(?:dalle|dalle\s+ore)\s*([0-2]?[0-9])(?::([0-5][0-9]))?\s*(?:alle|fino\s+alle|-)\s*([0-2]?[0-9])(?::([0-5][0-9]))?/i);
+    const startHourStr = hourRangeMatch ? hourRangeMatch[1].padStart(2, '0') : null;
+    const startMinStr = hourRangeMatch ? (hourRangeMatch[2] || '00') : null;
+    const endHourStr = hourRangeMatch ? hourRangeMatch[3].padStart(2, '0') : null;
+    const endMinStr = hourRangeMatch ? (hourRangeMatch[4] || '00') : null;
+
     let startTime = null;
+    let endTime = null;
+
     if (isoMatch) {
       const rawDate = isoMatch[1];
       const parsed = Date.parse(rawDate);
       if (!isNaN(parsed)) {
-        startTime = new Date(parsed).toISOString();
+        if (startHourStr && /^\d{4}-\d{2}-\d{2}$/.test(rawDate)) {
+          startTime = new Date(`${rawDate}T${startHourStr}:${startMinStr}:00+01:00`).toISOString();
+          if (endHourStr) {
+            endTime = new Date(`${rawDate}T${endHourStr}:${endMinStr}:00+01:00`).toISOString();
+          }
+        } else {
+          startTime = new Date(parsed).toISOString();
+        }
       } else {
         // Parse Italian format DD/MM/YYYY
         const dmy = rawDate.match(/([0-3]?[0-9])[\/.]([0-1]?[0-9])[\/.](202[4-9])/);
         if (dmy) {
-          const iso = `${dmy[3]}-${dmy[2].padStart(2, '0')}-${dmy[1].padStart(2, '0')}T20:30:00+01:00`;
+          const y = dmy[3];
+          const m = dmy[2].padStart(2, '0');
+          const d = dmy[1].padStart(2, '0');
+          const h = startHourStr || '20';
+          const min = startMinStr || '30';
+          const iso = `${y}-${m}-${d}T${h}:${min}:00+01:00`;
           const p = Date.parse(iso);
-          if (!isNaN(p)) startTime = new Date(p).toISOString();
+          if (!isNaN(p)) {
+            startTime = new Date(p).toISOString();
+            if (endHourStr) {
+              endTime = new Date(`${y}-${m}-${d}T${endHourStr}:${endMinStr}:00+01:00`).toISOString();
+            }
+          }
         }
       }
     }
@@ -149,7 +177,8 @@ export function extractHtmlEvents(html = '', baseUrl = '') {
       description: cleanDescription(block, 200),
       url: eventUrl,
       rawBlock: block,
-      startTime
+      startTime,
+      endTime
     });
 
     if (candidates.length >= 40) break;
@@ -215,13 +244,25 @@ export function normalizeDiscoveredEvent(rawItem, domainMeta = {}, { nowMs = Dat
   }
 
   if (!rawVenue) {
-    // Try to extract venue from title or description patterns like "al Teatro Manzoni", "da Base", "agli East End Studios", "all'Unipol Dome"
+    // Try to extract venue from title first, then description
     const venuePattern = /(?:al(?:la|lo|l'|le|i)?|da|presso|agli)\s+([A-ZÀ-ÖØ-ß][a-zA-Z0-9àèéìòùÀÈÉÌÒÙ'’\s\-]{2,30}?)(?:[\.,\(\:\–\—]|\s+a\s+milano|\s+dal|\s+il|$)/i;
-    const vMatch = `${title} ${desc}`.match(venuePattern);
-    if (vMatch && vMatch[1]) {
-      const candidateVenue = vMatch[1].trim();
+    const cleanTitle = (title || '').replace(/[“”"«»]/g, ' ').trim();
+    const tMatch = cleanTitle.match(venuePattern);
+    if (tMatch && tMatch[1]) {
+      const candidateVenue = tMatch[1].trim();
       if (!/^(?:oggi|domani|milano|weekend|novembre|dicembre|gennaio|febbraio|marzo|aprile|maggio|giugno|luglio|agosto|settembre|ottobre)$/i.test(candidateVenue)) {
         rawVenue = candidateVenue;
+      }
+    }
+
+    if (!rawVenue) {
+      const cleanDesc = (desc || '').replace(/[“”"«»]/g, ' ').trim();
+      const dMatch = cleanDesc.match(venuePattern);
+      if (dMatch && dMatch[1]) {
+        const candidateVenue = dMatch[1].trim();
+        if (!/^(?:oggi|domani|milano|weekend|novembre|dicembre|gennaio|febbraio|marzo|aprile|maggio|giugno|luglio|agosto|settembre|ottobre)$/i.test(candidateVenue)) {
+          rawVenue = candidateVenue;
+        }
       }
     }
   }

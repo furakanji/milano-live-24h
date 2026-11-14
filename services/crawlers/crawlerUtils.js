@@ -208,6 +208,14 @@ export const CANONICAL_VENUES = {
     instagramUrl: 'https://www.instagram.com/triennalemilano/',
     aliases: ['triennale milano', 'triennale', 'palazzo dell arte triennale']
   },
+  cascinanascosta: {
+    id: 'cascina-nascosta',
+    name: 'Cascina Nascosta',
+    address: 'Viale Emilio Alemagna 14, Milano',
+    neighborhood: 'Parco Sempione',
+    instagramUrl: 'https://www.instagram.com/cascinanascosta/',
+    aliases: ['cascina nascosta', 'cascina nascosta milano', 'parco sempione cascina nascosta']
+  },
   hangarbicocca: {
     id: 'pirelli-hangarbicocca',
     name: 'Pirelli HangarBicocca',
@@ -504,8 +512,8 @@ export function classifyMilanCategory(haystack = '') {
     return 'mostre';
   }
 
-  // 5. Special Openings & Tours
-  if (/\b(?:apertur[ae]\s*straordinari[ae]|visit[ae]\s*guidat[ae]|fai|dimor[ae]|palazz[oi]\s*apert[oi]|segret[oi])\b/i.test(text)) {
+  // 5. Special Openings, Markets & Fairs
+  if (/\b(?:apertur[ae]\s*straordinari[ae]|visit[ae]\s*guidat[ae]|fai|dimor[ae]|palazz[oi]\s*apert[oi]|segret[oi]|market|mercat(?:o|ini|ini)?|fier[ae]|bancarall[ae]|vintage|artigianato)\b/i.test(text)) {
     return 'aperture';
   }
 

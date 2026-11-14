@@ -412,6 +412,32 @@ test('Gate 4 & Crawler: vivimilano.corriere.it is recognized as an active Milan 
   );
   assert.equal(scan.immediate24h.length, 2);
   assert.equal(scan.immediate24h[0].sourceUrl, 'https://vivimilano.corriere.it/concerti-e-spettacoli/joe-jackson-al-lirico-gaber/');
+
+  // 3. Single event page parsing with explicit opening hours (Camaleonte Market)
+  const singleEventHtml = `
+    <html>
+      <body>
+        <article>
+          <h1 class="tappoTitle m-0" itemprop="name">“Camaleonte Market” alla Cascina Nascosta</h1>
+          <p>dal <time datetime="2026-11-14">14/11/2026</time></p>
+          <p>Al Parco Sempione Cascina Nascosta ospita l'appuntamento mensile con “Camaleonte Market” sabato 14 e domenica 15 novembre, dalle 10 alle 19. Ingresso libero.</p>
+        </article>
+      </body>
+    </html>
+  `;
+  const singleScan = await scanDomainForMilanEvents(
+    { domain: 'vivimilano.corriere.it', url: 'https://vivimilano.corriere.it/altri-eventi/feste-e-mercati-altri-eventi/camaleonte-market-alla-cascina-nascosta-12/' },
+    { nowMs: Date.parse('2026-11-14T16:00:00+01:00'), fetcher: async () => singleEventHtml }
+  );
+  assert.equal(singleScan.immediate24h.length, 1);
+  const mkt = singleScan.immediate24h[0];
+  assert.equal(mkt.title, '“Camaleonte Market” alla Cascina Nascosta');
+  assert.equal(mkt.venueName, 'Cascina Nascosta');
+  assert.equal(mkt.address, 'Viale Emilio Alemagna 14, Milano');
+  assert.equal(mkt.category, 'aperture');
+  // Starts at 10:00 (09:00 UTC) and ends at 19:00 (18:00 UTC) -> active at 16:00 Rome
+  assert.equal(mkt.startTime, '2026-11-14T09:00:00.000Z');
+  assert.equal(mkt.endTime, '2026-11-14T18:00:00.000Z');
 });
 
 
