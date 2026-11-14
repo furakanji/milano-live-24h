@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-14T13:39:59.592Z",
+  "generatedAt": "2026-11-14T13:54:53.870Z",
   "agentVersion": "3.0.0-live-feed",
   "schedule": "3 volte al giorno (05:00, 13:00, 19:00 UTC)",
   "sources": [
@@ -7,25 +7,25 @@
       "id": "dice-milan",
       "venueName": "DICE.fm Milano (Real-Time Crawler)",
       "url": "https://dice.fm/browse/milano-5d68e89f7f285e094f60b00e",
-      "checkedAt": "2026-11-14T13:39:59.592Z",
+      "checkedAt": "2026-11-14T13:54:53.870Z",
       "status": "ok",
-      "found": 25,
-      "published": 25
+      "found": 26,
+      "published": 26
     },
     {
       "id": "cinemino",
       "venueName": "Il Cinemino",
       "url": "https://www.ilcinemino.it/programmazione/",
-      "checkedAt": "2026-11-14T13:39:59.592Z",
+      "checkedAt": "2026-11-14T13:54:53.870Z",
       "status": "ok",
-      "found": 35,
-      "published": 8
+      "found": 34,
+      "published": 7
     },
     {
       "id": "milanocinema",
       "venueName": "Cinema di Milano (milanocinema.com)",
       "url": "https://milanocinema.com/",
-      "checkedAt": "2026-11-14T13:39:59.592Z",
+      "checkedAt": "2026-11-14T13:54:53.870Z",
       "status": "ok",
       "found": 1054,
       "published": 702,
@@ -35,7 +35,7 @@
       "id": "verso",
       "venueName": "Libreria Verso",
       "url": "http://www.libreriaverso.com/appuntamenti/",
-      "checkedAt": "2026-11-14T13:39:59.592Z",
+      "checkedAt": "2026-11-14T13:54:53.870Z",
       "status": "ok",
       "found": 14,
       "published": 0
@@ -45,19 +45,19 @@
       "venueName": "Controllo incrociato Cinemino (fonte diretta vs milanocinema.com)",
       "status": "ok",
       "published": 0,
-      "checkedAt": "2026-11-14T13:39:59.592Z"
+      "checkedAt": "2026-11-14T13:54:53.870Z"
     },
     {
       "id": "curated",
       "venueName": "Venue senza adapter (dati curati verificati)",
       "status": "curated",
       "published": 24,
-      "checkedAt": "2026-11-14T13:39:59.592Z"
+      "checkedAt": "2026-11-14T13:54:53.870Z"
     }
   ],
   "stats": {
     "approvedCount": 759,
-    "adapterEvents": 710,
+    "adapterEvents": 709,
     "curatedEvents": 24,
     "soldOutWithBadgeCount": 2,
     "rejectedCount": 22
@@ -732,28 +732,6 @@
       "origin": "dice_crawler",
       "sourceBadge": "DICE Live",
       "availabilityBadge": "PRENOTABILE • POSTI DISPONIBILI"
-    },
-    {
-      "id": "cinemino-20261114-1430-nel-silenzio-delle-stanze",
-      "title": "Nel Silenzio delle Stanze",
-      "description": "Proiezione al Cinemino (Via Seneca 6, Milano) — v.o. sott. ITA • Cinebau (ammessi i cani).",
-      "startTime": "2026-11-14T13:30:00.000Z",
-      "endTime": "2026-11-14T15:10:00.000Z",
-      "venueName": "Il Cinemino",
-      "neighborhood": "Porta Romana / Via Seneca",
-      "address": "Via Seneca 6, Milano",
-      "isFree": false,
-      "priceDetails": "€9,00 Intero / €7,00 Ridotto + Tessera",
-      "category": "cinema",
-      "eventType": "CINEMA_SCREENING",
-      "sourceName": "ilcinemino.it/programmazione",
-      "sourceUrl": "https://www.ilcinemino.it/programmazione/",
-      "instagramUrl": null,
-      "facebookUrl": null,
-      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=Il%20Cinemino%20Via%20Seneca%206%2C%20Milano+Milano",
-      "isSoldOut": false,
-      "availabilityBadge": "PRENOTABILE • POSTI DISPONIBILI",
-      "origin": "adapter"
     },
     {
       "id": "cine-centrale-1794663000000-la-gradiva",
@@ -5763,32 +5741,6 @@
       "origin": "adapter"
     },
     {
-      "id": "dice-6ae876e0275113000167260f",
-      "title": "Palchibelli26 • 4° semifinale",
-      "description": "Dalle eliminatorie di PalchiBelli26, il contest di Ostello Bello, Tuborg, in collaborazione con Rockit, di strada ne abbiamo fatta parecchia. Da sud a nord Italia, 48 band si sono sfidate sui nostri PalchiBelli, portando in giro per gli Ostelli Belli...",
-      "startTime": "2026-11-14T19:00:00.000Z",
-      "endTime": "2026-11-14T23:00:00.000Z",
-      "venueName": "Ostello Bello Milano Duomo",
-      "neighborhood": "Milano",
-      "address": "Via Medici, 4, 20123 Milano MI, Italy",
-      "isOutOfTown": false,
-      "outOfTownLocation": null,
-      "isFree": true,
-      "isSoldOut": false,
-      "priceDetails": "GRATIS",
-      "category": "concerti",
-      "eventType": "LIVE_CONCERT",
-      "source": "DICE",
-      "sourceName": "DICE.fm Milano",
-      "sourceUrl": "https://dice.fm/event/aabaov-palchibelli26-4-semifinale-14th-nov-ostello-bello-milano-duomo-milano-tickets",
-      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=Ostello%20Bello%20Milano%20Duomo%20Via%20Medici%2C%204%2C%2020123%20Milano%20MI%2C%20Italy",
-      "instagramUrl": "https://www.instagram.com/explore/tags/ostellobellomilanoduomo/",
-      "facebookUrl": null,
-      "origin": "dice_crawler",
-      "sourceBadge": "DICE Live",
-      "availabilityBadge": "INGRESSO LIBERO • DISPONIBILE"
-    },
-    {
       "id": "dice-6a6a0fb3561c750001f762ef",
       "title": "Psychedelic Porn Crumpets live a Magnolia",
       "description": "Per accedere agli eventi in questo locale è necessaria la tessera ARCI. Per aderire ad ARCI visita il sito https://www.circolomagnolia.it/tessera-arci/ ARCI membership card is required to access the events in this venue, check the website for more in...",
@@ -5813,6 +5765,32 @@
       "origin": "dice_crawler",
       "sourceBadge": "DICE Live",
       "availabilityBadge": "PRENOTABILE • POSTI DISPONIBILI"
+    },
+    {
+      "id": "dice-6ae876e0275113000167260f",
+      "title": "Palchibelli26 • 4° semifinale",
+      "description": "Dalle eliminatorie di PalchiBelli26, il contest di Ostello Bello, Tuborg, in collaborazione con Rockit, di strada ne abbiamo fatta parecchia. Da sud a nord Italia, 48 band si sono sfidate sui nostri PalchiBelli, portando in giro per gli Ostelli Belli...",
+      "startTime": "2026-11-14T19:00:00.000Z",
+      "endTime": "2026-11-14T23:00:00.000Z",
+      "venueName": "Ostello Bello Milano Duomo",
+      "neighborhood": "Milano",
+      "address": "Via Medici, 4, 20123 Milano MI, Italy",
+      "isOutOfTown": false,
+      "outOfTownLocation": null,
+      "isFree": true,
+      "isSoldOut": false,
+      "priceDetails": "GRATIS",
+      "category": "concerti",
+      "eventType": "LIVE_CONCERT",
+      "source": "DICE",
+      "sourceName": "DICE.fm Milano",
+      "sourceUrl": "https://dice.fm/event/aabaov-palchibelli26-4-semifinale-14th-nov-ostello-bello-milano-duomo-milano-tickets",
+      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=Ostello%20Bello%20Milano%20Duomo%20Via%20Medici%2C%204%2C%2020123%20Milano%20MI%2C%20Italy",
+      "instagramUrl": "https://www.instagram.com/explore/tags/ostellobellomilanoduomo/",
+      "facebookUrl": null,
+      "origin": "dice_crawler",
+      "sourceBadge": "DICE Live",
+      "availabilityBadge": "INGRESSO LIBERO • DISPONIBILE"
     },
     {
       "id": "cine-uci-bicocca-1794682800000-league-of-legends-worlds",
@@ -6719,32 +6697,6 @@
       "origin": "curated"
     },
     {
-      "id": "dice-6ac4a6bf12b85d00011fb76a",
-      "title": "Acidexplosion",
-      "description": "Acidexplosion. Acidexplosion returns more powerful than ever. A killer line-up. A sound system that shakes you and kicks you in the gut. Immersive videomapping. A large industrial venue in the heart of Milan. 🧪LINE-UP 💣MOLDETEK - @moldetek 🇪🇸 💣U...",
-      "startTime": "2026-11-14T20:00:00.000Z",
-      "endTime": "2026-11-15T04:00:00.000Z",
-      "venueName": "Department 184",
-      "neighborhood": "Milano",
-      "address": "Via Varesina 184, 20156 Milano città metropolitana di Milano, Italia",
-      "isOutOfTown": false,
-      "outOfTownLocation": null,
-      "isFree": false,
-      "isSoldOut": false,
-      "priceDetails": "€24.99",
-      "category": "concerti",
-      "eventType": "LIVE_CONCERT",
-      "source": "DICE",
-      "sourceName": "DICE.fm Milano",
-      "sourceUrl": "https://dice.fm/event/av8ob7-acidexplosion-14th-nov-department-184-milano-tickets",
-      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=Department%20184%20Via%20Varesina%20184%2C%2020156%20Milano%20citt%C3%A0%20metropolitana%20di%20Milano%2C%20Italia",
-      "instagramUrl": "https://www.instagram.com/explore/tags/department184/",
-      "facebookUrl": null,
-      "origin": "dice_crawler",
-      "sourceBadge": "DICE Live",
-      "availabilityBadge": "PRENOTABILE • POSTI DISPONIBILI"
-    },
-    {
       "id": "dice-6ad203bbfc483c0001557d78",
       "title": "GHTTOBLSTR - Circolo Agorà",
       "description": "Sabato 14 novembre GHTTOBLSTR torna all’Agorà con una notte dedicata all’hip hop, tra live, showcase e DJ set. In apertura gli artisti di Ril Factory, special guest Pepito Rella con il nuovo disco F4LL e in consolle Clinico BMBX. Un appuntamento per...",
@@ -6791,6 +6743,32 @@
       "sourceUrl": "https://dice.fm/event/7dx276-fitness-forever-14th-nov-arci-bellezza-milano-tickets",
       "mapsUrl": "https://www.google.com/maps/search/?api=1&query=ARCI%20Bellezza%20Via%20Giovanni%20Bellezza%2C%2016a%2C%2020136%20Milano%20MI%2C%20Italy",
       "instagramUrl": "https://www.instagram.com/arcibellezza/",
+      "facebookUrl": null,
+      "origin": "dice_crawler",
+      "sourceBadge": "DICE Live",
+      "availabilityBadge": "PRENOTABILE • POSTI DISPONIBILI"
+    },
+    {
+      "id": "dice-6ac4a6bf12b85d00011fb76a",
+      "title": "Acidexplosion",
+      "description": "Acidexplosion. Acidexplosion returns more powerful than ever. A killer line-up. A sound system that shakes you and kicks you in the gut. Immersive videomapping. A large industrial venue in the heart of Milan. 🧪LINE-UP 💣MOLDETEK - @moldetek 🇪🇸 💣U...",
+      "startTime": "2026-11-14T20:00:00.000Z",
+      "endTime": "2026-11-15T04:00:00.000Z",
+      "venueName": "Department 184",
+      "neighborhood": "Milano",
+      "address": "Via Varesina 184, 20156 Milano città metropolitana di Milano, Italia",
+      "isOutOfTown": false,
+      "outOfTownLocation": null,
+      "isFree": false,
+      "isSoldOut": false,
+      "priceDetails": "€24.99",
+      "category": "concerti",
+      "eventType": "LIVE_CONCERT",
+      "source": "DICE",
+      "sourceName": "DICE.fm Milano",
+      "sourceUrl": "https://dice.fm/event/av8ob7-acidexplosion-14th-nov-department-184-milano-tickets",
+      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=Department%20184%20Via%20Varesina%20184%2C%2020156%20Milano%20citt%C3%A0%20metropolitana%20di%20Milano%2C%20Italia",
+      "instagramUrl": "https://www.instagram.com/explore/tags/department184/",
       "facebookUrl": null,
       "origin": "dice_crawler",
       "sourceBadge": "DICE Live",
@@ -7605,6 +7583,32 @@
       "mapsUrl": "https://www.google.com/maps/search/?api=1&query=Notorious%20Merlata%20Bloom%20Via%20Gottlieb%20Wilhelm%20Daimler%2C%20Milano+Milano",
       "availabilityBadge": "PRENOTABILE • POSTI DISPONIBILI",
       "origin": "adapter"
+    },
+    {
+      "id": "dice-6af242f7b93e4f0001a122bc",
+      "title": "Wild Horse Nine",
+      "description": "Evento dal vivo in programma a Milano presso Cinema Beltrade. Biglietti e dettagli ufficiali su DICE.fm.",
+      "startTime": "2026-11-14T20:40:00.000Z",
+      "endTime": "2026-11-14T22:45:00.000Z",
+      "venueName": "Cinema Beltrade",
+      "neighborhood": "Milano",
+      "address": "Via Nino Oxilia, 10, 20127 Milano MI, Italy",
+      "isOutOfTown": false,
+      "outOfTownLocation": null,
+      "isFree": false,
+      "isSoldOut": false,
+      "priceDetails": "€€ / Biglietti su DICE",
+      "category": "cinema",
+      "eventType": "LIVE_CONCERT",
+      "source": "DICE",
+      "sourceName": "DICE.fm Milano",
+      "sourceUrl": "https://dice.fm/event/693qkq-wild-horse-nine-14th-nov-cinema-beltrade-milano-tickets",
+      "mapsUrl": "https://www.google.com/maps/search/?api=1&query=Cinema%20Beltrade%20Via%20Nino%20Oxilia%2C%2010%2C%2020127%20Milano%20MI%2C%20Italy",
+      "instagramUrl": "https://www.instagram.com/cinemabeltrade/",
+      "facebookUrl": null,
+      "origin": "dice_crawler",
+      "sourceBadge": "DICE Live",
+      "availabilityBadge": "PRENOTABILE • POSTI DISPONIBILI"
     },
     {
       "id": "cine-uci-bicocca-1794688800000-wild-horse-nine",
@@ -17628,7 +17632,7 @@
       "rejectionReasons": [
         "Gate 4 (Fedeltà Link Sorgente): La pagina sorgente ha risposto con errore HTTP 403"
       ],
-      "checkedAt": "2026-11-14T13:39:59.592Z"
+      "checkedAt": "2026-11-14T13:54:53.870Z"
     },
     {
       "id": "evt-palazzo-reale-brueghel",
@@ -17639,7 +17643,7 @@
       "rejectionReasons": [
         "Gate 4 (Fedeltà Link Sorgente): La pagina sorgente ha risposto con errore HTTP 403"
       ],
-      "checkedAt": "2026-11-14T13:39:59.592Z"
+      "checkedAt": "2026-11-14T13:54:53.870Z"
     },
     {
       "id": "evt-lafeltrinelli-duomo",
@@ -17650,7 +17654,7 @@
       "rejectionReasons": [
         "Gate 4 (Fedeltà Link Sorgente): Impossibile raggiungere l'URL sorgente: The operation was aborted due to timeout"
       ],
-      "checkedAt": "2026-11-14T13:39:59.592Z"
+      "checkedAt": "2026-11-14T13:54:53.870Z"
     },
     {
       "id": "evt-elfo-puccini-contemp",
@@ -17661,7 +17665,7 @@
       "rejectionReasons": [
         "Gate 4 (Fedeltà Link Sorgente): L'URL associato (https://www.elfo.org/) è una homepage generica e non riporta il permalink con i dettagli specifici dell'evento \"Stagione Teatro Contemporaneo — Sala Shakespeare, Bausch e Fassbinder\"."
       ],
-      "checkedAt": "2026-11-14T13:39:59.592Z"
+      "checkedAt": "2026-11-14T13:54:53.870Z"
     },
     {
       "id": "evt-blue-note-jazz",
@@ -17672,7 +17676,7 @@
       "rejectionReasons": [
         "Gate 4 (Fedeltà Link Sorgente): L'URL associato (https://www.bluenotemilano.com/) è una homepage generica e non riporta il permalink con i dettagli specifici dell'evento \"Live Jazz, Soul & Blues — First Set (Ore 21:00) in Via Borsieri\"."
       ],
-      "checkedAt": "2026-11-14T13:39:59.592Z"
+      "checkedAt": "2026-11-14T13:54:53.870Z"
     },
     {
       "id": "evt-magnolia-clubnight",
@@ -17683,7 +17687,7 @@
       "rejectionReasons": [
         "Gate 4 (Fedeltà Link Sorgente): L'URL associato (https://www.circolomagnolia.it/) è una homepage generica e non riporta il permalink con i dettagli specifici dell'evento \"Live Tour & Club Night al Circolo Magnolia — Idroscalo\"."
       ],
-      "checkedAt": "2026-11-14T13:39:59.592Z"
+      "checkedAt": "2026-11-14T13:54:53.870Z"
     },
     {
       "id": "evt-palazzo-reale-dali",
@@ -17694,7 +17698,7 @@
       "rejectionReasons": [
         "Gate 4 (Fedeltà Link Sorgente): La pagina sorgente ha risposto con errore HTTP 403"
       ],
-      "checkedAt": "2026-11-14T13:39:59.592Z"
+      "checkedAt": "2026-11-14T13:54:53.870Z"
     },
     {
       "id": "evt-gam-pellizza-volpedo",
@@ -17705,7 +17709,7 @@
       "rejectionReasons": [
         "Gate 4 (Fedeltà Link Sorgente): La pagina sorgente ha risposto con errore HTTP 403"
       ],
-      "checkedAt": "2026-11-14T13:39:59.592Z"
+      "checkedAt": "2026-11-14T13:54:53.870Z"
     },
     {
       "id": "evt-fondazione-prada-torre",
@@ -17716,7 +17720,7 @@
       "rejectionReasons": [
         "Gate 4 (Fedeltà Link Sorgente): La pagina sorgente ha risposto con errore HTTP 403"
       ],
-      "checkedAt": "2026-11-14T13:39:59.592Z"
+      "checkedAt": "2026-11-14T13:54:53.870Z"
     },
     {
       "id": "evt-mudec-dialogo-arti",
@@ -17727,7 +17731,7 @@
       "rejectionReasons": [
         "Gate 4 (Fedeltà Link Sorgente): La pagina sorgente ha risposto con errore HTTP 403"
       ],
-      "checkedAt": "2026-11-14T13:39:59.592Z"
+      "checkedAt": "2026-11-14T13:54:53.870Z"
     },
     {
       "id": "evt-palazzo-reale-brueghel",
@@ -17738,7 +17742,7 @@
       "rejectionReasons": [
         "Gate 4 (Fedeltà Link Sorgente): La pagina sorgente ha risposto con errore HTTP 403"
       ],
-      "checkedAt": "2026-11-14T13:39:59.592Z"
+      "checkedAt": "2026-11-14T13:54:53.870Z"
     },
     {
       "id": "evt-lafeltrinelli-duomo",
@@ -17749,7 +17753,7 @@
       "rejectionReasons": [
         "Gate 4 (Fedeltà Link Sorgente): Impossibile raggiungere l'URL sorgente: The operation was aborted due to timeout"
       ],
-      "checkedAt": "2026-11-14T13:39:59.592Z"
+      "checkedAt": "2026-11-14T13:54:53.870Z"
     },
     {
       "id": "evt-elfo-puccini-contemp",
@@ -17760,7 +17764,7 @@
       "rejectionReasons": [
         "Gate 4 (Fedeltà Link Sorgente): L'URL associato (https://www.elfo.org/) è una homepage generica e non riporta il permalink con i dettagli specifici dell'evento \"Stagione Teatro Contemporaneo — Sala Shakespeare, Bausch e Fassbinder\"."
       ],
-      "checkedAt": "2026-11-14T13:39:59.592Z"
+      "checkedAt": "2026-11-14T13:54:53.870Z"
     },
     {
       "id": "evt-blue-note-jazz",
@@ -17771,7 +17775,7 @@
       "rejectionReasons": [
         "Gate 4 (Fedeltà Link Sorgente): L'URL associato (https://www.bluenotemilano.com/) è una homepage generica e non riporta il permalink con i dettagli specifici dell'evento \"Live Jazz, Soul & Blues — First Set (Ore 21:00) in Via Borsieri\"."
       ],
-      "checkedAt": "2026-11-14T13:39:59.592Z"
+      "checkedAt": "2026-11-14T13:54:53.870Z"
     },
     {
       "id": "evt-magnolia-clubnight",
@@ -17782,7 +17786,7 @@
       "rejectionReasons": [
         "Gate 4 (Fedeltà Link Sorgente): L'URL associato (https://www.circolomagnolia.it/) è una homepage generica e non riporta il permalink con i dettagli specifici dell'evento \"Live Tour & Club Night al Circolo Magnolia — Idroscalo\"."
       ],
-      "checkedAt": "2026-11-14T13:39:59.592Z"
+      "checkedAt": "2026-11-14T13:54:53.870Z"
     },
     {
       "id": "evt-palazzo-reale-dali",
@@ -17793,7 +17797,7 @@
       "rejectionReasons": [
         "Gate 4 (Fedeltà Link Sorgente): La pagina sorgente ha risposto con errore HTTP 403"
       ],
-      "checkedAt": "2026-11-14T13:39:59.592Z"
+      "checkedAt": "2026-11-14T13:54:53.870Z"
     },
     {
       "id": "evt-gam-pellizza-volpedo",
@@ -17804,7 +17808,7 @@
       "rejectionReasons": [
         "Gate 4 (Fedeltà Link Sorgente): La pagina sorgente ha risposto con errore HTTP 403"
       ],
-      "checkedAt": "2026-11-14T13:39:59.592Z"
+      "checkedAt": "2026-11-14T13:54:53.870Z"
     },
     {
       "id": "evt-fondazione-prada-torre",
@@ -17815,7 +17819,7 @@
       "rejectionReasons": [
         "Gate 4 (Fedeltà Link Sorgente): La pagina sorgente ha risposto con errore HTTP 403"
       ],
-      "checkedAt": "2026-11-14T13:39:59.592Z"
+      "checkedAt": "2026-11-14T13:54:53.870Z"
     }
   ]
 }
