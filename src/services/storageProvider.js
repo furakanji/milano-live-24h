@@ -125,12 +125,12 @@ export class StorageProvider {
       }
     }
 
-    // 2. Fallback to public/live-events.json
+    // 2. Fallback to public snapshots
     const candidateUrls = [
-      'live-events.json',
-      'public/live-events.json',
+      'public/verified-events-24h.json',
       'verified-events-24h.json',
-      'public/verified-events-24h.json'
+      'public/live-events.json',
+      'live-events.json'
     ];
 
     for (const url of candidateUrls) {
