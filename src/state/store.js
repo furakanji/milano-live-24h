@@ -16,6 +16,7 @@ class Store {
       activeSearchQuery: '',
       onlyHappeningNow: false,
       expandedEventIds: new Set(['evt-mexico-qa', 'evt-base-vernissage']),
+      seenEventIds: new Set(),
       pageLoadAnchorMs: Date.now(),
       nextHourStartMs: (Math.floor(Date.now() / 3600000) + 1) * 3600000,
       crawlerStats: { zero: 0, milanotoday: 0, yesmilano: 0, mentelocale: 0, dice: 0 }
@@ -128,9 +129,25 @@ class Store {
     this.notify('filter:reset');
   }
 
+  setSeenEvents(seenIdsSet) {
+    this.state.seenEventIds = new Set(seenIdsSet || []);
+    this.recomputeFilteredEvents();
+    this.notify('seen:sync');
+  }
+
+  dismissEvent(eventId) {
+    if (!eventId) return;
+    this.state.seenEventIds.add(eventId);
+    this.recomputeFilteredEvents();
+    this.notify('event:dismissed');
+  }
+
   recomputeFilteredEvents() {
     const s = this.state;
     s.filteredEvents = s.allEvents.filter(ev => {
+      // Exclude permanently seen/dismissed events
+      if (s.seenEventIds.has(ev.id)) return false;
+
       if (s.activePriceFilter === 'free' && !ev.isFree) return false;
       if (s.activePriceFilter === 'paid' && ev.isFree) return false;
       if (s.activeLocationFilter === 'milano' && ev.isOutOfTown) return false;

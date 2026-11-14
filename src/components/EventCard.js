@@ -268,6 +268,22 @@ export function renderEventCard(ev, isExpanded = false) {
             </svg>
             <span>Condividi</span>
           </button>
+
+          <!-- Già Visto / Elimina Button -->
+          <button
+            type="button"
+            data-mark-seen="${ev.id}"
+            data-event-title="${ev.title.replace(/"/g, '&quot;')}"
+            class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-[#14161c] hover:bg-red-500/15 text-zinc-400 hover:text-red-300 border border-[#262a34] hover:border-red-500/40 text-xs font-semibold transition cursor-pointer"
+            title="Segna come già visto ed elimina dalla tua lista"
+          >
+            <svg class="w-3.5 h-3.5 text-zinc-400 group-hover:text-red-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+              <circle cx="12" cy="12" r="3"></circle>
+            </svg>
+            <span>Già visto</span>
+            <span class="text-zinc-500 text-[10px]">✕</span>
+          </button>
         </div>
 
         <div class="flex items-center gap-1.5">

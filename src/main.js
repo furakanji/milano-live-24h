@@ -9,6 +9,8 @@ import { Timeline } from './components/Timeline.js';
 import { FilterBar } from './components/FilterBar.js';
 import { storageProvider } from './services/storageProvider.js';
 import { generateRolling24hFeed, getRomeDateParts, getNextHourStartMs } from './data/milanEventsGenerator.js';
+import { seenEventsService } from './services/seenEventsService.js';
+import { openPhonePromptModal } from './features/seenUserModal.js';
 
 let adminStudioInstance = null;
 
@@ -253,6 +255,48 @@ function handleEventPermalink() {
   }, 100);
 }
 
+// Setup User Phone Profile & Seen Events Synchronization
+function setupSeenEventsSync() {
+  const profileBtn = document.getElementById('btn-user-seen-profile');
+  const dot = document.getElementById('user-seen-status-dot');
+  const label = document.getElementById('user-seen-label');
+
+  const refreshProfileButton = () => {
+    if (!profileBtn || !dot || !label) return;
+    const isAuth = seenEventsService.isAuthenticated();
+    const countSeen = seenEventsService.getSeenEventIds().size;
+
+    if (isAuth) {
+      dot.className = 'w-2 h-2 rounded-full bg-emerald-400';
+      label.innerHTML = `👤 ${seenEventsService.getMaskedPhone()} • <span class="text-emerald-300 font-bold">${countSeen} visti</span>`;
+      profileBtn.classList.add('border-emerald-500/40', 'bg-emerald-500/10');
+      profileBtn.classList.remove('bg-[#161921]');
+    } else {
+      dot.className = 'w-2 h-2 rounded-full bg-zinc-500';
+      label.textContent = 'Sincronizza Visti';
+      profileBtn.classList.remove('border-emerald-500/40', 'bg-emerald-500/10');
+      profileBtn.classList.add('bg-[#161921]');
+    }
+  };
+
+  profileBtn?.addEventListener('click', () => {
+    openPhonePromptModal({
+      onAuthenticated: () => {
+        refreshProfileButton();
+        store.setSeenEvents(seenEventsService.getSeenEventIds());
+      }
+    });
+  });
+
+  // Load existing seen events into state store
+  const existingSeen = seenEventsService.getSeenEventIds();
+  if (existingSeen.size > 0) {
+    store.setSeenEvents(existingSeen);
+  }
+
+  refreshProfileButton();
+}
+
 // Main App Initialization
 export async function initApp() {
   // 1. Initial Timeline & FilterBar
@@ -268,7 +312,10 @@ export async function initApp() {
   updateLiveClock();
   setInterval(updateLiveClock, 1000);
 
-  // 4. Ingest Events
+  // 4. Setup Seen Events User Profile
+  setupSeenEventsSync();
+
+  // 5. Ingest Events
   let events = await loadLiveFeed();
   if (!events || events.length === 0) {
     events = generateRolling24hFeed();
@@ -276,10 +323,10 @@ export async function initApp() {
 
   store.setEvents(events);
 
-  // 5. Handle Event Deep-link / Permalink
+  // 6. Handle Event Deep-link / Permalink
   handleEventPermalink();
 
-  // 6. Check if loaded with Admin hash or query
+  // 7. Check if loaded with Admin hash or query
   syncAdminRoute();
 }
 

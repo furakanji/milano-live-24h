@@ -259,5 +259,24 @@ test('Fuori Porta: detectOutofTownMilanEvent identifies out-of-town events (Berg
   assert.equal(checkMilanStreet.isOutOfTown, false);
 });
 
+test('Seen Events: normalizePhoneNumber, isValidPhoneNumber, and hashPhoneNumber produce deterministic encrypted hashes', async () => {
+  const { normalizePhoneNumber, isValidPhoneNumber, hashPhoneNumber } = await import('../../src/services/seenEventsService.js');
+
+  assert.equal(normalizePhoneNumber('340 123 4567'), '+393401234567');
+  assert.equal(normalizePhoneNumber('+39 340-123-4567'), '+393401234567');
+  assert.equal(normalizePhoneNumber('0039 340 123 4567'), '+393401234567');
+
+  assert.equal(isValidPhoneNumber('340 123 4567'), true);
+  assert.equal(isValidPhoneNumber('+393401234567'), true);
+  assert.equal(isValidPhoneNumber('123'), false);
+  assert.equal(isValidPhoneNumber('abc'), false);
+
+  const hash1 = await hashPhoneNumber('340 123 4567');
+  const hash2 = await hashPhoneNumber('+39 340-123-4567');
+  assert.ok(hash1.length >= 16);
+  assert.equal(hash1, hash2); // Deterministic matching
+});
+
+
 
 

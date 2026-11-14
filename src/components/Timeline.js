@@ -5,6 +5,8 @@
 import { renderEventCard } from './EventCard.js';
 import { checkContinuousExhibitionStatus } from '../../services/crawlers/crawlerUtils.js';
 import { openShareModal } from '../features/shareModal.js';
+import { seenEventsService } from '../services/seenEventsService.js';
+import { openPhonePromptModal } from '../features/seenUserModal.js';
 
 export class Timeline {
   constructor(containerEl, store) {
@@ -18,14 +20,16 @@ export class Timeline {
     this.store.subscribe((state, eventKey) => {
       if (eventKey === 'events' || eventKey === 'init') {
         this.renderFull();
-      } else if (eventKey && eventKey.startsWith('filter:')) {
+      } else if (eventKey && (eventKey.startsWith('filter:') || eventKey === 'seen:sync')) {
         this.applySurgicalFilter();
       } else if (eventKey === 'card:expand') {
         this.updateCardExpandStates();
+      } else if (eventKey === 'event:dismissed') {
+        this.applySurgicalFilter();
       }
     });
 
-    // Delegate click events for cards expansion and sharing inside timeline container
+    // Delegate click events for cards expansion, sharing and mark-as-seen inside timeline container
     this.container.addEventListener('click', (e) => {
       const shareBtn = e.target.closest('[data-share-event]');
       if (shareBtn) {
@@ -35,6 +39,43 @@ export class Timeline {
         const venue = shareBtn.getAttribute('data-event-venue') || 'Milano';
         const time = shareBtn.getAttribute('data-event-time') || '';
         openShareModal({ eventId, title, venue, time });
+        return;
+      }
+
+      const markSeenBtn = e.target.closest('[data-mark-seen]');
+      if (markSeenBtn) {
+        e.stopPropagation();
+        const eventId = markSeenBtn.getAttribute('data-mark-seen');
+        const eventTitle = markSeenBtn.getAttribute('data-event-title') || 'questo evento';
+
+        const executeDismissal = () => {
+          // Animate card removal gracefully
+          const cardEl = document.getElementById(`card-${eventId}`);
+          if (cardEl) {
+            cardEl.style.transition = 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)';
+            cardEl.style.opacity = '0';
+            cardEl.style.transform = 'scale(0.95)';
+            cardEl.style.pointerEvents = 'none';
+            setTimeout(() => {
+              seenEventsService.markEventAsSeen(eventId);
+              this.store.dismissEvent(eventId);
+            }, 250);
+          } else {
+            seenEventsService.markEventAsSeen(eventId);
+            this.store.dismissEvent(eventId);
+          }
+        };
+
+        if (seenEventsService.isAuthenticated()) {
+          executeDismissal();
+        } else {
+          openPhonePromptModal({
+            targetEventTitle: eventTitle,
+            onAuthenticated: () => {
+              executeDismissal();
+            }
+          });
+        }
         return;
       }
 
@@ -200,6 +241,15 @@ export class Timeline {
                       </svg>
                       <span>Condividi</span>
                     </button>
+                    <button
+                      type="button"
+                      data-mark-seen="${ev.id}"
+                      data-event-title="${ev.title.replace(/"/g, '&quot;')}"
+                      class="text-zinc-400 hover:text-red-300 font-semibold flex items-center gap-1 cursor-pointer"
+                      title="Segna come già visto ed elimina dalla tua lista"
+                    >
+                      <span>Già visto ✕</span>
+                    </button>
                     <a href="${ev.mapsUrl}" target="_blank" rel="noopener noreferrer" class="text-teal-400 hover:text-teal-300 font-bold underline">Maps →</a>
                   </div>
                 </div>
@@ -223,6 +273,7 @@ export class Timeline {
     // Filter each event card
     const allCards = this.container.querySelectorAll('.event-card-item');
     allCards.forEach(card => {
+      const eventId = card.getAttribute('data-event-id');
       const cat = card.getAttribute('data-category');
       const isFree = card.getAttribute('data-is-free') === 'true';
       const isSoldOut = card.getAttribute('data-is-sold-out') === 'true';
@@ -231,6 +282,11 @@ export class Timeline {
       const searchable = card.getAttribute('data-searchable-text') || '';
 
       let visible = true;
+
+      // Seen events filter (permanently excluded by user)
+      if (s.seenEventIds && s.seenEventIds.has(eventId)) {
+        visible = false;
+      }
 
       // Price filter
       if (s.activePriceFilter === 'free' && !isFree) visible = false;
