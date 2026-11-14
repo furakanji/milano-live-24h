@@ -29,8 +29,13 @@ export async function crawlMentelocale({ nowMs = Date.now(), fetcher = universal
       const html = await fetcher(url);
       const isTomorrow = url.includes('/domani/');
 
+      // Scope card extraction strictly to `.lab-sec` sections (the actual daily agenda categories: musica, teatro, mostre, cinema, etc.)
+      // This strictly prevents pulling editorial news from `.redrail` / `.redstrip` (e.g. far-future 2027 stadium tour announcements).
+      const labSections = [...html.matchAll(/<section\b[^>]*class="[^"]*lab-sec[^"]*"[^>]*>([\s\S]*?)<\/section>/gi)];
+      const agendaHtml = labSections.length > 0 ? labSections.map(s => s[1]).join('\n') : html;
+
       // Match event card anchors (`<a ... href=".../milano/.../ID-slug.htm">`)
-      const cardMatches = [...html.matchAll(/<a\b[^>]*href="([^"]*\/milano\/[^"]*\d+-[^"]+\.htm)"[^>]*>([\s\S]*?)<\/a>/gi)];
+      const cardMatches = [...agendaHtml.matchAll(/<a\b[^>]*href="([^"]*\/milano\/[^"]*\d+-[^"]+\.htm)"[^>]*>([\s\S]*?)<\/a>/gi)];
 
       for (const cm of cardMatches) {
         let sourceUrl = cm[1];
@@ -45,6 +50,13 @@ export async function crawlMentelocale({ nowMs = Date.now(), fetcher = universal
 
         const title = decodeHtml(headingMatch[1].replace(/<[^>]+>/g, '')).trim();
         if (!title || title.length < 4) continue;
+
+        // Temporal Guard: Exclude future years that do not match the current rolling 24h window
+        const nowYear = new Date(nowMs).getFullYear();
+        const futureYearMatch = title.match(/\b(202[7-9]|20[3-9]\d)\b/);
+        if (futureYearMatch && parseInt(futureYearMatch[1], 10) > nowYear) {
+          continue;
+        }
 
         const id = `mentelocale-${hashString(sourceUrl + title)}`;
         if (seenIds.has(id)) continue;

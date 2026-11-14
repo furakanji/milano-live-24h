@@ -764,6 +764,21 @@ export function verifyEventTemporalConsistency(event = {}, nowMs = Date.now()) {
     }
   }
 
+  // 1b. Check for future year mismatch (e.g. "Tour 2027", "Milano 2027", "Live 2028")
+  // If an event title explicitly mentions a year greater than the scheduled date's year,
+  // it is a future tour/event announcement and NOT valid for the current rolling 24h timeline.
+  const scheduledYear = eventDate.getFullYear();
+  const titleText = (event.title || '').trim();
+  const futureYearInTitle = titleText.match(/\b(202[7-9]|20[3-9]\d)\b/);
+
+  if (futureYearInTitle) {
+    const yearMentioned = parseInt(futureYearInTitle[1], 10);
+    if (yearMentioned > scheduledYear) {
+      isValidForScheduledDate = false;
+      issues.push(`Anno non corrispondente: il titolo fa riferimento all'anno ${yearMentioned}, mentre l'evento è programmato per il ${scheduledYear}.`);
+    }
+  }
+
   // 2. Check for explicit showtime extraction
   const hourMatch = norm.match(/(?:inizio\s+(?:show|spettacolo|concerto|live)?\s*(?:dalle|ore)?|dalle\s+ore|dalle|ore|h)\s*([0-2]?[0-9])[:.]([0-5][0-9])/i);
 

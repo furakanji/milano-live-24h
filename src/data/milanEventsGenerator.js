@@ -758,6 +758,27 @@ export const MILAN_EVENT_TEMPLATES = [
     instagramUrl: null,
     facebookUrl: null,
     sourceUrl: 'https://vivimilano.corriere.it/cinema/'
+  },
+  {
+    id: 'evt-vivimilano-camaleonte-market',
+    scheduledHour: 10,
+    scheduledMinute: 0,
+    durationMinutes: 540,
+    eventType: 'SPECIAL_EVENT',
+    isSoldOut: false,
+    title: '“Camaleonte Market” alla Cascina Nascosta — ViviMilano Corriere',
+    description: 'Al Parco Sempione Cascina Nascosta ospita l’appuntamento mensile con “Camaleonte Market” dalle 10 alle 19: bancarelle di artigianato, autoproduzioni e vintage con mercatino sostenibile e ristoro.',
+    venueName: 'Cascina Nascosta',
+    neighborhood: 'Parco Sempione',
+    address: 'Viale Emilio Alemagna 14, Milano',
+    isFree: true,
+    priceDetails: 'Ingresso libero • Gratuito',
+    category: 'aperture',
+    sourceName: 'vivimilano.corriere.it — Agenda Eventi',
+    sourceBadge: 'VIVIMILANO',
+    instagramUrl: 'https://www.instagram.com/cascinanascosta/',
+    facebookUrl: null,
+    sourceUrl: 'https://vivimilano.corriere.it/altri-eventi/feste-e-mercati-altri-eventi/camaleonte-market-alla-cascina-nascosta-12/'
   }
 ];
 

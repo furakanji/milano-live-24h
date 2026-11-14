@@ -210,6 +210,17 @@ test('Gate 5: verifyEventTemporalConsistency rejects weekday mismatch and correc
   assert.equal(checkCorrectDay.isValidForScheduledDate, true);
   // Corrected to 20:30 Rome (= 19:30 UTC)
   assert.equal(checkCorrectDay.event.startTime, '2026-11-11T19:30:00.000Z');
+
+  // Event with future year (2027) in title scheduled for 2026
+  const future2027Event = {
+    title: 'Noah Kahan in concerto agli I-Days Milano 2027',
+    description: 'Il cantautore folk-pop americano arriva a Milano sul palco dell’Ippodromo Snai La Maura per gli I-Days 2027.',
+    startTime: '2026-11-14T20:30:00.000Z',
+    venueName: 'Ippodromo Snai La Maura'
+  };
+  const checkFutureYear = verifyEventTemporalConsistency(future2027Event);
+  assert.equal(checkFutureYear.isValidForScheduledDate, false);
+  assert.ok(checkFutureYear.issues.some(i => i.includes('Anno non corrispondente')));
 });
 
 test('Fuori Porta: detectOutofTownMilanEvent identifies out-of-town events (Bergamo, Brescia, Busto) without false positives on Milan streets', async () => {
