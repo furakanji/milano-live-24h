@@ -49,7 +49,7 @@ async function loadLiveFeed() {
 // Lazy load Admin Studio
 async function ensureAdminStudioLoaded() {
   if (!adminStudioInstance) {
-    const { mountAdminStudio } = await import('./admin/AdminStudio.js');
+    const { mountAdminStudio } = await import(`./admin/AdminStudio.js?v=2.1.2`);
     adminStudioInstance = mountAdminStudio(store);
   }
   return adminStudioInstance;
