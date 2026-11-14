@@ -253,7 +253,9 @@ export async function checkSourceUrlFaithfulness(event = {}, htmlText = null) {
   try {
     const parsed = new URL(url);
     const path = parsed.pathname.replace(/\/+$/, '');
-    if (!path && !parsed.search) {
+    const host = parsed.hostname.toLowerCase();
+    const isPortalWithDailyAgenda = /vivimilano|milanotoday|mentelocale|zero\.eu/i.test(host);
+    if (!path && !parsed.search && !isPortalWithDailyAgenda) {
       return {
         isFaithful: false,
         score: 15,

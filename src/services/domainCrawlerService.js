@@ -71,34 +71,61 @@ export function extractHtmlEvents(html = '', baseUrl = '') {
   const candidates = [];
   if (!html) return candidates;
 
-  // Regex looking for event blocks with title, date/time and link
-  const blockRegex = /<(?:article|div|li)[^>]*class=["'][^"']*(?:event|spettacol|show|proiezion|mostra|programma)[^"']*["'][^>]*>([\s\S]*?)<\/(?:article|div|li)>/gi;
-  let match;
-  let count = 0;
+  const seenTitles = new Set();
+  const rawBlocks = [];
 
-  while ((match = blockRegex.exec(html)) !== null && count < 30) {
-    count++;
-    const block = match[1];
+  // 1. Dedicated semantic <article> elements (used in ViviMilano and standard portals)
+  const articleRegex = /<article\b[^>]*>([\s\S]*?)<\/article>/gi;
+  let artMatch;
+  while ((artMatch = articleRegex.exec(html)) !== null) {
+    rawBlocks.push(artMatch[1]);
+  }
 
-    // Extract title
-    const titleMatch = block.match(/<(?:h1|h2|h3|h4|strong|a)[^>]*>([\s\S]*?)<\/(?:h1|h2|h3|h4|strong|a)>/i);
-    const title = titleMatch ? decodeHtml(titleMatch[1].replace(/<[^>]+>/g, '')).trim() : '';
+  // 2. Event-card classes on div, li, section
+  const cardRegex = /<(?:div|li|section)\b[^>]*class=["'][^"']*(?:event-card|evento|event_item|show-card|programma-item|tappo)[^"']*["'][^>]*>([\s\S]*?)<\/(?:div|li|section)>/gi;
+  let cardMatch;
+  while ((cardMatch = cardRegex.exec(html)) !== null && rawBlocks.length < 50) {
+    rawBlocks.push(cardMatch[1]);
+  }
 
-    if (!title || title.length < 3 || title.length > 150) continue;
-
-    // Extract link
+  for (const block of rawBlocks) {
+    // Extract link first (must be a valid http link, not javascript: or empty)
     const linkMatch = block.match(/<a\b[^>]*href=["']([^"']+)["'][^>]*>/i);
-    let eventUrl = linkMatch ? linkMatch[1] : baseUrl;
+    if (!linkMatch) continue;
+
+    let eventUrl = linkMatch[1].trim();
+    if (/^javascript:|^#|mailto:/i.test(eventUrl)) continue;
+
     try {
       eventUrl = new URL(eventUrl, baseUrl).href;
     } catch {
-      eventUrl = baseUrl;
+      continue;
     }
 
-    // Extract date/time pattern (ISO, or YYYY-MM-DD or DD/MM/YYYY)
+    // Skip generic navigation/utility links
+    if (/(?:privacy|cookie|login|register|tag\/|categoria\/|author\/|archivio\.corriere|video\.corriere|trovocasa|lavoro\.corriere)/i.test(eventUrl)) {
+      continue;
+    }
+
+    // Extract title (h1-h4, or element with title class, or strong)
+    const titleMatch = block.match(/<(?:h[1-4]|div|span)[^>]*class=["'][^"']*title[^"']*["'][^>]*>([\s\S]*?)<\/(?:h[1-4]|div|span)>/i) ||
+                       block.match(/<(?:h[1-4])[^>]*>([\s\S]*?)<\/(?:h[1-4])>/i) ||
+                       block.match(/<strong[^>]*>([\s\S]*?)<\/strong>/i);
+
+    if (!titleMatch) continue;
+
+    const title = decodeHtml(titleMatch[1].replace(/<[^>]+>/g, '')).trim();
+
+    // Ignore generic navigation words
+    if (!title || title.length < 5 || title.length > 150) continue;
+    if (/^(?:sezioni|edizioni locali|servizi|cerca|login|home|archivio)$/i.test(title)) continue;
+    if (seenTitles.has(title.toLowerCase())) continue;
+    seenTitles.add(title.toLowerCase());
+
+    // Extract date/time pattern (ISO, or YYYY-MM-DD or DD/MM/YYYY, or "dal DD/MM/YYYY")
     const isoMatch = block.match(/datetime=["']([^"']+)["']/i) ||
                      block.match(/\b(202[4-9]-[0-1][0-9]-[0-3][0-9](?:T[0-2][0-9]:[0-5][0-9])?)\b/) ||
-                     block.match(/\b([0-3]?[0-9][\/.][0-1]?[0-9][\/.](?:20)?2[4-9])\b/);
+                     block.match(/(?:dal\s+)?([0-3]?[0-9][\/.][0-1]?[0-9][\/.](?:20)?2[4-9])/i);
 
     let startTime = null;
     if (isoMatch) {
@@ -106,6 +133,14 @@ export function extractHtmlEvents(html = '', baseUrl = '') {
       const parsed = Date.parse(rawDate);
       if (!isNaN(parsed)) {
         startTime = new Date(parsed).toISOString();
+      } else {
+        // Parse Italian format DD/MM/YYYY
+        const dmy = rawDate.match(/([0-3]?[0-9])[\/.]([0-1]?[0-9])[\/.](202[4-9])/);
+        if (dmy) {
+          const iso = `${dmy[3]}-${dmy[2].padStart(2, '0')}-${dmy[1].padStart(2, '0')}T20:30:00+01:00`;
+          const p = Date.parse(iso);
+          if (!isNaN(p)) startTime = new Date(p).toISOString();
+        }
       }
     }
 
@@ -116,6 +151,8 @@ export function extractHtmlEvents(html = '', baseUrl = '') {
       rawBlock: block,
       startTime
     });
+
+    if (candidates.length >= 40) break;
   }
 
   return candidates;
@@ -174,6 +211,18 @@ export function normalizeDiscoveredEvent(rawItem, domainMeta = {}, { nowMs = Dat
       address = addr;
     } else if (addr && typeof addr === 'object') {
       address = [addr.streetAddress, addr.addressLocality, addr.postalCode].filter(Boolean).join(', ') || 'Milano';
+    }
+  }
+
+  if (!rawVenue) {
+    // Try to extract venue from title or description patterns like "al Teatro Manzoni", "da Base", "agli East End Studios", "all'Unipol Dome"
+    const venuePattern = /(?:al(?:la|lo|l'|le|i)?|da|presso|agli)\s+([A-ZÀ-ÖØ-ß][a-zA-Z0-9àèéìòùÀÈÉÌÒÙ'’\s\-]{2,30}?)(?:[\.,\(\:\–\—]|\s+a\s+milano|\s+dal|\s+il|$)/i;
+    const vMatch = `${title} ${desc}`.match(venuePattern);
+    if (vMatch && vMatch[1]) {
+      const candidateVenue = vMatch[1].trim();
+      if (!/^(?:oggi|domani|milano|weekend|novembre|dicembre|gennaio|febbraio|marzo|aprile|maggio|giugno|luglio|agosto|settembre|ottobre)$/i.test(candidateVenue)) {
+        rawVenue = candidateVenue;
+      }
     }
   }
 
@@ -280,7 +329,7 @@ export async function scanDomainForMilanEvents(domainObj, { nowMs = Date.now(), 
   if (domainObj.notes && domainObj.notes.startsWith('/')) {
     pathsToProbe.unshift(domainObj.notes.trim());
   } else {
-    pathsToProbe.push('/programma', '/eventi', '/calendario', '/cinema', '/spettacoli');
+    pathsToProbe.push('/tutti-gli-eventi-di-oggi', '/agenda', '/programma', '/eventi', '/calendario', '/cinema', '/spettacoli');
   }
 
   const rawDiscovered = [];

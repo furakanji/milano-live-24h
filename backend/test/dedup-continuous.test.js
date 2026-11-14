@@ -359,6 +359,61 @@ test('Domain Crawler: extracts events via JSON-LD and HTML, automatically catego
   assert.equal(result.scheduledFuture[0].category, 'teatro');
 });
 
+test('Gate 4 & Crawler: vivimilano.corriere.it is recognized as an active Milan event portal without generic homepage rejection', async () => {
+  const { verifyEventCandidateWithAgent } = await import('../../src/admin/AdminStudio.js');
+  const { extractHtmlEvents, scanDomainForMilanEvents } = await import('../../src/services/domainCrawlerService.js');
+
+  // 1. Gate 4 should not reject vivimilano.corriere.it
+  const candidate = {
+    title: 'https://vivimilano.corriere.it',
+    sourceUrl: 'https://vivimilano.corriere.it',
+    rawText: 'https://vivimilano.corriere.it'
+  };
+  const verdict = verifyEventCandidateWithAgent(candidate);
+  assert.equal(verdict.isValidEvent, true);
+  assert.equal(verdict.verdict, 'APPROVATO E PRENOTABILE / ATTIVO');
+
+  // 2. Mock HTML with ViviMilano article elements
+  const mockVivimilanoHtml = `
+    <html>
+      <body>
+        <article>
+          <a href="https://vivimilano.corriere.it/concerti-e-spettacoli/joe-jackson-al-lirico-gaber/">
+            <div class="tappo">
+              <div class="tappoRectangle">
+                <h2 class="tappoTitle">I mille stili di Joe Jackson</h2>
+                <div class="tappoInfo">14/11/2026</div>
+              </div>
+            </div>
+          </a>
+        </article>
+        <article>
+          <a href="https://vivimilano.corriere.it/altri-eventi/fonderia-in-verde/">
+            <div class="tappo">
+              <div class="tappoRectangle">
+                <h2 class="tappoTitle">Fonderia in verde: Giardini d’inverno</h2>
+                <div class="tappoInfo">14/11/2026</div>
+              </div>
+            </div>
+          </a>
+        </article>
+      </body>
+    </html>
+  `;
+
+  const articles = extractHtmlEvents(mockVivimilanoHtml, 'https://vivimilano.corriere.it');
+  assert.equal(articles.length, 2);
+  assert.equal(articles[0].title, 'I mille stili di Joe Jackson');
+  assert.equal(articles[0].url, 'https://vivimilano.corriere.it/concerti-e-spettacoli/joe-jackson-al-lirico-gaber/');
+
+  const scan = await scanDomainForMilanEvents(
+    { domain: 'vivimilano.corriere.it', url: 'https://vivimilano.corriere.it' },
+    { nowMs: Date.parse('2026-11-14T12:00:00+01:00'), fetcher: async () => mockVivimilanoHtml }
+  );
+  assert.equal(scan.immediate24h.length, 2);
+  assert.equal(scan.immediate24h[0].sourceUrl, 'https://vivimilano.corriere.it/concerti-e-spettacoli/joe-jackson-al-lirico-gaber/');
+});
+
 
 
 

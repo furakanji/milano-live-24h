@@ -58,7 +58,11 @@ export function verifyEventCandidateWithAgent(candidate = {}) {
     try {
       const parsed = new URL(candidate.sourceUrl);
       const path = parsed.pathname.replace(/\/+$/, '');
-      if (!path && !parsed.search) {
+      const host = parsed.hostname.toLowerCase();
+      // Allow well-known Milan portals/calendars (e.g. vivimilano.corriere.it, zero.eu) that organize events by day
+      const isKnownPortal = /vivimilano|milanotoday|mentelocale|zero\.eu|spaziocinema|yesmilano/i.test(host);
+      const hasEventSignal = Boolean(candidate.rawText && /(?:event[io]|mostr[ae]|spettacol[oi]|cinema|concert[io]|oggi|domani|weekend)/i.test(candidate.rawText));
+      if (!path && !parsed.search && !isKnownPortal && !hasEventSignal) {
         reasons.push(`Gate 4 (Fedeltà Link Sorgente): L'URL associato (${parsed.origin}/) è una homepage generica.`);
       }
     } catch {
