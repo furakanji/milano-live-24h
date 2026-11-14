@@ -277,6 +277,88 @@ test('Seen Events: normalizePhoneNumber, isValidPhoneNumber, and hashPhoneNumber
   assert.equal(hash1, hash2); // Deterministic matching
 });
 
+test('Domain Crawler: extracts events via JSON-LD and HTML, automatically categorizing without user manual choice', async () => {
+  const { extractJsonLdEvents, scanDomainForMilanEvents } = await import('../../src/services/domainCrawlerService.js');
+
+  const sampleHtml = `
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <title>Cineteca Milano - Rassegna Capolavori</title>
+        <script type="application/ld+json">
+        {
+          "@context": "https://schema.org",
+          "@type": "ScreeningEvent",
+          "name": "I 400 Colpi - François Truffaut in lingua originale",
+          "description": "Proiezione speciale restaurata in 4K con introduzione critica in sala Arlecchino.",
+          "startDate": "2026-11-14T20:30:00+01:00",
+          "endDate": "2026-11-14T22:30:00+01:00",
+          "location": {
+            "@type": "Place",
+            "name": "Cineteca Milano Arlecchino",
+            "address": "Via San Pietro all'Orto 9, Milano"
+          },
+          "offers": {
+            "@type": "Offer",
+            "price": "8.50",
+            "priceCurrency": "EUR"
+          }
+        }
+        </script>
+        <script type="application/ld+json">
+        {
+          "@context": "https://schema.org",
+          "@type": "TheaterEvent",
+          "name": "La Locandiera di Goldoni - Spettacolo e regia contemporanea",
+          "description": "Spettacolo teatrale di prosa sul palcoscenico del Piccolo Teatro.",
+          "startDate": "2026-11-18T20:00:00+01:00",
+          "location": {
+            "@type": "Place",
+            "name": "Piccolo Teatro Grassi",
+            "address": "Via Rovello 2, Milano"
+          }
+        }
+        </script>
+      </head>
+      <body>
+        <h1>Cineteca Milano</h1>
+      </body>
+    </html>
+  `;
+
+  const extracted = extractJsonLdEvents(sampleHtml);
+  assert.equal(extracted.length, 2);
+
+  // Mock fetcher that returns sampleHtml
+  const mockFetcher = async () => sampleHtml;
+  const nowMs = Date.parse('2026-11-14T12:00:00+01:00');
+
+  const domainObj = {
+    domain: 'cinetecamilano.it',
+    url: 'https://cinetecamilano.it',
+    venueName: 'Cineteca Milano Arlecchino',
+    neighborhood: 'Centro'
+  };
+
+  const result = await scanDomainForMilanEvents(domainObj, { nowMs, fetcher: mockFetcher });
+
+  // 1. Automatic Category Detection (no manual user choice)
+  assert.ok(result.categoriesFound.has('cinema'));
+  assert.ok(result.categoriesFound.has('teatro'));
+
+  // 2. Rolling 24h separation
+  assert.equal(result.immediate24h.length, 1);
+  assert.equal(result.immediate24h[0].title, 'I 400 Colpi - François Truffaut in lingua originale');
+  assert.equal(result.immediate24h[0].category, 'cinema');
+  assert.equal(result.immediate24h[0].isFree, false);
+  assert.equal(result.immediate24h[0].priceDetails, '8.50 EUR');
+
+  // 3. Scheduled future queue (> 24h)
+  assert.equal(result.scheduledFuture.length, 1);
+  assert.equal(result.scheduledFuture[0].title, 'La Locandiera di Goldoni - Spettacolo e regia contemporanea');
+  assert.equal(result.scheduledFuture[0].category, 'teatro');
+});
+
 
 
 

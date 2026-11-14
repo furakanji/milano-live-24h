@@ -9,6 +9,8 @@
  */
 
 import { storageProvider } from '../services/storageProvider.js';
+import { scanDomainForMilanEvents } from '../services/domainCrawlerService.js';
+import { deduplicateEventsList } from '../../services/crawlers/multiSourceOrchestrator.js';
 
 export const MILAN_SOURCES_REGISTRY = [
   { name: 'Santeria Toscana 31 — Calendario Eventi', category: 'Concerti & Club', method: 'HTML Calendar + Liveurope', url: 'https://www.santeria.milano.it/eventi/' },
@@ -254,7 +256,17 @@ export class AdminStudio {
       this.handleAddDomainSubmit();
     });
 
-    document.getElementById('admin-domains-grid')?.addEventListener('click', (e) => {
+    document.getElementById('admin-domains-grid')?.addEventListener('click', async (e) => {
+      const rescanBtn = e.target.closest('[data-rescan-custom-domain]');
+      if (rescanBtn) {
+        const customId = rescanBtn.getAttribute('data-rescan-custom-domain');
+        const entry = this.customDomains.find(d => d.id === customId);
+        if (entry) {
+          await this.triggerDomainScan(entry);
+        }
+        return;
+      }
+
       const btn = e.target.closest('[data-remove-custom-domain]');
       if (!btn) return;
       const customId = btn.getAttribute('data-remove-custom-domain');
@@ -305,13 +317,13 @@ export class AdminStudio {
     });
   }
 
-  handleAddDomainSubmit() {
+  async handleAddDomainSubmit() {
     const hostInput = document.getElementById('input-new-domain-host');
     const venueInput = document.getElementById('input-new-domain-venue');
-    const categorySelect = document.getElementById('input-new-domain-category');
     const neighborhoodInput = document.getElementById('input-new-domain-neighborhood');
     const notesInput = document.getElementById('input-new-domain-notes');
     const feedbackEl = document.getElementById('admin-add-domain-feedback');
+    const submitBtn = document.getElementById('admin-add-domain-submit-btn');
 
     if (!hostInput || !feedbackEl) return;
     let raw = hostInput.value.trim();
@@ -334,7 +346,6 @@ export class AdminStudio {
       return;
     }
 
-    const category = categorySelect?.value || 'teatro';
     const venueName = (venueInput?.value || '').trim() || cleanHost.replace(/\.[a-z]+$/i, '').toUpperCase();
     const neighborhood = (neighborhoodInput?.value || '').trim() || 'Milano';
     const notes = (notesInput?.value || '').trim();
@@ -342,7 +353,7 @@ export class AdminStudio {
     const exists = this.customDomains.some(d => d.domain.toLowerCase().replace(/^www\./, '') === cleanHost);
     if (exists) {
       feedbackEl.className = 'p-3.5 rounded-lg border bg-amber-500/10 border-amber-500/40 text-amber-300 text-xs';
-      feedbackEl.textContent = `ℹ️ Il dominio "${cleanHost}" è già registrato.`;
+      feedbackEl.textContent = `ℹ️ Il dominio "${cleanHost}" è già registrato tra le fonti monitorate.`;
       feedbackEl.classList.remove('hidden');
       return;
     }
@@ -353,11 +364,13 @@ export class AdminStudio {
       domain: cleanHost,
       url: targetUrl,
       venueName,
-      category,
+      category: 'In Scansione...',
       neighborhood,
       notes,
       addedAt: new Date().toISOString(),
-      sampleTitle: `Occasione in programma presso ${venueName}`
+      sampleTitle: `Occasione in programma presso ${venueName}`,
+      lastScannedAt: null,
+      eventsFound: 0
     };
 
     this.customDomains.unshift(newEntry);
@@ -365,7 +378,7 @@ export class AdminStudio {
 
     MILAN_SOURCES_REGISTRY.unshift({
       name: `${venueName} [Dominio Ricerca Attivo]`,
-      category: category,
+      category: 'Auto-Classification',
       method: 'DOMINIO RICERCA ATTIVO (Auto-Ingestion)',
       url: targetUrl
     });
@@ -375,11 +388,88 @@ export class AdminStudio {
     if (neighborhoodInput) neighborhoodInput.value = '';
     if (notesInput) notesInput.value = '';
 
-    feedbackEl.className = 'p-3.5 rounded-lg border bg-emerald-500/10 border-emerald-500/40 text-emerald-300 text-xs';
-    feedbackEl.textContent = `✅ Dominio "${cleanHost}" registrato con successo tra le fonti monitorate.`;
+    feedbackEl.className = 'p-3.5 rounded-lg border bg-sky-500/10 border-sky-500/40 text-sky-300 text-xs flex items-center gap-2';
+    feedbackEl.innerHTML = `<span class="w-2.5 h-2.5 rounded-full bg-sky-400 animate-ping shrink-0"></span><span>🔍 Scansione automatica avviata per <strong>${cleanHost}</strong>: censimento eventi e categorizzazione intelligente in corso...</span>`;
     feedbackEl.classList.remove('hidden');
 
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
+    }
+
     this.render();
+
+    // Trigger immediate automatic crawl & event discovery
+    await this.triggerDomainScan(newEntry, feedbackEl);
+
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+    }
+  }
+
+  async triggerDomainScan(entry, feedbackEl = null) {
+    const feedback = feedbackEl || document.getElementById('admin-add-domain-feedback');
+    try {
+      if (feedback) {
+        feedback.className = 'p-3.5 rounded-lg border bg-sky-500/10 border-sky-500/40 text-sky-300 text-xs flex items-center gap-2';
+        feedback.innerHTML = `<span class="w-2.5 h-2.5 rounded-full bg-sky-400 animate-ping shrink-0"></span><span>🔍 Scansione in corso per <strong>${entry.domain}</strong> (pagine, JSON-LD, orari e categorie)...</span>`;
+        feedback.classList.remove('hidden');
+      }
+
+      const scanResult = await scanDomainForMilanEvents(entry);
+      const { immediate24h, scheduledFuture, categoriesFound } = scanResult;
+      const totalDiscovered = immediate24h.length + scheduledFuture.length;
+
+      // Update domain entry with discovered categories and timestamp
+      const detectedCat = categoriesFound.size > 0 ? Array.from(categoriesFound).join(', ') : 'teatro';
+      entry.category = detectedCat;
+      entry.lastScannedAt = new Date().toISOString();
+      entry.eventsFound = totalDiscovered;
+
+      // Persist updated domain list
+      this.saveCustomDomains(this.customDomains);
+
+      // Save scheduled future events to Cloud / LocalStorage queue
+      for (const futureEv of scheduledFuture) {
+        try {
+          await storageProvider.saveScheduledEvent(futureEv);
+        } catch { /* ignore */ }
+      }
+      if (scheduledFuture.length > 0) {
+        await this.refreshCloudData();
+      }
+
+      // Merge immediate 24h events into active store
+      if (immediate24h.length > 0) {
+        const currentEvents = this.store.getState().allEvents || [];
+        const combined = deduplicateEventsList([...immediate24h, ...currentEvents]);
+        this.store.setEvents(combined);
+        try {
+          await storageProvider.publishLiveSnapshot(combined);
+        } catch { /* ignore */ }
+      }
+
+      this.render();
+
+      if (feedback) {
+        feedback.className = 'p-3.5 rounded-lg border bg-emerald-500/10 border-emerald-500/40 text-emerald-300 text-xs space-y-1';
+        feedback.innerHTML = `
+          <div class="font-bold flex items-center gap-1.5">
+            <span>✅ Scansione completata per ${entry.domain}!</span>
+          </div>
+          <div>• Trovati <strong>${totalDiscovered}</strong> eventi (${immediate24h.length} nelle prossime 24h, ${scheduledFuture.length} in programma per date future).</div>
+          <div>• Categorizzazione automatica: <span class="px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-200 uppercase font-mono font-bold text-[10px]">${detectedCat}</span> (nessuna scelta manuale necessaria).</div>
+        `;
+        feedback.classList.remove('hidden');
+      }
+    } catch (err) {
+      if (feedback) {
+        feedback.className = 'p-3.5 rounded-lg border bg-amber-500/10 border-amber-500/40 text-amber-300 text-xs';
+        feedback.textContent = `⚠️ Dominio ${entry.domain} aggiunto. Scansione automatica terminata con avviso: ${err.message || err}`;
+        feedback.classList.remove('hidden');
+      }
+    }
   }
 
   setActiveTab(tabName) {
@@ -695,15 +785,24 @@ export class AdminStudio {
             </span>
           </div>
           <div class="text-[11px] text-zinc-400 truncate">Luoghi: ${Array.from(d.venues).slice(0, 3).join(', ')}</div>
+          <div class="flex items-center gap-1.5 flex-wrap">
+            <span class="text-[10px] text-zinc-500">Categorie:</span>
+            ${Array.from(d.categories).map(cat => `<span class="px-1.5 py-0.2 rounded bg-zinc-800 text-zinc-300 font-mono text-[9px] uppercase border border-zinc-700">${cat}</span>`).join('')}
+          </div>
         </div>
         <div class="pt-2 border-t border-[#1e232d] flex items-center justify-between text-[10px]">
           <a href="${d.sampleUrls[0] || `https://${d.hostname}`}" target="_blank" rel="noopener noreferrer" class="text-zinc-400 hover:text-emerald-400 underline">
             Apri Sito ↗
           </a>
           ${d.isCustomAdded && d.customId ? `
-            <button type="button" data-remove-custom-domain="${d.customId}" class="text-rose-400 hover:text-rose-300 underline cursor-pointer">
-              Rimuovi
-            </button>
+            <div class="flex items-center gap-2">
+              <button type="button" data-rescan-custom-domain="${d.customId}" class="text-sky-400 hover:text-sky-300 underline cursor-pointer">
+                Scansiona Ora 🔄
+              </button>
+              <button type="button" data-remove-custom-domain="${d.customId}" class="text-rose-400 hover:text-rose-300 underline cursor-pointer">
+                Rimuovi
+              </button>
+            </div>
           ` : ''}
         </div>
       </div>
